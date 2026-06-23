@@ -1,0 +1,146 @@
+body {
+  background: #0a0a0a;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  font-family: 'Courier New', monospace;
+}
+
+.game-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-family: 'Courier New', monospace;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  font-size: 0.9rem;
+}
+
+#gameCanvas {
+  display: block;
+  background: #000;
+  border: 3px solid #00ff00;
+  box-shadow: 0 0 20px #00ff00;
+  margin: 0 auto 1.5rem;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.game-controls {
+  background: rgba(0, 255, 0, 0.05);
+  border: 2px solid #00ff00;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-family: 'Courier New', monospace;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.game-controls h3 {
+  margin-top: 0;
+  color: #00ff00;
+}
+
+.controls-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+}
+
+.controls-list li {
+  padding: 0.25rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.btn-game {
+  padding: 0.75rem 1.5rem;
+  background: #00ff00;
+  color: #000;
+  border: 2px solid #00ff00;
+  border-radius: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.btn-game:hover {
+  box-shadow: 0 0 20px #00ff00;
+  transform: scale(1.05);
+}
+
+.btn-game:active {
+  transform: scale(0.95);
+}
+
+.game-over {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  color: #ff0000;
+  text-shadow: 0 0 10px #ff0000;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #00ff00;
+  text-decoration: none;
+  font-family: 'Courier New', monospace;
+  border: 2px solid #00ff00;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+}
+
+.back-link:hover {
+  background: #00ff00;
+  color: #000;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+@media (max-width: 600px) {
+  .game-header h1 {
+    font-size: 1.5rem;
+  }
+
+  #gameCanvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .controls-list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Space Invaders - Giochino retrò stile anni 80" />
+  <title>Space Invaders</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles/tokens.css" />
+  <link rel="stylesheet" href="../../styles/base.css" />
+  <link rel="stylesheet" href="../../styles/components.css" />
+  <link rel="stylesheet" href="../../styles/layout.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="site-header" data-header>
+    <div class="container navbar">
+      <a class="brand" href="../../index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 16.5 12 5l7 11.5"/>
+            <path d="M8.5 16.5h7"/>
+            <path d="M10.5 12.5h3"/>
+          </svg>
+        </span>
+        <span class="brand__text">Space Invaders</span>
+      </a>
+
+      <a href="../projects.html" class="btn btn--secondary" style="margin-left: auto;">← Progetti</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="game-container">
+      <div class="game-header">
+        <h1>⚡ SPACE INVADERS ⚡</h1>
+      </div>
+
+      <div class="game-stats">
+        <div>SCORE: <span id="score">0</span></div>
+        <div>VITE: <span id="lives">3</span></div>
+        <div>LIVELLO: <span id="level">1</span></div>
+      </div>
+
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+      <div id="gameOverMessage" class="game-over" style="display: none;"></div>
+
+      <div class="button-row">
+        <button class="btn-game" onclick="gameState.start()">NUOVA PARTITA</button>
+        <button class="btn-game" onclick="gameState.togglePause()">PAUSA</button>
+      </div>
+
+      <div class="game-controls">
+        <h3>🎮 COMANDI:</h3>
+        <ul class="controls-list">
+          <li>← → : Muovi astronave</li>
+          <li>SPAZIO: Spara</li>
+          <li>P: Pausa</li>
+          <li>WASD: Movimento alternativo</li>
+        </ul>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="../projects.html" class="back-link">← TORNA AI PROGETTI</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <span>Space Invaders Retrò</span>
+      <span>Anni 80 · Stile Verde Fluo · Divertimento Garantito</span>
+    </div>
+  </footer>
+
+  <script src="../../scripts/main.js" defer></script>
+  <script src="./script.js" defer></script>
+</body>
+</html>
