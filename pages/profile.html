@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Profilo professionale cloud engineer: stack, approccio e aree di specializzazione." />
+  <title>Profilo · Cloud Engineer Site</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/base.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <link rel="stylesheet" href="../styles/layout.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Salta al contenuto</a>
+  <header class="site-header" data-header>
+    <div class="container navbar">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 16.5 12 5l7 11.5"/><path d="M8.5 16.5h7"/><path d="M10.5 12.5h3"/>
+          </svg>
+        </span>
+        <span class="brand__text">Cloud Engineer</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigazione principale">
+        <button class="icon-button nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+          <span class="sr-only">Apri menu</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="nav-menu" id="nav-menu" data-nav-menu>
+          <a href="../index.html">Home</a>
+          <a href="./services.html">Servizi</a>
+          <a href="./profile.html" class="is-active">Profilo</a>
+          <a href="./contact.html">Contatti</a>
+        </div>
+      </nav>
+      <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
+        <span data-theme-icon aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-main">
+    <section class="section page-hero">
+      <div class="container profile-grid">
+        <article class="profile-quote reveal">
+          <p>“Portare struttura dove l'infrastruttura è cresciuta troppo in fretta.”</p>
+        </article>
+        <article class="profile-card reveal">
+          <span class="eyebrow">Profilo</span>
+          <h1>Un ingegnere operativo con visione architetturale.</h1>
+          <p>Questa pagina serve a raccontare in modo più chiaro il tuo background, il tuo stack e il tipo di problemi che sai prendere in carico.</p>
+          <div class="definition-list">
+            <div><span>Stack</span><strong>Azure, Microsoft 365, Terraform, PowerShell, Bash, Python</strong></div>
+            <div><span>Approccio</span><strong>Hybrid, automation-first, documentation-aware</strong></div>
+            <div><span>Valore</span><strong>Ridurre complessità, aumentare controllo e continuità</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer__inner"><span>Profilo</span><span>Stack e posizionamento personale</span></div></footer>
+  <script src="../scripts/main.js" defer></script>
+</body>
+</html>

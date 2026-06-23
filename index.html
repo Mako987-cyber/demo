@@ -1,12 +1,133 @@
-<!doctype html>
-<html lang="it">
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Il mio sito</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfolio professionale di un Cloud Engineer specializzato in Azure, Microsoft 365, automazione e infrastrutture ibride." />
+  <title>Cloud Engineer Site</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/tokens.css" />
+  <link rel="stylesheet" href="./styles/base.css" />
+  <link rel="stylesheet" href="./styles/components.css" />
+  <link rel="stylesheet" href="./styles/layout.css" />
 </head>
 <body>
-  <h1>Ciao, questo è il mio sito</h1>
-  <p>Pubblicato con GitHub Pages.</p>
+  <a class="skip-link" href="#main-content">Salta al contenuto</a>
+
+  <header class="site-header" data-header>
+    <div class="container navbar">
+      <a class="brand" href="./index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 16.5 12 5l7 11.5"/>
+            <path d="M8.5 16.5h7"/>
+            <path d="M10.5 12.5h3"/>
+          </svg>
+        </span>
+        <span class="brand__text">Cloud Engineer</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigazione principale">
+        <button class="icon-button nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+          <span class="sr-only">Apri menu</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="nav-menu" id="nav-menu" data-nav-menu>
+          <a href="./index.html" class="is-active">Home</a>
+          <a href="./pages/services.html">Servizi</a>
+          <a href="./pages/profile.html">Profilo</a>
+          <a href="./pages/contact.html">Contatti</a>
+        </div>
+      </nav>
+
+      <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
+        <span data-theme-icon aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero section section--hero">
+      <div class="container hero__grid">
+        <div class="hero__content reveal">
+          <span class="eyebrow">Azure · M365 · Automation</span>
+          <h1>Infrastrutture cloud progettate per essere affidabili, leggibili e scalabili.</h1>
+          <p>
+            Una presenza digitale professionale costruita attorno al tuo lavoro da cloud engineer: ambienti ibridi,
+            governance Microsoft, automazione e operation con un tono sobrio da consulenza tecnica premium.
+          </p>
+          <div class="button-row">
+            <a class="btn btn--primary" href="./pages/contact.html">Prenota una call</a>
+            <a class="btn btn--secondary" href="./pages/services.html">Esplora i servizi</a>
+          </div>
+        </div>
+
+        <aside class="hero-card reveal" aria-label="Sintesi professionale">
+          <div class="code-card">
+            <div class="code-card__bar"><span></span><span></span><span></span></div>
+            <pre>cloud.engineer {
+  focus: ["Azure", "Microsoft 365", "Identity", "Automation"]
+  stack: ["Terraform", "PowerShell", "Bash", "Python"]
+  outcome: "Meno complessità, più controllo operativo"
+}</pre>
+          </div>
+          <div class="metric-grid">
+            <article class="metric-card"><span>Focus</span><strong>360°</strong></article>
+            <article class="metric-card"><span>Approccio</span><strong>Hybrid</strong></article>
+            <article class="metric-card"><span>Metodo</span><strong>IaC</strong></article>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section--bordered">
+      <div class="container section-intro reveal">
+        <h2>Un sito più serio anche nel codice.</h2>
+        <p>
+          Ho diviso la struttura in file separati, così hai una base più pulita, mantenibile e pronta per crescere come progetto reale,
+          invece di una singola pagina monolitica.
+        </p>
+      </div>
+      <div class="container card-grid card-grid--split">
+        <article class="info-card reveal">
+          <h3>Architettura front-end ordinata</h3>
+          <p>HTML separato per pagine, CSS suddiviso per responsabilità e JavaScript dedicato ai comportamenti condivisi.</p>
+        </article>
+        <article class="info-card reveal">
+          <h3>Stile consulenziale</h3>
+          <p>Direzione visiva pulita, professionale e coerente con un profilo cloud / infrastructure engineer.</p>
+        </article>
+        <article class="info-card reveal">
+          <h3>Base pronta al deploy</h3>
+          <p>File statici facili da pubblicare su GitHub Pages o hosting statico senza build complessa.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section--bordered">
+      <div class="container featured-panel reveal">
+        <div>
+          <span class="eyebrow">Struttura del progetto</span>
+          <h2>Una base da portfolio professionale, non solo una demo.</h2>
+        </div>
+        <ul class="feature-list" role="list">
+          <li>Home separata come pagina di ingresso.</li>
+          <li>Pagina servizi per posizionamento commerciale.</li>
+          <li>Pagina profilo per biografia, stack e approccio.</li>
+          <li>Pagina contatti per call to action finale.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <span>Cloud Engineer Portfolio</span>
+      <span>Codice modulare · statico · pronto da personalizzare</span>
+    </div>
+  </footer>
+
+  <script src="./scripts/main.js" defer></script>
 </body>
 </html>

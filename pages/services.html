@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Servizi cloud engineering: Azure, Microsoft 365, automazione, ambienti ibridi e consulenza infrastrutturale." />
+  <title>Servizi · Cloud Engineer Site</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/base.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <link rel="stylesheet" href="../styles/layout.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Salta al contenuto</a>
+  <header class="site-header" data-header>
+    <div class="container navbar">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 16.5 12 5l7 11.5"/><path d="M8.5 16.5h7"/><path d="M10.5 12.5h3"/>
+          </svg>
+        </span>
+        <span class="brand__text">Cloud Engineer</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigazione principale">
+        <button class="icon-button nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+          <span class="sr-only">Apri menu</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="nav-menu" id="nav-menu" data-nav-menu>
+          <a href="../index.html">Home</a>
+          <a href="./services.html" class="is-active">Servizi</a>
+          <a href="./profile.html">Profilo</a>
+          <a href="./contact.html">Contatti</a>
+        </div>
+      </nav>
+      <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
+        <span data-theme-icon aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-main">
+    <section class="section page-hero">
+      <div class="container section-intro reveal">
+        <span class="eyebrow">Servizi</span>
+        <h1>Cloud engineering con taglio operativo.</h1>
+        <p>Una pagina dedicata ai servizi comunica meglio il tuo posizionamento e rende il sito più credibile come presenza professionale.</p>
+      </div>
+    </section>
+
+    <section class="section section--bordered">
+      <div class="container service-layout">
+        <article class="service-panel reveal">
+          <h2>Cloud architecture & modernization</h2>
+          <p>Design e riordino di tenant Azure e Microsoft 365, governance, sicurezza di base e razionalizzazione delle componenti critiche.</p>
+          <div class="tag-row"><span class="tag">Azure</span><span class="tag">Entra ID</span><span class="tag">M365</span></div>
+        </article>
+        <article class="service-panel reveal">
+          <h2>Automation & Infrastructure as Code</h2>
+          <p>Provisioning e operazioni ripetibili con Terraform, PowerShell, Bash e workflow pratici orientati alla manutenzione nel tempo.</p>
+          <div class="tag-row"><span class="tag">Terraform</span><span class="tag">PowerShell</span><span class="tag">DevOps</span></div>
+        </article>
+        <article class="service-panel reveal">
+          <h2>Hybrid operations</h2>
+          <p>Integrazione fra cloud e sistemi esistenti, backup, accessi, networking e processi operativi per ambienti reali, non solo teorici.</p>
+          <div class="tag-row"><span class="tag">Hybrid</span><span class="tag">Networking</span><span class="tag">Backup</span></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer__inner"><span>Servizi</span><span>Pagina dedicata al posizionamento</span></div></footer>
+  <script src="../scripts/main.js" defer></script>
+</body>
+</html>
