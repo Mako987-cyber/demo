@@ -49,18 +49,16 @@
           <div class="search-wrapper">
             <input
               type="text"
-              id="cityInput"
+              id="city"
               class="search-input"
-              placeholder="Scrivi il nome di una città (es: Roma, Milano, Londra)..."
+              placeholder="Milano"
               autocomplete="off"
             />
-            <button class="search-button" id="searchBtn">Cerca</button>
+            <button class="search-button" id="load">Cerca</button>
           </div>
         </div>
 
-        <div id="errorMessage"></div>
-        <div id="loadingMessage"></div>
-        <div id="weatherResult"></div>
+        <pre id="out" class="weather-output"></pre>
       </div>
     </section>
   </main>
@@ -68,7 +66,7 @@
   <footer class="site-footer">
     <div class="container footer__inner">
       <span>Weather Tool</span>
-      <span>Meteo gratuito · Mondo</span>
+      <span>Meteo gratuito · wttr.in · Mondo</span>
     </div>
   </footer>
 
