@@ -27,52 +27,77 @@ const weatherApp = {
 
   async fetchWeather(city) {
     try {
-      // Using a CORS proxy to bypass CORS issues
-      const proxyUrl = 'https://api.allorigins.win/get?url=';
-      const apiUrl = `https://wttr.in/${encodeURIComponent(city)}?format=j1`;
-      const url = proxyUrl + encodeURIComponent(apiUrl);
+      // First, get coordinates using geocoding
+      const geoResponse = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=it&format=json`
+      );
 
-      const response = await fetch(url);
+      const geoData = await geoResponse.json();
 
-      if (!response.ok) {
-        throw new Error('Errore nella richiesta');
+      if (!geoData.results || geoData.results.length === 0) {
+        this.elements.loadingDiv.innerHTML = '';
+        this.elements.errorDiv.innerHTML =
+          '<div class="error">⚠️ Città non trovata. Prova con un altro nome.</div>';
+        return;
       }
 
-      const data = await response.json();
-      const jsonData = JSON.parse(data.contents);
+      const location = geoData.results[0];
+      const { latitude, longitude, name, country, admin1 } = location;
+
+      // Then get weather data
+      const weatherResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto`
+      );
+
+      const weatherData = await weatherResponse.json();
 
       this.elements.loadingDiv.innerHTML = '';
-      this.displayWeather(jsonData);
+      this.displayWeather(weatherData, name, country, admin1, latitude, longitude);
     } catch (error) {
       this.elements.loadingDiv.innerHTML = '';
       this.elements.errorDiv.innerHTML =
-        '<div class="error">⚠️ Città non trovata. Prova con un altro nome.</div>';
+        '<div class="error">❌ Errore nella ricerca. Riprova.</div>';
       console.error('Errore:', error);
     }
   },
 
-  displayWeather(data) {
+  displayWeather(data, cityName, country, region, lat, lon) {
     try {
-      const current = data.current_condition[0];
-      const area = data.nearest_area[0];
-      const cityName = area.areaName[0].value;
-      const country = area.country[0].value;
-      const region = area.region[0]?.value || '';
-      const lat = area.latitude;
-      const lon = area.longitude;
+      const current = data.current;
 
-      const weatherDesc = current.weatherDesc[0].value;
-      const weatherIcon = current.weatherIconUrl[0].value;
-      const temp = current.temp_C;
-      const feelsLike = current.FeelsLikeC;
-      const humidity = current.humidity;
-      const windSpeed = current.windspeedKmph;
-      const windDir = current.winddir16Point;
-      const pressure = current.pressure;
-      const uvIndex = current.uvIndex;
-      const visibility = current.visibility;
-      const cloudCover = current.cloudcover;
-      const precipitation = current.precipMM;
+      // Weather descriptions
+      const weatherDescriptions = {
+        0: '☀️ Sereno',
+        1: '🌤️ Principalmente sereno',
+        2: '⛅ Parzialmente nuvoloso',
+        3: '☁️ Nuvoloso',
+        45: '🌫️ Nebbia',
+        48: '🌫️ Nebbia gelata',
+        51: '🌧️ Pioggia leggera',
+        53: '🌧️ Pioggia moderata',
+        55: '⛈️ Pioggia forte',
+        61: '🌧️ Pioggia',
+        63: '🌧️ Pioggia moderata',
+        65: '⛈️ Pioggia forte',
+        71: '❄️ Neve leggera',
+        73: '❄️ Neve moderata',
+        75: '❄️ Neve forte',
+        77: '❄️ Grani di neve',
+        80: '🌧️ Pioggia leggera',
+        81: '🌧️ Pioggia moderata',
+        82: '⛈️ Pioggia forte',
+        85: '❄️ Neve',
+        86: '❄️ Neve forte',
+        95: '⛈️ Temporale',
+        96: '⛈️ Temporale con grandine',
+        99: '⛈️ Temporale forte'
+      };
+
+      const weatherDesc = weatherDescriptions[current.weather_code] || '🌡️ Sconosciuto';
+      const temp = current.temperature_2m;
+      const humidity = current.relative_humidity_2m;
+      const windSpeed = current.wind_speed_10m;
+      const windDir = current.wind_direction_10m;
 
       this.elements.resultDiv.innerHTML = `
         <div class="weather-result reveal">
@@ -80,21 +105,15 @@ const weatherApp = {
             <div class="weather-city">
               <h2>${cityName}</h2>
               <p>${region ? region + ', ' : ''}${country}</p>
-              <p style="font-size: 0.85rem; margin-top: 0.5rem;">Lat: ${lat}° | Lon: ${lon}°</p>
+              <p style="font-size: 0.85rem; margin-top: 0.5rem;">Lat: ${lat.toFixed(2)}° | Lon: ${lon.toFixed(2)}°</p>
             </div>
-            <div class="weather-icon">
-              <img src="${weatherIcon}" alt="${weatherDesc}" />
-            </div>
+            <div style="font-size: 3rem;">🌍</div>
           </div>
 
           <div class="weather-main">
             <div class="weather-stat">
               <div class="weather-stat-value">${temp}°C</div>
               <div class="weather-stat-label">Temperatura</div>
-            </div>
-            <div class="weather-stat">
-              <div class="weather-stat-value">${feelsLike}°C</div>
-              <div class="weather-stat-label">Percepita</div>
             </div>
             <div class="weather-stat">
               <div class="weather-stat-value">${humidity}%</div>
@@ -104,20 +123,19 @@ const weatherApp = {
               <div class="weather-stat-value">${windSpeed}</div>
               <div class="weather-stat-label">Vento (km/h)</div>
             </div>
+            <div class="weather-stat">
+              <div class="weather-stat-value">${windDir}°</div>
+              <div class="weather-stat-label">Direzione</div>
+            </div>
           </div>
 
           <div class="weather-condition">
             <p><strong>Condizioni:</strong> ${weatherDesc}</p>
-            <p><strong>Direzione vento:</strong> ${windDir}</p>
-            <p><strong>Pressione:</strong> ${pressure} mb</p>
-            <p><strong>Indice UV:</strong> ${uvIndex}</p>
-            <p><strong>Visibilità:</strong> ${visibility} km</p>
-            <p><strong>Copertura nuvolosa:</strong> ${cloudCover}%</p>
-            <p><strong>Precipitazioni:</strong> ${precipitation} mm</p>
+            <p style="margin-bottom: 0;"><strong>Ora UTC:</strong> ${new Date(current.time).toLocaleString('it-IT')}</p>
           </div>
 
           <div style="font-size: 0.85rem; color: var(--color-text-secondary); text-align: center; margin-top: 1rem;">
-            Dati in tempo reale
+            Dati forniti da Open-Meteo · Aggiornamento in tempo reale
           </div>
         </div>
       `;
