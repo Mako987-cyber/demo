@@ -1,78 +1,38 @@
 <!DOCTYPE html>
-<html lang="it" data-theme="light">
+<html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Weather Tool - Meteo in tempo reale" />
-  <title>Meteo</title>
-  <link rel="preconnect" href="https://api.fontshare.com" />
-  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../styles/tokens.css" />
-  <link rel="stylesheet" href="../../styles/base.css" />
-  <link rel="stylesheet" href="../../styles/components.css" />
-  <link rel="stylesheet" href="../../styles/layout.css" />
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wttr.in raw viewer</title>
+  <link rel="stylesheet" href="./style-3.css">
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Salta al contenuto</a>
+  <main class="weather-container">
+    <h1>wttr.in raw viewer</h1>
+    <p class="intro-text">Inserisci una città e visualizza l'output puro restituito da wttr.in.</p>
 
-  <header class="site-header" data-header>
-    <div class="container navbar">
-      <a class="brand" href="../../index.html" aria-label="Home">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 16.5 12 5l7 11.5"/>
-            <path d="M8.5 16.5h7"/>
-            <path d="M10.5 12.5h3"/>
-          </svg>
-        </span>
-        <span class="brand__text">Meteo</span>
-      </a>
-
-      <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
-        <span data-theme-icon aria-hidden="true"></span>
-      </button>
-    </div>
-  </header>
-
-  <main id="main-content">
-    <section class="section">
-      <div class="container weather-container">
-        <a href="../projects.html" class="back-link">← Torna ai Progetti</a>
-
-        <div class="search-section reveal">
-          <h1>Meteo in Tempo Reale</h1>
-          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
-            Cerca il meteo di qualsiasi città nel mondo.
-          </p>
-
-          <div class="search-wrapper">
-            <input
-              type="text"
-              id="cityInput"
-              class="search-input"
-              placeholder="Scrivi il nome di una città (es: Roma, Milano, Londra)..."
-              autocomplete="off"
-            />
-            <button class="search-button" id="searchBtn">Cerca</button>
-          </div>
-        </div>
-
-        <div id="errorMessage"></div>
-        <div id="loadingMessage"></div>
-        <div id="weatherResult"></div>
+    <section class="search-section" aria-label="Ricerca città">
+      <div class="search-wrapper">
+        <input
+          id="cityInput"
+          class="search-input"
+          type="text"
+          placeholder="Es. Milan"
+          autocomplete="off"
+        >
+        <button id="searchBtn" class="search-button" type="button">Esegui curl</button>
       </div>
+    </section>
+
+    <div id="loadingMessage" class="loading" hidden>Richiesta in corso...</div>
+    <div id="errorMessage" class="error" hidden></div>
+
+    <section class="weather-result">
+      <h2>Output raw</h2>
+      <pre id="weatherResult" class="raw-output">Nessun risultato ancora.</pre>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer__inner">
-      <span>Weather Tool</span>
-      <span>Meteo gratuito · Mondo</span>
-    </div>
-  </footer>
-
-  <script src="../../scripts/main.js" defer></script>
-  <script src="./script.js" defer></script>
+  <script src="./script-2.js" defer></script>
 </body>
 </html>
