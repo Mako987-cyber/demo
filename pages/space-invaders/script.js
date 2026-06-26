@@ -1,16 +1,14 @@
 // Space Invaders Game
 const gameState = {
-  canvas: document.getElementById('gameCanvas'),
+  canvas: null,
   ctx: null,
 
-  // Game state
   running: false,
   paused: false,
   score: 0,
   level: 1,
   lives: 3,
 
-  // Player
   player: {
     x: 0,
     y: 0,
@@ -20,29 +18,27 @@ const gameState = {
     dx: 0
   },
 
-  // Game objects
   bullets: [],
   enemies: [],
   enemyBullets: [],
   bulletSpeed: 7,
   enemySpeed: 2,
 
-  // Controls
   keys: {},
 
   init() {
+    this.canvas = document.getElementById('gameCanvas');
     this.ctx = this.canvas.getContext('2d');
     this.player.x = this.canvas.width / 2 - this.player.width / 2;
-    this.player.y = this.canvas.height - 40;
+    this.player.y = this.canvas.height - 60;
 
     this.attachEventListeners();
-    this.gameLoop();
+    this.loop();
   },
 
   attachEventListeners() {
     window.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
-
       if (e.key === ' ') {
         e.preventDefault();
         this.shoot();
@@ -78,22 +74,22 @@ const gameState = {
           x: 60 + c * 100,
           y: 40 + r * 70,
           width: 30,
-          height: 25,
-          dx: this.enemySpeed
+          height: 25
         });
       }
     }
   },
 
   drawPlayer() {
+    const p = this.player;
     this.ctx.fillStyle = '#00ff00';
     this.ctx.shadowBlur = 10;
     this.ctx.shadowColor = '#00ff00';
 
     this.ctx.beginPath();
-    this.ctx.moveTo(this.player.x + this.player.width / 2, this.player.y);
-    this.ctx.lineTo(this.player.x + this.player.width, this.player.y + this.player.height);
-    this.ctx.lineTo(this.player.x, this.player.y + this.player.height);
+    this.ctx.moveTo(p.x + p.width / 2, p.y);
+    this.ctx.lineTo(p.x + p.width, p.y + p.height);
+    this.ctx.lineTo(p.x, p.y + p.height);
     this.ctx.closePath();
     this.ctx.fill();
 
@@ -158,18 +154,16 @@ const gameState = {
   },
 
   updateBullets() {
-    this.bullets = this.bullets.filter(b => b.y > 0);
-    this.bullets.forEach(bullet => {
-      bullet.y -= this.bulletSpeed;
-    });
+    this.bullets.forEach(b => { b.y -= this.bulletSpeed; });
+    this.bullets = this.bullets.filter(b => b.y + b.height > 0);
   },
 
   updateEnemies() {
     let changeDirection = false;
 
     this.enemies.forEach(enemy => {
-      enemy.x += enemy.dx;
-      if (enemy.x < 0 || enemy.x + enemy.width > this.canvas.width) {
+      enemy.x += this.enemySpeed;
+      if (enemy.x <= 0 || enemy.x + enemy.width >= this.canvas.width) {
         changeDirection = true;
       }
     });
@@ -177,8 +171,8 @@ const gameState = {
     if (changeDirection) {
       this.enemySpeed *= -1;
       this.enemies.forEach(enemy => {
-        enemy.dx = this.enemySpeed;
         enemy.y += 30;
+        enemy.x += this.enemySpeed;
       });
     }
 
@@ -195,20 +189,20 @@ const gameState = {
   },
 
   updateEnemyBullets() {
+    this.enemyBullets.forEach(b => { b.y += b.dy; });
     this.enemyBullets = this.enemyBullets.filter(b => b.y < this.canvas.height);
-    this.enemyBullets.forEach(bullet => {
-      bullet.y += bullet.dy;
-    });
   },
 
   checkCollisions() {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       for (let j = this.enemies.length - 1; j >= 0; j--) {
-        if (this.bullets[i] && this.enemies[j] &&
-            this.bullets[i].x < this.enemies[j].x + this.enemies[j].width &&
-            this.bullets[i].x + this.bullets[i].width > this.enemies[j].x &&
-            this.bullets[i].y < this.enemies[j].y + this.enemies[j].height &&
-            this.bullets[i].y + this.bullets[i].height > this.enemies[j].y) {
+        const b = this.bullets[i];
+        const e = this.enemies[j];
+        if (b && e &&
+            b.x < e.x + e.width &&
+            b.x + b.width > e.x &&
+            b.y < e.y + e.height &&
+            b.y + b.height > e.y) {
           this.score += 10;
           this.bullets.splice(i, 1);
           this.enemies.splice(j, 1);
@@ -218,21 +212,33 @@ const gameState = {
     }
 
     for (let i = this.enemyBullets.length - 1; i >= 0; i--) {
-      if (this.enemyBullets[i].x < this.player.x + this.player.width &&
-          this.enemyBullets[i].x + this.enemyBullets[i].width > this.player.x &&
-          this.enemyBullets[i].y < this.player.y + this.player.height &&
-          this.enemyBullets[i].y + this.enemyBullets[i].height > this.player.y) {
+      const b = this.enemyBullets[i];
+      const p = this.player;
+      if (b.x < p.x + p.width &&
+          b.x + b.width > p.x &&
+          b.y < p.y + p.height &&
+          b.y + b.height > p.y) {
         this.lives--;
         this.enemyBullets.splice(i, 1);
-        break;
+        if (this.lives <= 0) {
+          this.endGame();
+        }
       }
     }
 
-    this.enemies.forEach(enemy => {
-      if (enemy.y > this.canvas.height) {
+    for (const enemy of this.enemies) {
+      if (enemy.y + enemy.height >= this.canvas.height) {
         this.lives = 0;
+        this.endGame();
+        break;
       }
-    });
+    }
+  },
+
+  endGame() {
+    this.running = false;
+    document.getElementById('gameOverMessage').textContent = `GAME OVER! SCORE: ${this.score}`;
+    document.getElementById('gameOverMessage').style.display = 'block';
   },
 
   updateUI() {
@@ -241,9 +247,10 @@ const gameState = {
     document.getElementById('level').textContent = this.level;
   },
 
-  gameLoop = () => {
-    this.ctx.fillStyle = '#000';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  loop() {
+    const ctx = this.ctx;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (this.running && !this.paused) {
       this.updatePlayer();
@@ -254,15 +261,10 @@ const gameState = {
 
       if (this.enemies.length === 0) {
         this.level++;
-        this.enemySpeed += 1;
+        const dir = this.enemySpeed > 0 ? 1 : -1;
+        this.enemySpeed = dir * (2 + this.level);
         this.createEnemies();
         this.score += 100;
-      }
-
-      if (this.lives <= 0) {
-        this.running = false;
-        document.getElementById('gameOverMessage').textContent = `GAME OVER! SCORE: ${this.score}`;
-        document.getElementById('gameOverMessage').style.display = 'block';
       }
     }
 
@@ -270,21 +272,31 @@ const gameState = {
     this.drawBullets();
     this.drawEnemyBullets();
     this.drawPlayer();
-
     this.updateUI();
 
-    if (this.paused) {
-      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.fillStyle = '#00ff00';
-      this.ctx.font = 'bold 40px Courier New';
-      this.ctx.textAlign = 'center';
-      this.ctx.shadowBlur = 10;
-      this.ctx.shadowColor = '#00ff00';
-      this.ctx.fillText('PAUSA', this.canvas.width / 2, this.canvas.height / 2);
+    if (!this.running && !document.getElementById('gameOverMessage').style.display.includes('block')) {
+      ctx.fillStyle = '#00ff00';
+      ctx.font = 'bold 22px Courier New';
+      ctx.textAlign = 'center';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#00ff00';
+      ctx.fillText('PREMI "NUOVA PARTITA" PER INIZIARE', this.canvas.width / 2, this.canvas.height / 2);
+      ctx.shadowBlur = 0;
     }
 
-    requestAnimationFrame(() => this.gameLoop());
+    if (this.paused) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      ctx.fillStyle = '#00ff00';
+      ctx.font = 'bold 40px Courier New';
+      ctx.textAlign = 'center';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#00ff00';
+      ctx.fillText('PAUSA', this.canvas.width / 2, this.canvas.height / 2);
+      ctx.shadowBlur = 0;
+    }
+
+    requestAnimationFrame(() => this.loop());
   },
 
   start() {
@@ -296,6 +308,7 @@ const gameState = {
     this.bullets = [];
     this.enemyBullets = [];
     this.enemySpeed = 2;
+    this.player.x = this.canvas.width / 2 - this.player.width / 2;
     document.getElementById('gameOverMessage').style.display = 'none';
     this.createEnemies();
   },
@@ -307,7 +320,6 @@ const gameState = {
   }
 };
 
-// Initialize game
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => gameState.init());
 } else {
