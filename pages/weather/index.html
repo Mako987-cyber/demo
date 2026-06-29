@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Weather Tool - Meteo in tempo reale" />
+  <meta name="description" content="Weather Tool - Meteo corrente e previsioni 7 giorni" />
   <title>Meteo</title>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
@@ -38,12 +38,12 @@
   <main id="main-content">
     <section class="section">
       <div class="container weather-container">
-        <a href="../projects.html" class="back-link">← Torna ai Progetti</a>
+        <a href="../projects.html" class="back-link">&larr; Torna ai Progetti</a>
 
         <div class="search-section reveal">
-          <h1>Meteo in Tempo Reale</h1>
+          <h1>Meteo &amp; Previsioni</h1>
           <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
-            Cerca il meteo di qualsiasi città nel mondo.
+            Cerca una città per visualizzare il meteo corrente e le previsioni dei prossimi 7 giorni.
           </p>
 
           <div class="search-wrapper">
@@ -51,14 +51,14 @@
               type="text"
               id="city"
               class="search-input"
-              placeholder="Milano"
+              placeholder="Milano, Roma, Londra..."
               autocomplete="off"
             />
             <button class="search-button" id="load">Cerca</button>
           </div>
         </div>
 
-        <pre id="out" class="weather-output"></pre>
+        <div id="weather-output"></div>
       </div>
     </section>
   </main>
@@ -66,7 +66,7 @@
   <footer class="site-footer">
     <div class="container footer__inner">
       <span>Weather Tool</span>
-      <span>Meteo gratuito · wttr.in · Mondo</span>
+      <span>Dati da Open-Meteo API &middot; Aggiornamento in tempo reale</span>
     </div>
   </footer>
 
