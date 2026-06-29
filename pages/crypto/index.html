@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dashboard Crypto - Prezzi delle principali criptovalute in tempo reale" />
+  <title>Dashboard Crypto</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles/tokens.css" />
+  <link rel="stylesheet" href="../../styles/base.css" />
+  <link rel="stylesheet" href="../../styles/components.css" />
+  <link rel="stylesheet" href="../../styles/layout.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Salta al contenuto</a>
+
+  <header class="site-header" data-header>
+    <div class="container navbar">
+      <a class="brand" href="../../index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 16.5 12 5l7 11.5"/>
+            <path d="M8.5 16.5h7"/>
+            <path d="M10.5 12.5h3"/>
+          </svg>
+        </span>
+        <span class="brand__text">Crypto</span>
+      </a>
+
+      <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
+        <span data-theme-icon aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="section">
+      <div class="container crypto-container">
+        <a href="../projects.html" class="back-link">&larr; Torna ai Progetti</a>
+
+        <div class="dashboard-header reveal">
+          <h1>Dashboard Crypto</h1>
+          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+            Prezzi in tempo reale delle principali criptovalute con storico settimanale e convertitore.
+          </p>
+        </div>
+
+        <div class="rates-grid reveal" id="rates-grid">
+          <div class="rate-card" data-coin="bitcoin">
+            <div class="rate-header">
+              <span class="rate-flag">&#x20BF;</span>
+              <span class="rate-code">BTC</span>
+            </div>
+            <div class="rate-value" id="price-bitcoin">--</div>
+            <div class="rate-change" id="change-bitcoin">--</div>
+            <div class="rate-label">Bitcoin</div>
+          </div>
+
+          <div class="rate-card" data-coin="ethereum">
+            <div class="rate-header">
+              <span class="rate-flag">&#x039E;</span>
+              <span class="rate-code">ETH</span>
+            </div>
+            <div class="rate-value" id="price-ethereum">--</div>
+            <div class="rate-change" id="change-ethereum">--</div>
+            <div class="rate-label">Ethereum</div>
+          </div>
+
+          <div class="rate-card" data-coin="solana">
+            <div class="rate-header">
+              <span class="rate-flag">&#x25C8;</span>
+              <span class="rate-code">SOL</span>
+            </div>
+            <div class="rate-value" id="price-solana">--</div>
+            <div class="rate-change" id="change-solana">--</div>
+            <div class="rate-label">Solana</div>
+          </div>
+
+          <div class="rate-card" data-coin="ripple">
+            <div class="rate-header">
+              <span class="rate-flag">&#x2715;</span>
+              <span class="rate-code">XRP</span>
+            </div>
+            <div class="rate-value" id="price-ripple">--</div>
+            <div class="rate-change" id="change-ripple">--</div>
+            <div class="rate-label">Ripple</div>
+          </div>
+
+          <div class="rate-card" data-coin="cardano">
+            <div class="rate-header">
+              <span class="rate-flag">&#x25B3;</span>
+              <span class="rate-code">ADA</span>
+            </div>
+            <div class="rate-value" id="price-cardano">--</div>
+            <div class="rate-change" id="change-cardano">--</div>
+            <div class="rate-label">Cardano</div>
+          </div>
+        </div>
+
+        <div class="currency-toggle reveal">
+          <button class="toggle-btn active" data-vs="eur">EUR</button>
+          <button class="toggle-btn" data-vs="usd">USD</button>
+        </div>
+
+        <div class="history-section reveal">
+          <h2>Storico Settimanale</h2>
+          <div class="history-tabs">
+            <button class="history-tab active" data-coin="bitcoin">BTC</button>
+            <button class="history-tab" data-coin="ethereum">ETH</button>
+            <button class="history-tab" data-coin="solana">SOL</button>
+            <button class="history-tab" data-coin="ripple">XRP</button>
+            <button class="history-tab" data-coin="cardano">ADA</button>
+          </div>
+          <div class="history-chart" id="history-chart">
+            <canvas id="chart-canvas"></canvas>
+          </div>
+          <div class="history-table-wrapper">
+            <table class="history-table" id="history-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Prezzo</th>
+                  <th>Variazione</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="converter-section reveal">
+          <h2>Convertitore</h2>
+          <div class="converter-card">
+            <div class="converter-row">
+              <div class="converter-field">
+                <label for="amount-from">Importo</label>
+                <input type="number" id="amount-from" value="1" min="0" step="0.0001" />
+              </div>
+              <div class="converter-field">
+                <label for="crypto-from">Crypto</label>
+                <select id="crypto-from">
+                  <option value="bitcoin">BTC - Bitcoin</option>
+                  <option value="ethereum">ETH - Ethereum</option>
+                  <option value="solana">SOL - Solana</option>
+                  <option value="ripple">XRP - Ripple</option>
+                  <option value="cardano">ADA - Cardano</option>
+                </select>
+              </div>
+              <button class="swap-btn" id="swap-btn" aria-label="Inverti">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                  <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+                </svg>
+              </button>
+              <div class="converter-field">
+                <label for="fiat-to">Valuta</label>
+                <select id="fiat-to">
+                  <option value="eur">EUR - Euro</option>
+                  <option value="usd">USD - Dollaro</option>
+                </select>
+              </div>
+            </div>
+            <div class="converter-result" id="converter-result">
+              <span class="result-value">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="update-info" id="update-info">
+          Ultimo aggiornamento: --
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <span>Dashboard Crypto</span>
+      <span>Dati da CoinGecko API &middot; Aggiornamento in tempo reale</span>
+    </div>
+  </footer>
+
+  <script src="../../scripts/main.js" defer></script>
+  <script src="./script.js" defer></script>
+</body>
+</html>
