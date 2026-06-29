@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="No-as-a-Service - Generatore di rifiuti casuali" />
+  <title>No as a Service</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles/tokens.css" />
+  <link rel="stylesheet" href="../../styles/base.css" />
+  <link rel="stylesheet" href="../../styles/components.css" />
+  <link rel="stylesheet" href="../../styles/layout.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Salta al contenuto</a>
+
+  <header class="site-header" data-header>
+    <div class="container navbar">
+      <a class="brand" href="../../index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 16.5 12 5l7 11.5"/>
+            <path d="M8.5 16.5h7"/>
+            <path d="M10.5 12.5h3"/>
+          </svg>
+        </span>
+        <span class="brand__text">NaaS</span>
+      </a>
+
+      <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
+        <span data-theme-icon aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="section">
+      <div class="container naas-container">
+        <a href="../projects.html" class="back-link">&larr; Torna ai Progetti</a>
+
+        <div class="naas-header reveal">
+          <h1>No as a Service</h1>
+          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+            Hai bisogno di un rifiuto creativo? Premi il bottone e ottieni una scusa casuale.
+          </p>
+        </div>
+
+        <div class="naas-card reveal">
+          <div class="no-display" id="no-display">
+            <span class="no-icon">&#x1F6AB;</span>
+            <p class="no-text" id="no-text">Premi il bottone per ricevere un "No"</p>
+          </div>
+          <button class="generate-btn" id="generate-btn">Genera un No</button>
+        </div>
+
+        <div class="history-section reveal">
+          <h2>Storico Rifiuti</h2>
+          <ul class="history-list" id="history-list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <span>No as a Service</span>
+      <span>API da naas.isalman.dev &middot; Rifiuti creativi</span>
+    </div>
+  </footer>
+
+  <script src="../../scripts/main.js" defer></script>
+  <script src="./script.js" defer></script>
+</body>
+</html>

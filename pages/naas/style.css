@@ -1,0 +1,176 @@
+.naas-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.naas-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.naas-card {
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.no-display {
+  margin-bottom: 2rem;
+}
+
+.no-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.no-icon.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-10deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(5deg); }
+}
+
+.no-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.generate-btn {
+  padding: 1rem 2.5rem;
+  background: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-body);
+}
+
+.generate-btn:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.generate-btn:active {
+  transform: scale(0.95);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.history-section {
+  margin-bottom: 2rem;
+}
+
+.history-section h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-item {
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.history-item:hover {
+  border-color: var(--color-primary);
+}
+
+.history-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: var(--color-primary);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.history-text {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  padding: 1.5rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg);
+}
+
+@media (max-width: 600px) {
+  .naas-card {
+    padding: 1.5rem;
+  }
+
+  .no-icon {
+    font-size: 3rem;
+  }
+
+  .no-text {
+    font-size: 1.1rem;
+  }
+}
