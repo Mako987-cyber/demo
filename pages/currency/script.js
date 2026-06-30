@@ -9,7 +9,6 @@ const state = {
   timeframeDays: 7
 };
 
-
 async function fetchLatestRates() {
   return window.CurrencyApi.fetchLatestRates(state.baseCurrency);
 }
@@ -400,7 +399,8 @@ async function init() {
 window.addEventListener('resize', () => {
   const cacheKey = `${state.activePair}-${state.timeframeDays}`;
   if (state.history[cacheKey]) {
-    loadHistory(state.activePair);
+    const [, to] = state.activePair.split('/');
+    drawChart(state.history[cacheKey], to);
   }
 });
 
