@@ -1,12 +1,7 @@
-const API_URL = 'https://naas.isalman.dev/no';
-
 const history = [];
 
 async function fetchNo() {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  return data.reason;
+  return window.NaasApi.fetchNoReason();
 }
 
 function updateDisplay(reason) {

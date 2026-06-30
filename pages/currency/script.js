@@ -1,5 +1,3 @@
-const API_BASE = 'https://api.frankfurter.dev/v1';
-
 const state = {
   rates: {},
   previousRates: {},
@@ -10,9 +8,7 @@ const state = {
 };
 
 async function fetchLatestRates() {
-  const res = await fetch(`${API_BASE}/latest?from=${state.baseCurrency}`);
-  const data = await res.json();
-  return data;
+  return window.CurrencyApi.fetchLatestRates(state.baseCurrency);
 }
 
 async function fetchPreviousDayRates() {
@@ -22,9 +18,7 @@ async function fetchPreviousDayRates() {
   if (yesterday.getDay() === 0) day.setDate(day.getDate() - 2);
   if (yesterday.getDay() === 6) day.setDate(day.getDate() - 1);
   const dateStr = day.toISOString().split('T')[0];
-  const res = await fetch(`${API_BASE}/${dateStr}?from=${state.baseCurrency}`);
-  const data = await res.json();
-  return data;
+  return window.CurrencyApi.fetchRatesByDate(state.baseCurrency, dateStr);
 }
 
 async function fetchHistory(from, to) {
@@ -33,9 +27,7 @@ async function fetchHistory(from, to) {
   startDate.setDate(startDate.getDate() - 10);
   const start = startDate.toISOString().split('T')[0];
   const end = endDate.toISOString().split('T')[0];
-  const res = await fetch(`${API_BASE}/${start}..${end}?from=${from}&to=${to}`);
-  const data = await res.json();
-  return data;
+  return window.CurrencyApi.fetchHistory(from, to, start, end);
 }
 
 function updateRateCards(latest, previous) {
@@ -224,8 +216,7 @@ function setupConverter() {
       return;
     }
 
-    const res = await fetch(`${API_BASE}/latest?amount=${amount}&from=${from}&to=${to}`);
-    const data = await res.json();
+    const data = await window.CurrencyApi.convert(amount, from, to);
     const result = data.rates[to];
 
     const formatted = to === 'JPY'

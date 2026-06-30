@@ -1,6 +1,3 @@
-const GEO_API = 'https://geocoding-api.open-meteo.com/v1/search';
-const WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
-
 const WMO_CODES = {
   0: { desc: 'Sereno', icon: '\u2600\uFE0F' },
   1: { desc: 'Prevalentemente sereno', icon: '\uD83C\uDF24\uFE0F' },
@@ -57,28 +54,11 @@ function getFullDayName(dateStr, index) {
 }
 
 async function geocodeCity(city) {
-  const res = await fetch(`${GEO_API}?name=${encodeURIComponent(city)}&count=1&language=it`);
-  if (!res.ok) throw new Error('Errore nella geocodifica');
-  const data = await res.json();
-  if (!data.results || data.results.length === 0) {
-    throw new Error('Città non trovata. Controlla il nome e riprova.');
-  }
-  return data.results[0];
+  return window.WeatherApi.geocodeCity(city);
 }
 
 async function fetchWeather(lat, lon) {
-  const params = new URLSearchParams({
-    latitude: lat,
-    longitude: lon,
-    current: 'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl,cloud_cover,uv_index',
-    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max,precipitation_probability_max',
-    hourly: 'temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,precipitation_probability,precipitation',
-    timezone: 'auto',
-    forecast_days: 7
-  });
-  const res = await fetch(`${WEATHER_API}?${params}`);
-  if (!res.ok) throw new Error('Errore nel recupero dati meteo');
-  return await res.json();
+  return window.WeatherApi.fetchWeatherForecast(lat, lon);
 }
 
 function renderCurrent(weather, location) {

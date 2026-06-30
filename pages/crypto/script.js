@@ -1,5 +1,3 @@
-const API_BASE = 'https://api.coingecko.com/api/v3';
-
 const COINS = [
   { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin' },
   { id: 'ethereum', symbol: 'ETH', name: 'Ethereum' },
@@ -31,23 +29,15 @@ function getCurrencySymbol(currency) {
 }
 
 async function fetchPrices() {
-  const ids = COINS.map(c => c.id).join(',');
-  const res = await fetch(
-    `${API_BASE}/simple/price?ids=${ids}&vs_currencies=eur,usd&include_24hr_change=true`
-  );
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
+  const ids = COINS.map(c => c.id);
+  return window.CryptoApi.fetchPrices(ids);
 }
 
 async function fetchHistory(coinId, vsCurrency) {
   const key = `${coinId}-${vsCurrency}`;
   if (state.historyCache[key]) return state.historyCache[key];
 
-  const res = await fetch(
-    `${API_BASE}/coins/${coinId}/market_chart?vs_currency=${vsCurrency}&days=7`
-  );
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+  const data = await window.CryptoApi.fetchHistory(coinId, vsCurrency, 7);
   state.historyCache[key] = data;
   return data;
 }
