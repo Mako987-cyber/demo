@@ -11,7 +11,18 @@ const state = {
   vsCurrency: 'eur',
   activeCoin: 'bitcoin',
   historyCache: {},
-  reversed: false
+  candleCache: {},
+  reversed: false,
+  chartType: 'line',
+  timeframeDays: 7
+};
+
+const BINANCE_SYMBOLS = {
+  bitcoin: { usd: 'BTCUSDT', eur: 'BTCEUR' },
+  ethereum: { usd: 'ETHUSDT', eur: 'ETHEUR' },
+  solana: { usd: 'SOLUSDT', eur: 'SOLEUR' },
+  ripple: { usd: 'XRPUSDT', eur: 'XRPEUR' },
+  cardano: { usd: 'ADAUSDT', eur: 'ADAEUR' }
 };
 
 function formatPrice(value, currency) {
@@ -33,11 +44,11 @@ async function fetchPrices() {
   return window.CryptoApi.fetchPrices(ids);
 }
 
-async function fetchHistory(coinId, vsCurrency) {
-  const key = `${coinId}-${vsCurrency}`;
+async function fetchHistory(coinId, vsCurrency, days) {
+  const key = `${coinId}-${vsCurrency}-${days}`;
   if (state.historyCache[key]) return state.historyCache[key];
 
-  const data = await window.CryptoApi.fetchHistory(coinId, vsCurrency, 7);
+  const data = await window.CryptoApi.fetchHistory(coinId, vsCurrency, days);
   state.historyCache[key] = data;
   return data;
 }
@@ -71,7 +82,95 @@ function updatePriceCards() {
   });
 }
 
-function drawChart(historyData) {
+function getChartPalette(ctx, isDark, top, bottom) {
+  const lineColor = isDark ? '#63aab3' : '#0a6b74';
+  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+  const upColor = isDark ? '#34d399' : '#10b981';
+  const downColor = isDark ? '#f87171' : '#ef4444';
+  const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+  gradient.addColorStop(0, isDark ? 'rgba(99,170,179,0.2)' : 'rgba(10,107,116,0.1)');
+  gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+  return { lineColor, gridColor, textColor, upColor, downColor, gradient };
+}
+
+function drawGrid(ctx, width, height, padding, gridColor) {
+  const chartHeight = height - padding.top - padding.bottom;
+  ctx.strokeStyle = gridColor;
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + (chartHeight / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+  }
+}
+
+function getCryptoCandles(prices) {
+  if (!prices || prices.length < 2) return [];
+
+  const bucketSize = Math.max(2, Math.floor(prices.length / 45));
+  const candles = [];
+
+  for (let i = 0; i < prices.length; i += bucketSize) {
+    const bucket = prices.slice(i, i + bucketSize);
+    if (!bucket.length) continue;
+
+    const values = bucket.map(p => p[1]);
+    candles.push({
+      ts: bucket[bucket.length - 1][0],
+      open: bucket[0][1],
+      close: bucket[bucket.length - 1][1],
+      high: Math.max(...values),
+      low: Math.min(...values)
+    });
+  }
+
+  return candles;
+}
+
+function getIntervalConfig(days) {
+  if (days <= 7) return { interval: '1h', limit: days * 24 };
+  if (days <= 30) return { interval: '4h', limit: days * 6 };
+  if (days <= 90) return { interval: '12h', limit: days * 2 };
+  return { interval: '1d', limit: days };
+}
+
+async function fetchRealCandles(coinId, vsCurrency, days) {
+  const cacheKey = `${coinId}-${vsCurrency}-${days}`;
+  if (state.candleCache[cacheKey]) return state.candleCache[cacheKey];
+
+  const { interval, limit } = getIntervalConfig(days);
+  const pairMap = BINANCE_SYMBOLS[coinId] || {};
+  const primary = vsCurrency === 'eur' ? pairMap.eur : pairMap.usd;
+  const fallback = pairMap.usd;
+  const symbolsToTry = [primary, fallback].filter(Boolean);
+
+  let lastError = null;
+  for (const symbol of symbolsToTry) {
+    try {
+      const rows = await window.CryptoApi.fetchCandles(symbol, interval, Math.min(limit, 1000));
+      const candles = rows.map(row => ({
+        ts: row[0],
+        open: parseFloat(row[1]),
+        high: parseFloat(row[2]),
+        low: parseFloat(row[3]),
+        close: parseFloat(row[4])
+      }));
+      state.candleCache[cacheKey] = candles;
+      return candles;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  if (lastError) throw lastError;
+  return [];
+}
+
+function drawChart(historyData, realtimeCandles) {
   const canvas = document.getElementById('chart-canvas');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -85,67 +184,96 @@ function drawChart(historyData) {
   ctx.clearRect(0, 0, width, height);
 
   const prices = historyData.prices;
-  const step = Math.max(1, Math.floor(prices.length / 50));
+  const step = Math.max(1, Math.floor(prices.length / 70));
   const sampled = prices.filter((_, i) => i % step === 0);
 
   if (sampled.length < 2) return;
 
-  const values = sampled.map(p => p[1]);
-  const timestamps = sampled.map(p => p[0]);
+  const syntheticCandles = getCryptoCandles(prices);
+  const candles = Array.isArray(realtimeCandles) && realtimeCandles.length > 1
+    ? realtimeCandles
+    : syntheticCandles;
+  const isCandle = state.chartType === 'candle' && candles.length > 1;
+  const values = isCandle
+    ? candles.flatMap(c => [c.low, c.high])
+    : sampled.map(p => p[1]);
+  const timestamps = isCandle
+    ? candles.map(c => c.ts)
+    : sampled.map(p => p[0]);
+
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
   const padding = { top: 20, bottom: 30, left: 10, right: 10 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
+  const count = isCandle ? candles.length : sampled.length;
 
-  const getX = (i) => padding.left + (i / (sampled.length - 1)) * chartWidth;
+  if (count < 2) return;
+
+  const getX = (i) => padding.left + (i / (count - 1)) * chartWidth;
   const getY = (v) => padding.top + chartHeight - ((v - min) / range) * chartHeight;
 
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const lineColor = isDark ? '#63aab3' : '#0a6b74';
-  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-  const textColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+  const palette = getChartPalette(ctx, isDark, padding.top, height - padding.bottom);
 
-  ctx.strokeStyle = gridColor;
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = padding.top + (chartHeight / 4) * i;
+  drawGrid(ctx, width, height, padding, palette.gridColor);
+
+  if (isCandle) {
+    const bodyWidth = Math.max(3, Math.min(14, chartWidth / candles.length * 0.55));
+
+    candles.forEach((candle, i) => {
+      const x = getX(i);
+      const openY = getY(candle.open);
+      const closeY = getY(candle.close);
+      const highY = getY(candle.high);
+      const lowY = getY(candle.low);
+      const isUp = candle.close >= candle.open;
+      const color = isUp ? palette.upColor : palette.downColor;
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x, highY);
+      ctx.lineTo(x, lowY);
+      ctx.stroke();
+
+      const top = Math.min(openY, closeY);
+      const bodyHeight = Math.max(1.5, Math.abs(closeY - openY));
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.9;
+      ctx.fillRect(x - bodyWidth / 2, top, bodyWidth, bodyHeight);
+      ctx.globalAlpha = 1;
+    });
+  } else {
+    const lineValues = sampled.map(p => p[1]);
+
     ctx.beginPath();
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
+    ctx.moveTo(getX(0), getY(lineValues[0]));
+    lineValues.forEach((v, i) => {
+      if (i > 0) ctx.lineTo(getX(i), getY(v));
+    });
+    ctx.lineTo(getX(lineValues.length - 1), height - padding.bottom);
+    ctx.lineTo(getX(0), height - padding.bottom);
+    ctx.closePath();
+    ctx.fillStyle = palette.gradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(getX(0), getY(lineValues[0]));
+    lineValues.forEach((v, i) => {
+      if (i > 0) ctx.lineTo(getX(i), getY(v));
+    });
+    ctx.strokeStyle = palette.lineColor;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
     ctx.stroke();
   }
 
-  const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-  gradient.addColorStop(0, isDark ? 'rgba(99,170,179,0.2)' : 'rgba(10,107,116,0.1)');
-  gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
-  ctx.beginPath();
-  ctx.moveTo(getX(0), getY(values[0]));
-  values.forEach((v, i) => {
-    if (i > 0) ctx.lineTo(getX(i), getY(v));
-  });
-  ctx.lineTo(getX(values.length - 1), height - padding.bottom);
-  ctx.lineTo(getX(0), height - padding.bottom);
-  ctx.closePath();
-  ctx.fillStyle = gradient;
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(getX(0), getY(values[0]));
-  values.forEach((v, i) => {
-    if (i > 0) ctx.lineTo(getX(i), getY(v));
-  });
-  ctx.strokeStyle = lineColor;
-  ctx.lineWidth = 2.5;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
-
-  ctx.fillStyle = textColor;
+  ctx.fillStyle = palette.textColor;
   ctx.font = '11px General Sans, sans-serif';
   ctx.textAlign = 'center';
-  const labelStep = Math.max(1, Math.floor(sampled.length / 6));
+  const labelStep = Math.max(1, Math.floor(timestamps.length / 6));
   timestamps.forEach((ts, i) => {
     if (i % labelStep === 0 || i === timestamps.length - 1) {
       const date = new Date(ts);
@@ -195,9 +323,37 @@ function updateHistoryTable(historyData) {
 }
 
 async function loadHistory() {
-  const data = await fetchHistory(state.activeCoin, state.vsCurrency);
-  drawChart(data);
+  const data = await fetchHistory(state.activeCoin, state.vsCurrency, state.timeframeDays);
+  let realtimeCandles = [];
+  if (state.chartType === 'candle') {
+    try {
+      realtimeCandles = await fetchRealCandles(state.activeCoin, state.vsCurrency, state.timeframeDays);
+    } catch (err) {
+      console.warn('Fallback su candele sintetiche:', err);
+    }
+  }
+
+  drawChart(data, realtimeCandles);
   updateHistoryTable(data);
+}
+
+function setupChartControls() {
+  const timeframeEl = document.getElementById('history-timeframe');
+  timeframeEl.value = String(state.timeframeDays);
+
+  timeframeEl.addEventListener('change', () => {
+    state.timeframeDays = parseInt(timeframeEl.value, 10);
+    loadHistory();
+  });
+
+  document.querySelectorAll('.chart-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chart-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.chartType = btn.dataset.chartType;
+      loadHistory();
+    });
+  });
 }
 
 function setupTabs() {
@@ -276,6 +432,7 @@ async function init() {
     updatePriceCards();
     setupTabs();
     setupCurrencyToggle();
+    setupChartControls();
     setupConverter();
     await loadHistory();
 
@@ -292,9 +449,9 @@ async function init() {
 }
 
 window.addEventListener('resize', () => {
-  if (state.historyCache[`${state.activeCoin}-${state.vsCurrency}`]) {
-    const data = state.historyCache[`${state.activeCoin}-${state.vsCurrency}`];
-    drawChart(data);
+  const key = `${state.activeCoin}-${state.vsCurrency}-${state.timeframeDays}`;
+  if (state.historyCache[key]) {
+    loadHistory();
   }
 });
 

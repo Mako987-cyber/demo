@@ -4,7 +4,9 @@ const state = {
   history: {},
   baseCurrency: 'USD',
   currencies: ['EUR', 'USD', 'GBP', 'JPY'],
-  activePair: 'EUR/USD'
+  activePair: 'EUR/USD',
+  chartType: 'line',
+  timeframeDays: 7
 };
 
 async function fetchLatestRates() {
@@ -21,10 +23,10 @@ async function fetchPreviousDayRates() {
   return window.CurrencyApi.fetchRatesByDate(state.baseCurrency, dateStr);
 }
 
-async function fetchHistory(from, to) {
+async function fetchHistory(from, to, days) {
   const endDate = new Date();
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 10);
+  startDate.setDate(startDate.getDate() - days);
   const start = startDate.toISOString().split('T')[0];
   const end = endDate.toISOString().split('T')[0];
   return window.CurrencyApi.fetchHistory(from, to, start, end);
@@ -65,6 +67,74 @@ function updateRateCards(latest, previous) {
   });
 }
 
+function getChartPalette(ctx, isDark, top, bottom) {
+  const lineColor = isDark ? '#63aab3' : '#0a6b74';
+  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+  const upColor = isDark ? '#34d399' : '#10b981';
+  const downColor = isDark ? '#f87171' : '#ef4444';
+  const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+  gradient.addColorStop(0, isDark ? 'rgba(99,170,179,0.2)' : 'rgba(10,107,116,0.1)');
+  gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+  return { lineColor, gridColor, textColor, upColor, downColor, gradient };
+}
+
+function drawGrid(ctx, width, height, padding, gridColor) {
+  const chartHeight = height - padding.top - padding.bottom;
+  ctx.strokeStyle = gridColor;
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + (chartHeight / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+  }
+}
+
+function getCurrencyClosePoints(historyData, to) {
+  const dates = Object.keys(historyData.rates).sort();
+  return dates
+    .map(date => ({ date, close: historyData.rates[date][to] }))
+    .filter(point => typeof point.close === 'number');
+}
+
+function getCurrencyCandles(points) {
+  if (!points.length) return [];
+
+  const dailyCandles = points.map((point, i) => {
+    const prevClose = i > 0 ? points[i - 1].close : point.close;
+    const open = prevClose;
+    const close = point.close;
+    return {
+      ts: new Date(point.date).getTime(),
+      open,
+      close,
+      high: Math.max(open, close),
+      low: Math.min(open, close)
+    };
+  });
+
+  const bucketSize = Math.max(1, Math.floor(dailyCandles.length / 60));
+  const candles = [];
+
+  for (let i = 0; i < dailyCandles.length; i += bucketSize) {
+    const bucket = dailyCandles.slice(i, i + bucketSize);
+    if (!bucket.length) continue;
+
+    candles.push({
+      ts: bucket[bucket.length - 1].ts,
+      open: bucket[0].open,
+      close: bucket[bucket.length - 1].close,
+      high: Math.max(...bucket.map(c => c.high)),
+      low: Math.min(...bucket.map(c => c.low))
+    });
+  }
+
+  return candles;
+}
+
 function drawChart(historyData, to) {
   const canvas = document.getElementById('chart-canvas');
   const ctx = canvas.getContext('2d');
@@ -79,10 +149,20 @@ function drawChart(historyData, to) {
 
   ctx.clearRect(0, 0, width, height);
 
-  const dates = Object.keys(historyData.rates).sort();
-  const values = dates.map(d => historyData.rates[d][to]);
+  const points = getCurrencyClosePoints(historyData, to);
+  if (points.length < 2) return;
 
-  if (values.length < 2) return;
+  const step = Math.max(1, Math.floor(points.length / 90));
+  const sampled = points.filter((_, i) => i % step === 0 || i === points.length - 1);
+  const candles = getCurrencyCandles(points);
+  const isCandle = state.chartType === 'candle' && candles.length > 1;
+
+  const values = isCandle
+    ? candles.flatMap(c => [c.low, c.high])
+    : sampled.map(p => p.close);
+  const timestamps = isCandle
+    ? candles.map(c => c.ts)
+    : sampled.map(p => new Date(p.date).getTime());
 
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -90,64 +170,84 @@ function drawChart(historyData, to) {
   const padding = { top: 20, bottom: 30, left: 10, right: 10 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
+  const count = isCandle ? candles.length : sampled.length;
 
-  const getX = (i) => padding.left + (i / (values.length - 1)) * chartWidth;
+  if (count < 2) return;
+
+  const getX = (i) => padding.left + (i / (count - 1)) * chartWidth;
   const getY = (v) => padding.top + chartHeight - ((v - min) / range) * chartHeight;
 
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const lineColor = isDark ? '#63aab3' : '#0a6b74';
-  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-  const textColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+  const palette = getChartPalette(ctx, isDark, padding.top, height - padding.bottom);
 
-  ctx.strokeStyle = gridColor;
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = padding.top + (chartHeight / 4) * i;
+  drawGrid(ctx, width, height, padding, palette.gridColor);
+
+  if (isCandle) {
+    const bodyWidth = Math.max(3, Math.min(14, chartWidth / candles.length * 0.55));
+
+    candles.forEach((candle, i) => {
+      const x = getX(i);
+      const openY = getY(candle.open);
+      const closeY = getY(candle.close);
+      const highY = getY(candle.high);
+      const lowY = getY(candle.low);
+      const isUp = candle.close >= candle.open;
+      const color = isUp ? palette.upColor : palette.downColor;
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(x, highY);
+      ctx.lineTo(x, lowY);
+      ctx.stroke();
+
+      const top = Math.min(openY, closeY);
+      const bodyHeight = Math.max(1.5, Math.abs(closeY - openY));
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.9;
+      ctx.fillRect(x - bodyWidth / 2, top, bodyWidth, bodyHeight);
+      ctx.globalAlpha = 1;
+    });
+  } else {
+    const lineValues = sampled.map(p => p.close);
+
     ctx.beginPath();
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
+    ctx.moveTo(getX(0), getY(lineValues[0]));
+    lineValues.forEach((v, i) => {
+      if (i > 0) ctx.lineTo(getX(i), getY(v));
+    });
+    ctx.lineTo(getX(lineValues.length - 1), height - padding.bottom);
+    ctx.lineTo(getX(0), height - padding.bottom);
+    ctx.closePath();
+    ctx.fillStyle = palette.gradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(getX(0), getY(lineValues[0]));
+    lineValues.forEach((v, i) => {
+      if (i > 0) ctx.lineTo(getX(i), getY(v));
+    });
+    ctx.strokeStyle = palette.lineColor;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
     ctx.stroke();
+
+    lineValues.forEach((v, i) => {
+      ctx.beginPath();
+      ctx.arc(getX(i), getY(v), 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = palette.lineColor;
+      ctx.fill();
+    });
   }
 
-  const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-  gradient.addColorStop(0, isDark ? 'rgba(99,170,179,0.2)' : 'rgba(10,107,116,0.1)');
-  gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
-  ctx.beginPath();
-  ctx.moveTo(getX(0), getY(values[0]));
-  values.forEach((v, i) => {
-    if (i > 0) ctx.lineTo(getX(i), getY(v));
-  });
-  ctx.lineTo(getX(values.length - 1), height - padding.bottom);
-  ctx.lineTo(getX(0), height - padding.bottom);
-  ctx.closePath();
-  ctx.fillStyle = gradient;
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(getX(0), getY(values[0]));
-  values.forEach((v, i) => {
-    if (i > 0) ctx.lineTo(getX(i), getY(v));
-  });
-  ctx.strokeStyle = lineColor;
-  ctx.lineWidth = 2.5;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
-
-  values.forEach((v, i) => {
-    ctx.beginPath();
-    ctx.arc(getX(i), getY(v), 3, 0, Math.PI * 2);
-    ctx.fillStyle = lineColor;
-    ctx.fill();
-  });
-
-  ctx.fillStyle = textColor;
+  ctx.fillStyle = palette.textColor;
   ctx.font = '11px General Sans, sans-serif';
   ctx.textAlign = 'center';
-  const step = Math.max(1, Math.floor(dates.length / 5));
-  dates.forEach((d, i) => {
-    if (i % step === 0 || i === dates.length - 1) {
-      const label = d.slice(5);
+  const labelStep = Math.max(1, Math.floor(timestamps.length / 6));
+  timestamps.forEach((ts, i) => {
+    if (i % labelStep === 0 || i === timestamps.length - 1) {
+      const date = new Date(ts);
+      const label = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
       ctx.fillText(label, getX(i), height - 8);
     }
   });
@@ -155,23 +255,22 @@ function drawChart(historyData, to) {
 
 function updateHistoryTable(historyData, to) {
   const tbody = document.getElementById('history-body');
-  const dates = Object.keys(historyData.rates).sort().reverse();
+  const points = getCurrencyClosePoints(historyData, to).reverse();
 
-  tbody.innerHTML = dates.map((date, i) => {
-    const rate = historyData.rates[date][to];
-    const prevDate = dates[i + 1];
+  tbody.innerHTML = points.map((point, i) => {
+    const rate = point.close;
+    const prev = points[i + 1];
     let changeHtml = '-';
 
-    if (prevDate) {
-      const prevRate = historyData.rates[prevDate][to];
-      const change = ((rate - prevRate) / prevRate) * 100;
+    if (prev) {
+      const change = ((rate - prev.close) / prev.close) * 100;
       const sign = change >= 0 ? '+' : '';
       const cssClass = change > 0 ? 'change-positive' : change < 0 ? 'change-negative' : '';
       changeHtml = `<span class="${cssClass}">${sign}${change.toFixed(3)}%</span>`;
     }
 
     const formatted = to === 'JPY' ? rate.toFixed(2) : rate.toFixed(4);
-    const dateFormatted = new Date(date).toLocaleDateString('it-IT', {
+    const dateFormatted = new Date(point.date).toLocaleDateString('it-IT', {
       day: '2-digit', month: 'short'
     });
 
@@ -181,10 +280,34 @@ function updateHistoryTable(historyData, to) {
 
 async function loadHistory(pair) {
   const [from, to] = pair.split('/');
-  const historyData = await fetchHistory(from, to);
-  state.history[pair] = historyData;
+  const cacheKey = `${pair}-${state.timeframeDays}`;
+
+  if (!state.history[cacheKey]) {
+    state.history[cacheKey] = await fetchHistory(from, to, state.timeframeDays);
+  }
+
+  const historyData = state.history[cacheKey];
   drawChart(historyData, to);
   updateHistoryTable(historyData, to);
+}
+
+function setupChartControls() {
+  const timeframeEl = document.getElementById('history-timeframe');
+  timeframeEl.value = String(state.timeframeDays);
+
+  timeframeEl.addEventListener('change', () => {
+    state.timeframeDays = parseInt(timeframeEl.value, 10);
+    loadHistory(state.activePair);
+  });
+
+  document.querySelectorAll('.chart-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chart-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.chartType = btn.dataset.chartType;
+      loadHistory(state.activePair);
+    });
+  });
 }
 
 function setupTabs() {
@@ -263,6 +386,7 @@ async function init() {
     updateRateCards(latest, previous);
     updateTimestamp(latest);
     setupTabs();
+    setupChartControls();
     setupConverter();
     await loadHistory(state.activePair);
   } catch (err) {
@@ -273,9 +397,10 @@ async function init() {
 }
 
 window.addEventListener('resize', () => {
-  if (state.history[state.activePair]) {
+  const cacheKey = `${state.activePair}-${state.timeframeDays}`;
+  if (state.history[cacheKey]) {
     const [, to] = state.activePair.split('/');
-    drawChart(state.history[state.activePair], to);
+    drawChart(state.history[cacheKey], to);
   }
 });
 

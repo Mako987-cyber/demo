@@ -106,6 +106,21 @@
 
         <div class="history-section reveal">
           <h2>Storico Settimanale</h2>
+          <div class="chart-controls">
+            <div class="chart-type-toggle" role="group" aria-label="Tipo grafico">
+              <button class="chart-toggle-btn active" data-chart-type="line">Linea</button>
+              <button class="chart-toggle-btn" data-chart-type="candle">Candele</button>
+            </div>
+            <label class="timeframe-control" for="history-timeframe">
+              Timeframe
+              <select id="history-timeframe">
+                <option value="7" selected>7G</option>
+                <option value="30">1M</option>
+                <option value="90">3M</option>
+                <option value="180">6M</option>
+              </select>
+            </label>
+          </div>
           <div class="history-tabs">
             <button class="history-tab active" data-coin="bitcoin">BTC</button>
             <button class="history-tab" data-coin="ethereum">ETH</button>
