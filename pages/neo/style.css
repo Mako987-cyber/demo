@@ -29,7 +29,7 @@
   position: absolute;
   top: 1rem;
   left: 1rem;
-  z-index: 20;
+  z-index: 45;
   padding: 0.4rem 0.85rem;
   background: rgba(9, 14, 22, 0.75);
   border: 1px solid rgba(99, 170, 179, 0.3);
@@ -51,7 +51,7 @@
 /* ── Glass panel base ─────────────────────────────────────────── */
 .neo-panel {
   position: absolute;
-  z-index: 30;
+  z-index: 45;
   background: rgba(7, 12, 20, 0.82);
   border: 1px solid rgba(99, 170, 179, 0.22);
   border-radius: 0.625rem;
