@@ -181,14 +181,14 @@
     </div>
   </footer>
 
-  <!-- Non-module scripts (IIFEs → window globals) loaded first -->
-  <script src="../../scripts/main.js" defer></script>
-  <script src="../api/http.js" defer></script>
-  <script src="../api/nasaApi.js" defer></script>
+  <!-- Three.js UMD global builds (classic scripts, no module system) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-  <!-- ES module (Three.js) – direct CDN URLs, no importmap needed -->
-  <script type="module" src="./script.js"
-    onerror="(function(){var p=document.querySelector('#panel-welcome p');if(p)p.textContent='Errore caricamento script 3D. Controlla la connessione e ricarica.';})()">
-  </script>
+  <!-- Site utilities -->
+  <script src="../../scripts/main.js" defer></script>
+
+  <!-- NEO Tracker logic (plain script, accesses window.THREE) -->
+  <script src="./script.js" defer></script>
 </body>
 </html>

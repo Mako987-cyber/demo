@@ -2,12 +2,12 @@
  * NEO Tracker 3D — script.js
  * WebGL 3D visualization of Near-Earth Objects
  * Sources: NASA NeoWs API + JPL SSD Close Approach API
+ *
+ * Uses Three.js r128 loaded as a classic UMD global (window.THREE).
+ * No ES modules, no importmap — works on every browser / CDN edge.
  */
 
-/* esm.sh rewrites all internal bare specifiers to absolute URLs,
-   making it safe to use without an importmap. */
-import * as THREE from 'https://esm.sh/three@0.167.0';
-import { OrbitControls } from 'https://esm.sh/three@0.167.0/examples/jsm/controls/OrbitControls';
+/* global THREE */
 
 /* ============================================================
    Constants
@@ -107,7 +107,7 @@ function initScene() {
   camera = new THREE.PerspectiveCamera(50, w / h, 0.01, 2000);
   camera.position.set(0, 5, 20);
 
-  controls = new OrbitControls(camera, renderer.domElement);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping   = true;
   controls.dampingFactor   = 0.05;
   controls.minDistance     = 1.6;
