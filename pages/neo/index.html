@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="NEO Tracker - Near Earth Objects in tempo reale con NASA API" />
-  <title>NEO Tracker</title>
+  <meta name="description" content="NEO Tracker 3D – Incontri ravvicinati con la Terra in WebGL, dati NASA e JPL in tempo reale" />
+  <title>NEO Tracker 3D</title>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../styles/tokens.css" />
@@ -12,6 +12,16 @@
   <link rel="stylesheet" href="../../styles/components.css" />
   <link rel="stylesheet" href="../../styles/layout.css" />
   <link rel="stylesheet" href="./style.css" />
+
+  <!-- Three.js importmap (ES module pattern) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
@@ -20,15 +30,15 @@
     <div class="container navbar">
       <a class="brand" href="../../index.html" aria-label="Home">
         <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 16.5 12 5l7 11.5"/>
             <path d="M8.5 16.5h7"/>
             <path d="M10.5 12.5h3"/>
           </svg>
         </span>
-        <span class="brand__text">NEO Tracker</span>
+        <span class="brand__text">NEO Tracker 3D</span>
       </a>
-
       <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
         <span data-theme-icon aria-hidden="true"></span>
       </button>
@@ -36,100 +46,157 @@
   </header>
 
   <main id="main-content">
-    <section class="section">
-      <div class="container neo-container">
-        <a href="../projects.html" class="back-link">&larr; Torna ai Progetti</a>
 
-        <div class="projects-header reveal" style="text-align:center; margin-bottom:2rem;">
-          <h1>NEO Tracker</h1>
-          <p style="color: var(--color-text-secondary); margin-top: 0.75rem; font-size: 1.05rem;">
-            Oggetti Near-Earth monitorati dalla NASA in tempo reale. Seleziona un intervallo di date (massimo 7 giorni) per visualizzare le traiettorie attorno alla Terra.
-          </p>
+    <!-- ── 3D Viewport ─────────────────────────────────── -->
+    <div id="neo-viewport" class="neo-viewport">
+      <canvas id="gl-canvas" aria-label="Visualizzazione 3D Near Earth Objects"></canvas>
+
+      <!-- Back link (top-left overlay) -->
+      <a href="../projects.html" class="neo-back-link">&#8592; Progetti</a>
+
+      <!-- ── Left control panel ─────────────────────── -->
+      <div class="neo-panel neo-panel--left" id="panel-controls">
+        <div class="panel-header" id="toggle-controls" role="button" aria-expanded="true" tabindex="0">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M3 5h14M3 10h14M3 15h14"/>
+          </svg>
+          <span>Parametri</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M5 8l5 5 5-5"/>
+          </svg>
         </div>
-
-        <!-- Controls -->
-        <div class="neo-controls reveal">
-          <div class="control-group">
+        <div class="panel-body" id="controls-body">
+          <div class="ctrl-group">
             <label for="start-date">Data inizio</label>
             <input type="date" id="start-date" />
           </div>
-          <div class="control-group">
+          <div class="ctrl-group">
             <label for="end-date">Data fine</label>
             <input type="date" id="end-date" />
           </div>
-          <button class="neo-btn" id="load-neo">Carica NEO</button>
-        </div>
-
-        <!-- Stats -->
-        <div class="neo-stats reveal" id="neo-stats" style="display:none;">
-          <div class="stat-pill">
-            <span class="dot dot--total"></span>
-            <span id="stat-total">0 oggetti</span>
+          <div class="ctrl-group">
+            <label for="dist-max">Distanza max</label>
+            <select id="dist-max">
+              <option value="0.01">0.01 AU (~3.9 LD)</option>
+              <option value="0.05" selected>0.05 AU (~20 LD)</option>
+              <option value="0.1">0.10 AU (~39 LD)</option>
+            </select>
           </div>
-          <div class="stat-pill">
-            <span class="dot dot--safe"></span>
-            <span id="stat-safe">0 non pericolosi</span>
-          </div>
-          <div class="stat-pill">
-            <span class="dot dot--hazard"></span>
-            <span id="stat-hazard">0 potenzialmente pericolosi</span>
-          </div>
-        </div>
-
-        <!-- Loading / Error message -->
-        <div class="neo-message" id="neo-message">
-          <div class="neo-spinner"></div>
-          <p>Inserisci un intervallo di date e premi <strong>Carica NEO</strong>.</p>
-        </div>
-
-        <!-- Canvas scene -->
-        <div class="neo-scene reveal" id="neo-scene" style="display:none;">
-          <canvas id="neo-canvas"></canvas>
-          <div class="neo-tooltip" id="neo-tooltip"></div>
-        </div>
-
-        <!-- Legend -->
-        <div class="neo-legend reveal" id="neo-legend" style="display:none;">
-          <div class="legend-item">
-            <span class="legend-circle" style="width:10px;height:10px;background:#63aab3;"></span>
-            Non pericoloso
-          </div>
-          <div class="legend-item">
-            <span class="legend-circle" style="width:10px;height:10px;background:#e05e40;"></span>
-            Potenzialmente pericoloso
-          </div>
-          <div class="legend-item">
-            <span class="legend-circle" style="width:14px;height:14px;background:rgba(99,170,179,0.3);border:1px dashed #63aab3;"></span>
-            Orbita a 1 LD (Distanza Lunare ~384 400 km)
-          </div>
-          <div class="legend-item">
-            <span style="font-size:0.8em;">&#9679;</span>&nbsp;Dimensione proporzionale al diametro stimato
-          </div>
-          <div class="legend-item">
-            Velocità orbitale proporzionale alla velocità relativa di avvicinamento
+          <button class="neo-btn" id="load-neo">
+            Carica NEO
+          </button>
+          <div class="ctrl-hint">
+            <strong>Navigazione 3D</strong><br>
+            Trascina &rarr; ruota &nbsp;&middot;&nbsp; Scroll &rarr; zoom<br>
+            Click oggetto &rarr; dettagli
           </div>
         </div>
-
-        <!-- Object list -->
-        <div id="neo-list-section" style="display:none;">
-          <p class="neo-section-title">Oggetti rilevati</p>
-          <div class="neo-list" id="neo-list"></div>
-        </div>
-
       </div>
-    </section>
+
+      <!-- ── Stats bar (top-center) ─────────────────── -->
+      <div class="neo-stats-bar" id="panel-stats" hidden>
+        <span class="stat-item stat-item--total" id="stat-total">—</span>
+        <span class="stat-sep">·</span>
+        <span class="stat-item stat-item--safe" id="stat-safe">—</span>
+        <span class="stat-sep">·</span>
+        <span class="stat-item stat-item--hazard" id="stat-hazard">—</span>
+      </div>
+
+      <!-- ── Info panel (right) ─────────────────────── -->
+      <div class="neo-panel neo-panel--right" id="panel-info" hidden>
+        <button class="panel-close" id="close-info" aria-label="Chiudi">&#10005;</button>
+        <div id="info-content"></div>
+      </div>
+
+      <!-- ── Tooltip ────────────────────────────────── -->
+      <div class="neo-tooltip" id="neo-tooltip" aria-hidden="true"></div>
+
+      <!-- ── Legend (bottom-right) ──────────────────── -->
+      <div class="neo-legend" id="panel-legend" hidden>
+        <div class="legend-row"><span class="legend-dot" style="background:#63aab3;"></span> Non pericoloso</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#e05e40;"></span> Potenzialmente pericoloso</div>
+        <div class="legend-row"><span class="legend-ring"></span> 1 LD ≈ 384 400 km</div>
+        <div class="legend-row legend-row--dim">Dimensione &#8733; diametro stimato</div>
+      </div>
+
+      <!-- ── Loading overlay ────────────────────────── -->
+      <div class="neo-overlay-msg" id="panel-loading" hidden>
+        <div class="neo-spinner"></div>
+        <p id="loading-text">Caricamento dati NASA &amp; JPL&hellip;</p>
+      </div>
+
+      <!-- ── Error overlay ──────────────────────────── -->
+      <div class="neo-overlay-msg neo-overlay-msg--error" id="panel-error" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="36" height="36">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+        <p id="error-text">Errore nel caricamento.</p>
+        <button class="neo-btn neo-btn--sm" id="retry-btn">Riprova</button>
+      </div>
+
+      <!-- ── Welcome state (before first load) ─────── -->
+      <div class="neo-overlay-msg neo-overlay-msg--welcome" id="panel-welcome">
+        <svg viewBox="0 0 64 64" fill="none" width="72" height="72">
+          <circle cx="32" cy="32" r="14" stroke="#63aab3" stroke-width="2" fill="#0a2a40" opacity="0.9"/>
+          <circle cx="32" cy="32" r="5" fill="#63aab3" opacity="0.7"/>
+          <ellipse cx="32" cy="32" rx="29" ry="9" stroke="#3a6a70" stroke-width="1" stroke-dasharray="4 5" opacity="0.7"/>
+          <ellipse cx="32" cy="32" rx="29" ry="9" stroke="#3a6a70" stroke-width="1" stroke-dasharray="4 5" opacity="0.5" transform="rotate(60 32 32)"/>
+          <circle cx="56" cy="16" r="3.5" fill="#e05e40" opacity="0.9"/>
+          <circle cx="10" cy="48" r="2.5" fill="#63aab3" opacity="0.8"/>
+          <circle cx="52" cy="50" r="2" fill="#e05e40" opacity="0.6"/>
+        </svg>
+        <h2>NEO Tracker 3D</h2>
+        <p>Seleziona un intervallo di date e premi <strong>Carica NEO</strong> per visualizzare in 3D gli oggetti Near-Earth nel sistema Terra.</p>
+        <p class="welcome-sources">Dati real-time da <strong>NASA NeoWs</strong> &amp; <strong>JPL SSD Close Approach API</strong></p>
+      </div>
+
+    </div><!-- /neo-viewport -->
+
+    <!-- ── Object list table (below viewport) ─────────── -->
+    <div class="container" id="neo-list-section" hidden>
+      <div class="list-header">
+        <h2 class="list-title">Oggetti rilevati</h2>
+        <div class="list-controls">
+          <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">Tutti</button>
+            <button class="filter-btn" data-filter="hazard">Solo pericolosi</button>
+          </div>
+          <input type="search" id="neo-search" placeholder="Cerca per nome…" class="neo-search-input" />
+        </div>
+      </div>
+      <div class="neo-table-wrap">
+        <table class="neo-table" id="neo-table">
+          <thead>
+            <tr>
+              <th data-sort="name">Nome <span class="sort-icon"></span></th>
+              <th data-sort="date">Data avvic. <span class="sort-icon"></span></th>
+              <th data-sort="dist" class="sorted-asc">Distanza (LD) <span class="sort-icon">&#9650;</span></th>
+              <th data-sort="vel">Velocità (km/s) <span class="sort-icon"></span></th>
+              <th data-sort="diam">Diametro <span class="sort-icon"></span></th>
+              <th>Pericoloso</th>
+            </tr>
+          </thead>
+          <tbody id="neo-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
   </main>
 
   <footer class="site-footer">
     <div class="container footer__inner">
-      <span>NEO Tracker</span>
-      <span>Dati da NASA NeoWs API &middot; Powered by NASA Open Data</span>
+      <span>NEO Tracker 3D</span>
+      <span>NASA NeoWs API &amp; JPL SSD CAD API &middot; Three.js WebGL</span>
     </div>
   </footer>
 
+  <!-- Non-module scripts (IIFEs → window globals) loaded first -->
   <script src="../../scripts/main.js" defer></script>
   <script src="../api/http.js" defer></script>
   <script src="../api/nasaApi.js" defer></script>
-  <script src="./script.js" defer></script>
+
+  <!-- ES module (Three.js) – implicitly deferred, runs after above -->
+  <script type="module" src="./script.js"></script>
 </body>
 </html>
