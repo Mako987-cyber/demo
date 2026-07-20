@@ -32,7 +32,7 @@ let clock, earthMesh, moonMesh;
 let moonTheta  = 0;
 let neoObjects = [];   // [{mesh, line, data, r, inc, raan, theta, omega}]
 let selectedId = null;
-let pointer    = new THREE.Vector2(-9, -9);
+let pointer    = { x: -9, y: -9 };   // plain object – THREE not needed at top level
 let lastHover  = null;
 let allNeos    = [];   // raw processed list
 let tableSort  = { key: 'dist', dir: 1 };
@@ -516,7 +516,7 @@ glCanvas.addEventListener('pointermove', e => {
 });
 
 glCanvas.addEventListener('pointerleave', () => {
-  pointer.set(-9, -9);
+  pointer.x = -9; pointer.y = -9;
   lastHover = null;
   hideTooltip();
 });
@@ -896,10 +896,10 @@ neoSearch.addEventListener('input', () => {
    ============================================================ */
 
 function showLoading(msg) {
-  loadingText.textContent = msg || 'Caricamento…';
-  panelLoading.hidden = false;
-  panelError.hidden   = true;
-  panelWelcome.hidden = true;
+  if (loadingText) loadingText.textContent = msg || 'Caricamento\u2026';
+  if (panelLoading) panelLoading.hidden = false;
+  if (panelError)   panelError.hidden   = true;
+  if (panelWelcome) panelWelcome.hidden = true;
 }
 
 function updateLoadingText(msg) { loadingText.textContent = msg; }

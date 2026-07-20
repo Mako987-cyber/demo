@@ -109,10 +109,10 @@
         <div class="legend-row legend-row--dim">Dimensione &#8733; diametro stimato</div>
       </div>
 
-      <!-- ── Loading overlay ────────────────────────── -->
-      <div class="neo-overlay-msg" id="panel-loading" hidden>
+      <!-- ── Loading overlay (shown by default – hidden by JS once ready) ── -->
+      <div class="neo-overlay-msg" id="panel-loading">
         <div class="neo-spinner"></div>
-        <p id="loading-text">Caricamento dati NASA &amp; JPL&hellip;</p>
+        <p id="loading-text">Caricamento libreria 3D&hellip;</p>
       </div>
 
       <!-- ── Error overlay ──────────────────────────── -->
@@ -125,8 +125,8 @@
         <button class="neo-btn neo-btn--sm" id="retry-btn">Riprova</button>
       </div>
 
-      <!-- ── Welcome state (before first load) ─────── -->
-      <div class="neo-overlay-msg neo-overlay-msg--welcome" id="panel-welcome">
+      <!-- ── Welcome state (hidden by default, shown only if needed) ─────── -->
+      <div class="neo-overlay-msg neo-overlay-msg--welcome" id="panel-welcome" hidden>
         <svg viewBox="0 0 64 64" fill="none" width="72" height="72">
           <circle cx="32" cy="32" r="14" stroke="#63aab3" stroke-width="2" fill="#0a2a40" opacity="0.9"/>
           <circle cx="32" cy="32" r="5" fill="#63aab3" opacity="0.7"/>
@@ -181,9 +181,25 @@
     </div>
   </footer>
 
-  <!-- Three.js UMD global builds (classic scripts, no module system) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Three.js r128 vendored locally – same origin, no CDN dependency -->
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="../../assets/vendor/OrbitControls.js"></script>
+
+  <!-- Inline diagnostic: verify THREE loaded before running main script -->
+  <script>
+    (function () {
+      var lt = document.getElementById('loading-text');
+      if (typeof THREE === 'undefined') {
+        if (lt) lt.textContent = 'Errore: Three.js non disponibile. Ricarica la pagina.';
+        return;
+      }
+      if (!THREE.OrbitControls) {
+        if (lt) lt.textContent = 'Errore: OrbitControls non disponibile. Ricarica la pagina.';
+        return;
+      }
+      if (lt) lt.textContent = 'Caricamento dati NASA & JPL\u2026';
+    })();
+  </script>
 
   <!-- Site utilities -->
   <script src="../../scripts/main.js" defer></script>
