@@ -13,15 +13,7 @@
   <link rel="stylesheet" href="../../styles/layout.css" />
   <link rel="stylesheet" href="./style.css" />
 
-  <!-- Three.js importmap (ES module pattern) -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/"
-    }
-  }
-  </script>
+
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
@@ -194,7 +186,9 @@
   <script src="../api/http.js" defer></script>
   <script src="../api/nasaApi.js" defer></script>
 
-  <!-- ES module (Three.js) – implicitly deferred, runs after above -->
-  <script type="module" src="./script.js"></script>
+  <!-- ES module (Three.js) – direct CDN URLs, no importmap needed -->
+  <script type="module" src="./script.js"
+    onerror="(function(){var p=document.querySelector('#panel-welcome p');if(p)p.textContent='Errore caricamento script 3D. Controlla la connessione e ricarica.';})()">
+  </script>
 </body>
 </html>
