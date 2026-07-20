@@ -18,9 +18,9 @@
    ============================================================ */
 const AU_TO_KM      = 149597870.7;
 const LUNAR_DIST_KM = 384400;
-// API key injected at build time by Vercel (see build.sh + vercel.json)
-// Falls back to 'DEMO_KEY' for local development
-const NASA_KEY      = window.__NASA_API_KEY__ || 'DEMO_KEY';
+// __NASA_API_KEY__ is replaced at build time by build.sh via Vercel env var DEMO_KEY
+// If not replaced (local dev), falls back to NASA public DEMO_KEY
+const NASA_KEY      = '__NASA_API_KEY__' !== '__NASA_API_KEY__' ? '__NASA_API_KEY__' : 'DEMO_KEY';
 const JPL_CAD_URL   = 'https://ssd-api.jpl.nasa.gov/cad.api';
 const NASA_NEO_URL  = 'https://api.nasa.gov/neo/rest/v1/feed';
 
@@ -115,7 +115,6 @@ function updateDateHint() {
    Three.js scene init
    ============================================================ */
 function initScene() {
-  // glCanvas might not have rendered dimensions yet — force a layout read
   const w = glCanvas.offsetWidth  || window.innerWidth;
   const h = glCanvas.offsetHeight || Math.round(window.innerHeight * 0.7);
 
@@ -152,12 +151,7 @@ function initScene() {
   buildLdRing();
 }
 
-/* ──────────────────────────────────────────────────────────── */
-/*  Scene construction helpers                                  */
-/* ──────────────────────────────────────────────────────────── */
-
 function buildBackground() {
-  /* Starfield */
   const count = 7000;
   const pos   = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
@@ -174,7 +168,6 @@ function buildBackground() {
     color: 0xffffff, size: 0.7, sizeAttenuation: false
   })));
 
-  /* Milky Way band (extra clustered stars along a great circle) */
   const mwCount = 2000;
   const mwPos   = new Float32Array(mwCount * 3);
   for (let i = 0; i < mwCount; i++) {
@@ -195,15 +188,12 @@ function buildBackground() {
 function buildLights() {
   scene.add(new THREE.AmbientLight(0x0d1a2e, 8));
 
-  /* Sun directional light */
   const sunLight = new THREE.DirectionalLight(0xfff8e8, 3.5);
   sunLight.position.set(80, 25, 40);
   scene.add(sunLight);
 
-  /* Hemisphere fill */
   scene.add(new THREE.HemisphereLight(0x0a1428, 0x040a10, 0.6));
 
-  /* Sun visual sphere */
   const sunGeo  = new THREE.SphereGeometry(9, 16, 16);
   const sunMat  = new THREE.MeshBasicMaterial({ color: 0xfffde8 });
   const sun     = new THREE.Mesh(sunGeo, sunMat);
@@ -221,7 +211,6 @@ function makeEarthTexture() {
   c.width = W; c.height = H;
   const g = c.getContext('2d');
 
-  /* Ocean */
   const og = g.createLinearGradient(0, 0, 0, H);
   og.addColorStop(0,   '#0b2e5c');
   og.addColorStop(0.4, '#1060a0');
@@ -230,7 +219,6 @@ function makeEarthTexture() {
   g.fillStyle = og;
   g.fillRect(0, 0, W, H);
 
-  /* Continents */
   const cc = '#3d7a43';
   const fill = (x, y, rx, ry, rot) => {
     g.fillStyle = cc;
@@ -238,38 +226,25 @@ function makeEarthTexture() {
     g.ellipse(x, y, rx, ry, rot || 0, 0, Math.PI * 2);
     g.fill();
   };
-  // North America
   fill(W*0.18, H*0.31, W*0.08, H*0.17, -0.25);
   fill(W*0.22, H*0.21, W*0.04, H*0.07, 0.1);
-  // Central America
   fill(W*0.215, H*0.44, W*0.02, H*0.05, 0.2);
-  // South America
   fill(W*0.245, H*0.63, W*0.048, H*0.17, 0.1);
-  // Europe
   fill(W*0.504, H*0.265, W*0.036, H*0.09, -0.1);
-  // Africa
   fill(W*0.515, H*0.55, W*0.05, H*0.19, 0.03);
-  // Arabia
   fill(W*0.565, H*0.35, W*0.022, H*0.065, 0.1);
-  // Asia (main)
   fill(W*0.66, H*0.29, W*0.135, H*0.165, 0);
-  // India
   fill(W*0.614, H*0.45, W*0.023, H*0.08, 0.04);
-  // SE Asia
   fill(W*0.73, H*0.46, W*0.04, H*0.09, 0.12);
-  // Australia
   fill(W*0.76, H*0.68, W*0.052, H*0.078, -0.08);
-  // Greenland
   g.fillStyle = '#b0c8b0';
   fill(W*0.275, H*0.12, W*0.033, H*0.065, 0.12);
 
-  /* Polar ice */
   g.fillStyle = '#cce4f5';
   g.fillRect(0, 0, W, H * 0.045);
   g.beginPath(); g.ellipse(W*0.5, 0, W*0.5, H*0.09, 0, 0, Math.PI); g.fill();
   g.fillRect(0, H * 0.91, W, H * 0.09);
 
-  /* Cloud wisps */
   g.fillStyle = 'rgba(255,255,255,0.11)';
   [
     [0.08,0.32,90,19], [0.28,0.52,65,13], [0.43,0.39,55,11],
@@ -291,7 +266,6 @@ function buildEarth() {
   earthMesh = new THREE.Mesh(geo, mat);
   scene.add(earthMesh);
 
-  /* Atmosphere glow */
   const atmoGeo = new THREE.SphereGeometry(EARTH_R * 1.025, 32, 32);
   const atmoMat = new THREE.MeshPhongMaterial({
     color:       0x4488cc,
@@ -309,7 +283,6 @@ function buildMoon() {
   moonMesh = new THREE.Mesh(geo, mat);
   scene.add(moonMesh);
 
-  /* Moon orbit ring */
   const ring = new THREE.RingGeometry(MOON_ORBIT_VIS - 0.01, MOON_ORBIT_VIS + 0.01, 128);
   const rmat = new THREE.MeshBasicMaterial({
     color: 0x334455, side: THREE.DoubleSide, transparent: true, opacity: 0.4
@@ -318,7 +291,6 @@ function buildMoon() {
 }
 
 function buildLdRing() {
-  /* Lunar-distance reference ring */
   const ring = new THREE.RingGeometry(MOON_ORBIT_VIS - 0.005, MOON_ORBIT_VIS + 0.005, 128);
   const mat  = new THREE.MeshBasicMaterial({
     color: 0x99bbcc, side: THREE.DoubleSide, transparent: true, opacity: 0.2
@@ -355,7 +327,6 @@ function populateScene(neos) {
     const raan = neo.raan || (Math.random() * Math.PI * 2);
     const theta = neo.phase || (idx * 2.399963);
 
-    // Size: clamp diameter 0.05–10 km → visual 0.06–0.28
     const dkm  = Math.max(0.05, Math.min(neo.diameter || 0.1, 10));
     const size = 0.06 + (Math.log10(dkm + 0.05) + 1.3) * 0.09;
 
@@ -368,7 +339,6 @@ function populateScene(neos) {
     });
     const mesh = new THREE.Mesh(geo, mat);
 
-    // Orbit path
     const pts = [];
     for (let i = 0; i <= 128; i++) {
       const t = (i / 128) * Math.PI * 2;
@@ -398,7 +368,6 @@ function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
 
-  // Moon orbit
   moonTheta += 0.005 * dt * 60;
   moonMesh.position.set(
     MOON_ORBIT_VIS * Math.cos(moonTheta),
@@ -406,10 +375,8 @@ function animate() {
     MOON_ORBIT_VIS * Math.sin(moonTheta)
   );
 
-  // Earth rotation
   earthMesh.rotation.y += 0.002 * dt * 60;
 
-  // NEO orbits
   neoObjects.forEach(obj => {
     obj.theta += obj.omega * dt * 60;
     const x = obj.r * Math.cos(obj.theta);
@@ -418,7 +385,6 @@ function animate() {
     obj.mesh.position.set(x, y * 0.3, z);
   });
 
-  // Raycasting for hover
   raycaster.setFromCamera(pointer, camera);
   const meshes = neoObjects.map(o => o.mesh);
   const hits   = raycaster.intersectObjects(meshes);
@@ -555,7 +521,6 @@ async function loadNeos() {
   const { start, end } = getDateRange();
   const distMax = distSelect ? distSelect.value : '0.05';
 
-  // Validate
   if (start > end) {
     showError('La data di inizio deve essere precedente alla data di fine.');
     return;
@@ -566,7 +531,6 @@ async function loadNeos() {
   if (refreshBtn) refreshBtn.disabled = true;
 
   try {
-    // Parallel fetch: JPL (CORS-blocked in browsers), NASA with auto-chunking for >7 days
     const [jplResult, nasaResult] = await Promise.allSettled([
       fetchJpl(start, end, distMax),
       fetchNasaChunked(start, end)
@@ -586,7 +550,6 @@ async function loadNeos() {
         updateLoadingText('Integrazione dati NASA…');
         mergeNasa(neos, nasaResult.value);
       } else {
-        // JPL blocked by CORS → use NASA NeoWs as primary source
         updateLoadingText('Elaborazione dati NASA NeoWs…');
         neos = processNasaDirect(nasaResult.value, distMax);
       }
@@ -595,14 +558,12 @@ async function loadNeos() {
     }
 
     if (neos.length === 0) {
-      // Check if we got raw NASA data but everything was filtered out by distance
       const rawNasaData = nasaResult.status === 'fulfilled' ? nasaResult.value : null;
       const totalObjects = rawNasaData
         ? Object.values(rawNasaData.near_earth_objects || {}).reduce((acc, day) => acc + day.length, 0)
         : 0;
 
       if (totalObjects > 0) {
-        // Data exists but was filtered out — inform user to widen distance filter
         showError(
           `Trovati ${totalObjects} oggetti nel periodo, ma nessuno entro ${distMax} AU.<br>` +
           'Prova ad aumentare la <strong>distanza massima</strong> o amplia l\'intervallo di date.'
@@ -655,7 +616,6 @@ async function fetchJpl(dateMin, dateMax, distMax) {
 function processJpl(raw) {
   if (!raw.data || raw.data.length === 0) return [];
 
-  // Build field index map
   const fi = {};
   (raw.fields || []).forEach((f, i) => { fi[f] = i; });
 
@@ -670,9 +630,7 @@ function processJpl(raw) {
     const diameter = diamRaw ? parseFloat(diamRaw) : estimateDiameter(h);
     const distKm   = distAu * AU_TO_KM;
     const distLd   = distKm / LUNAR_DIST_KM;
-
-    // Date: JPL gives "2026-Jul-20 14:32" → normalize
-    const dateStr = normalizeJplDate(cd);
+    const dateStr  = normalizeJplDate(cd);
 
     return {
       id:       'jpl-' + idx + '-' + des.replace(/\s+/g, ''),
@@ -684,10 +642,9 @@ function processJpl(raw) {
       vel,
       h,
       diameter,
-      hazard:   false,       // default; overridden by NASA merge
+      hazard:   false,
       source:   'JPL CAD',
       jplUrl:   `https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?des=${encodeURIComponent(des)}`,
-      // random orbital elements for visualization
       inc:   Math.random() * Math.PI * 0.7,
       raan:  Math.random() * Math.PI * 2,
       phase: Math.random() * Math.PI * 2,
@@ -696,7 +653,6 @@ function processJpl(raw) {
 }
 
 function normalizeJplDate(cd) {
-  // "2026-Jul-20 14:32" → "2026-07-20"
   if (!cd) return '—';
   const months = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
                   Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
@@ -709,16 +665,13 @@ function cleanName(fullname) {
   return fullname.replace(/^\s*\d+\s+/, '').replace(/\s*\(.*?\)\s*/g, '').trim() || fullname.trim();
 }
 
-/** Rough diameter estimate from absolute magnitude */
 function estimateDiameter(h) {
   if (h === null || isNaN(h)) return 0.1;
-  // Using albedo p=0.14 as typical
-  return 1329 * Math.pow(10, -h / 5) / Math.sqrt(0.14) / 1000; // km
+  return 1329 * Math.pow(10, -h / 5) / Math.sqrt(0.14) / 1000;
 }
 
 /* ── NASA NeoWs API ──────────────────────────────────────── */
 
-/** Process NASA NeoWs as primary source (fallback when JPL is CORS-blocked) */
 function processNasaDirect(raw, distMaxAu) {
   const maxAu = parseFloat(distMaxAu) || 0.05;
   const neos  = [];
@@ -730,8 +683,6 @@ function processNasaDirect(raw, distMaxAu) {
 
       const distKm = parseFloat(approach.miss_distance.kilometers);
       const distAu = distKm / AU_TO_KM;
-
-      // Filter by selected max distance (both values are in AU)
       if (distAu > maxAu) return;
 
       const distLd = parseFloat(approach.miss_distance.lunar);
@@ -763,7 +714,6 @@ function processNasaDirect(raw, distMaxAu) {
   return neos.sort((a, b) => a.distKm - b.distKm);
 }
 
-/** Fetch NASA NeoWs in 7-day chunks and merge results (API limit = 7 days/request) */
 async function fetchNasaChunked(startDate, endDate) {
   const start  = new Date(startDate);
   const end    = new Date(endDate);
@@ -800,7 +750,6 @@ async function fetchNasa(startDate, endDate) {
   return res.json();
 }
 
-/** Build lookup map: designation (lowercase, no spaces) → {hazard, diameter} */
 function buildNasaMap(raw) {
   const map = new Map();
   Object.values(raw.near_earth_objects || {}).forEach(dayList => {
@@ -911,7 +860,6 @@ function showError(msg) {
    Boot
    ============================================================ */
 function boot() {
-  // Theme toggle (mirrors main.js logic for standalone page)
   const root        = document.documentElement;
   const themeToggle = document.querySelector('[data-theme-toggle]');
   const themeIcon   = document.querySelector('[data-theme-icon]');
@@ -939,7 +887,6 @@ function boot() {
     animate();
   } catch (err) {
     console.error('[NEO Tracker] Boot error:', err);
-    // Surface the error visibly if scene init fails
     const p = document.querySelector('#panel-error p');
     if (panelError) panelError.hidden = false;
     if (p) p.textContent = 'Errore di avvio: ' + (err.message || err);
