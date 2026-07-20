@@ -608,12 +608,10 @@ async function loadNeos() {
   if (refreshBtn) refreshBtn.disabled = true;
 
   try {
-    const diffDays = (new Date(end) - new Date(start)) / 86400000;
-
-    // Parallel fetch: JPL always, NASA only if ≤ 7 days
+    // Parallel fetch: JPL (may be CORS-blocked in browser), NASA always
     const [jplResult, nasaResult] = await Promise.allSettled([
       fetchJpl(start, end, distMax),
-      diffDays <= 7 ? fetchNasa(start, end) : Promise.resolve(null)
+      fetchNasa(start, end)
     ]);
 
     let neos = [];
@@ -622,12 +620,18 @@ async function loadNeos() {
       updateLoadingText('Elaborazione dati JPL…');
       neos = processJpl(jplResult.value);
     } else {
-      console.warn('JPL CAD failed:', jplResult.reason);
+      console.warn('JPL CAD non disponibile (CORS):', jplResult.reason);
     }
 
     if (nasaResult.status === 'fulfilled' && nasaResult.value) {
-      updateLoadingText('Integrazione dati NASA…');
-      mergeNasa(neos, nasaResult.value);
+      if (neos.length > 0) {
+        updateLoadingText('Integrazione dati NASA…');
+        mergeNasa(neos, nasaResult.value);
+      } else {
+        // JPL blocked by CORS → use NASA NeoWs as primary source
+        updateLoadingText('Elaborazione dati NASA NeoWs…');
+        neos = processNasaDirect(nasaResult.value, distMax);
+      }
     }
 
     if (neos.length === 0) {
@@ -736,6 +740,49 @@ function estimateDiameter(h) {
 }
 
 /* ── NASA NeoWs API ──────────────────────────────────────── */
+
+/** Process NASA NeoWs as primary source (fallback when JPL is CORS-blocked) */
+function processNasaDirect(raw, distMaxAu) {
+  const maxAu = parseFloat(distMaxAu) || 0.05;
+  const neos  = [];
+
+  Object.values(raw.near_earth_objects || {}).forEach(dayList => {
+    dayList.forEach(obj => {
+      const approach = obj.close_approach_data && obj.close_approach_data[0];
+      if (!approach) return;
+
+      const distKm = parseFloat(approach.miss_distance.kilometers);
+      const distAu = distKm / AU_TO_KM;
+      if (distAu > maxAu) return;
+
+      const distLd = parseFloat(approach.miss_distance.lunar);
+      const vel    = parseFloat(approach.relative_velocity.kilometers_per_second);
+      const dMin   = obj.estimated_diameter.kilometers.estimated_diameter_min;
+      const dMax   = obj.estimated_diameter.kilometers.estimated_diameter_max;
+      const h      = typeof obj.absolute_magnitude_h === 'number' ? obj.absolute_magnitude_h : null;
+
+      neos.push({
+        id:       'nasa-' + obj.id,
+        name:     obj.name.replace(/^\s*\(/, '').replace(/\)\s*$/, '').trim() || obj.name.trim(),
+        des:      obj.name.trim(),
+        date:     approach.close_approach_date,
+        distKm,
+        distLd,
+        vel,
+        h,
+        diameter: (dMin + dMax) / 2,
+        hazard:   obj.is_potentially_hazardous_asteroid,
+        source:   'NASA NeoWs',
+        jplUrl:   `https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?des=${encodeURIComponent(obj.name.trim())}`,
+        inc:   Math.random() * Math.PI * 0.7,
+        raan:  Math.random() * Math.PI * 2,
+        phase: Math.random() * Math.PI * 2,
+      });
+    });
+  });
+
+  return neos.sort((a, b) => a.distKm - b.distKm);
+}
 
 async function fetchNasa(startDate, endDate) {
   const url = NASA_NEO_URL + '?' + new URLSearchParams({
