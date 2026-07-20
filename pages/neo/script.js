@@ -45,7 +45,9 @@ let searchTerm = '';
 const glCanvas        = document.getElementById('gl-canvas');
 const viewport        = document.getElementById('neo-viewport');
 const refreshBtn      = document.getElementById('refresh-btn');
-const dateRangeLabel  = document.getElementById('date-range-display');
+const dateStartInput  = document.getElementById('date-start');
+const dateEndInput    = document.getElementById('date-end');
+const dateRangeHint   = document.getElementById('date-range-hint');
 const distSelect      = document.getElementById('dist-max');
 const panelStats   = document.getElementById('panel-stats');
 const statTotal    = document.getElementById('stat-total');
@@ -69,23 +71,39 @@ const toggleCtrl   = document.getElementById('toggle-controls');
 const controlsBody = document.getElementById('controls-body');
 
 /* ============================================================
-   Date range (always last 7 days, computed at call time)
+   Date range — driven by the two date inputs
    ============================================================ */
-function getDateRange() {
-  const end   = new Date();
-  const start = new Date(end);
-  start.setDate(start.getDate() - 6); // 7 days inclusive
-  return { start: fmt(start), end: fmt(end) };
-}
-
-function updateDateLabel() {
-  const { start, end } = getDateRange();
-  const s = start.split('-').reverse().join('/');
-  const e = end.split('-').reverse().join('/');
-  if (dateRangeLabel) dateRangeLabel.textContent = `${s} – ${e}`;
-}
-
 function fmt(d) { return d.toISOString().slice(0, 10); }
+
+function initDateInputs() {
+  const today = new Date();
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 6);
+  const todayStr = fmt(today);
+  dateStartInput.max = todayStr;
+  dateEndInput.max   = todayStr;
+  dateStartInput.value = fmt(sevenDaysAgo);
+  dateEndInput.value   = todayStr;
+}
+
+function getDateRange() {
+  const start = dateStartInput.value || fmt((() => { const d = new Date(); d.setDate(d.getDate() - 6); return d; })());
+  const end   = dateEndInput.value   || fmt(new Date());
+  return { start, end };
+}
+
+function updateDateHint() {
+  const { start, end } = getDateRange();
+  const days = Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+  if (!dateRangeHint) return;
+  if (days < 1) {
+    dateRangeHint.textContent = '⚠ La data fine deve essere dopo la data inizio';
+    dateRangeHint.style.color = '#e05e40';
+  } else {
+    dateRangeHint.textContent = `${days} giorn${days === 1 ? 'o' : 'i'}`;
+    dateRangeHint.style.color = 'rgba(157,212,218,0.5)';
+  }
+}
 
 /* ============================================================
    Three.js scene init
@@ -603,15 +621,21 @@ async function loadNeos() {
   const { start, end } = getDateRange();
   const distMax = distSelect ? distSelect.value : '0.05';
 
-  updateDateLabel();
-  showLoading('Contatto NASA & JPL…');
+  // Validate
+  if (start > end) {
+    showError('La data di inizio deve essere precedente alla data di fine.');
+    return;
+  }
+
+  updateDateHint();
+  showLoading('Contatto NASA NeoWs…');
   if (refreshBtn) refreshBtn.disabled = true;
 
   try {
-    // Parallel fetch: JPL (may be CORS-blocked in browser), NASA always
+    // Parallel fetch: JPL (CORS-blocked in browsers), NASA with auto-chunking for >7 days
     const [jplResult, nasaResult] = await Promise.allSettled([
       fetchJpl(start, end, distMax),
-      fetchNasa(start, end)
+      fetchNasaChunked(start, end)
     ]);
 
     let neos = [];
@@ -632,6 +656,8 @@ async function loadNeos() {
         updateLoadingText('Elaborazione dati NASA NeoWs…');
         neos = processNasaDirect(nasaResult.value, distMax);
       }
+    } else if (nasaResult.status === 'rejected') {
+      console.warn('NASA NeoWs fallito:', nasaResult.reason);
     }
 
     if (neos.length === 0) {
@@ -782,6 +808,32 @@ function processNasaDirect(raw, distMaxAu) {
   });
 
   return neos.sort((a, b) => a.distKm - b.distKm);
+}
+
+/** Fetch NASA NeoWs in 7-day chunks and merge results (API limit = 7 days/request) */
+async function fetchNasaChunked(startDate, endDate) {
+  const start  = new Date(startDate);
+  const end    = new Date(endDate);
+  const chunks = [];
+  let   cur    = new Date(start);
+
+  while (cur <= end) {
+    const chunkEnd = new Date(cur);
+    chunkEnd.setDate(chunkEnd.getDate() + 6);
+    if (chunkEnd > end) chunkEnd.setTime(end.getTime());
+    chunks.push({ s: fmt(cur), e: fmt(chunkEnd) });
+    cur.setDate(cur.getDate() + 7);
+  }
+
+  const results = await Promise.all(chunks.map(c => fetchNasa(c.s, c.e).catch(() => null)));
+
+  const merged = { near_earth_objects: {} };
+  results.forEach(r => {
+    if (r && r.near_earth_objects) {
+      Object.assign(merged.near_earth_objects, r.near_earth_objects);
+    }
+  });
+  return merged;
 }
 
 async function fetchNasa(startDate, endDate) {
@@ -1019,6 +1071,8 @@ function scheduleDailyRefresh() {
    module finishes loading its imports.
    ============================================================ */
 try {
+  initDateInputs();
+  updateDateHint();
   initScene();
   animate();
   loadNeos();

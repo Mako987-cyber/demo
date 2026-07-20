@@ -59,8 +59,13 @@
         </div>
         <div class="panel-body" id="controls-body">
           <div class="ctrl-group">
-            <span class="ctrl-label">Periodo</span>
-            <span class="date-range-display" id="date-range-display">Ultimi 7 giorni</span>
+            <label>Periodo</label>
+            <div class="date-range-inputs">
+              <input type="date" id="date-start" aria-label="Data inizio" />
+              <span class="date-sep">&#8594;</span>
+              <input type="date" id="date-end" aria-label="Data fine" />
+            </div>
+            <span class="date-range-hint" id="date-range-hint"></span>
           </div>
           <div class="ctrl-group">
             <label for="dist-max">Distanza max</label>

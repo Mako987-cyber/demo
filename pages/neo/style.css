@@ -134,6 +134,29 @@
   letter-spacing: 0.02em;
 }
 
+.date-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.date-range-inputs input[type="date"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-sep {
+  color: rgba(157, 212, 218, 0.4);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.date-range-hint {
+  font-size: 0.7rem;
+  color: rgba(157, 212, 218, 0.5);
+  min-height: 1em;
+}
+
 .ctrl-group input[type="date"],
 .ctrl-group select {
   padding: 0.45rem 0.6rem;
