@@ -1,5 +1,4 @@
 {
-  "buildCommand": "bash build.sh",
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,

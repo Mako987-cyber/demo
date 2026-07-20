@@ -1,8 +1,5 @@
 (function (global) {
-  // __NASA_API_KEY__ is replaced at build time by build.sh via the Vercel env var DEMO_KEY.
-  // Falls back to NASA's public DEMO_KEY (30 req/hour) if not injected (local dev).
-  // NEVER commit a real API key here — the placeholder must remain in the repo.
-  const NASA_API_KEY = '__NASA_API_KEY__' !== '__NASA_API_KEY__' ? '__NASA_API_KEY__' : 'DEMO_KEY';
+  const NASA_API_KEY = 'pi2UlqIi7tEEGb6NrRYhETFeRgKSY3pfMa0RzyZS';
   const NEO_FEED_URL = 'https://api.nasa.gov/neo/rest/v1/feed';
   const JPL_CAD_URL  = 'https://ssd-api.jpl.nasa.gov/cad.api';
 
