@@ -1,14 +1,12 @@
 /**
  * NEO Tracker 3D — script.js
  * WebGL 3D visualization of Near-Earth Objects
- * Sources: NASA NeoWs API + JPL SSD Close Approach API
+ * Sources: NASA NeoWs API + JPL SSD Close Approach API, via window.NasaApi
+ * (pages/api/nasaApi.js + pages/api/http.js — same shared API layer used by
+ * the weather/crypto/currency/naas pages).
  *
  * Uses Three.js r128 loaded as a classic UMD global (window.THREE).
  * No ES modules, no importmap — works on every browser / CDN edge.
- *
- * API key is injected at build time by Vercel via build.sh.
- * The placeholder __NASA_API_KEY__ is replaced with the DEMO_KEY env var.
- * Falls back to NASA DEMO_KEY if not injected.
  */
 
 /* global THREE */
@@ -18,11 +16,6 @@
    ============================================================ */
 const AU_TO_KM      = 149597870.7;
 const LUNAR_DIST_KM = 384400;
-// __NASA_API_KEY__ is replaced at build time by build.sh via Vercel env var DEMO_KEY
-// If not replaced (local dev), falls back to NASA public DEMO_KEY
-const NASA_KEY      = '__NASA_API_KEY__' !== '__NASA_API_KEY__' ? '__NASA_API_KEY__' : 'DEMO_KEY';
-const JPL_CAD_URL   = 'https://ssd-api.jpl.nasa.gov/cad.api';
-const NASA_NEO_URL  = 'https://api.nasa.gov/neo/rest/v1/feed';
 
 // Scene scale: Earth visual radius = 1 unit
 const EARTH_R        = 1;
@@ -39,6 +32,7 @@ let moonTheta  = 0;
 let neoObjects = [];   // [{mesh, line, data, r, inc, raan, theta, omega}]
 let selectedId = null;
 let pointer    = { x: -9, y: -9 };   // plain object – THREE not needed at top level
+let pointerClientX = 0, pointerClientY = 0;   // canvas-relative px, for tooltip placement
 let lastHover  = null;
 let allNeos    = [];   // raw processed list
 let tableSort  = { key: 'dist', dir: 1 };
@@ -425,6 +419,9 @@ function setupEvents() {
     const rect = glCanvas.getBoundingClientRect();
     pointer.x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
     pointer.y = -((e.clientY - rect.top)   / rect.height) * 2 + 1;
+    pointerClientX = e.clientX - rect.left;
+    pointerClientY = e.clientY - rect.top;
+    positionTooltip();
   });
 
   glCanvas.addEventListener('mouseleave', () => {
@@ -456,8 +453,8 @@ function setupEvents() {
   document.querySelectorAll('[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
       filterMode = btn.dataset.filter;
-      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('is-active'));
-      btn.classList.add('is-active');
+      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
       renderTable(allNeos);
     });
   });
@@ -489,16 +486,16 @@ function selectNeo(id) {
   });
 
   infoContent.innerHTML = `
-    <dl class="info-grid">
-      <dt>Nome</dt>       <dd>${neo.name}</dd>
-      <dt>Data</dt>       <dd>${neo.date}</dd>
-      <dt>Distanza</dt>   <dd>${neo.distLd.toFixed(3)} LD &nbsp;(${(neo.distKm / 1e6).toFixed(3)} M km)</dd>
-      <dt>Velocità</dt>   <dd>${neo.vel.toFixed(2)} km/s</dd>
-      <dt>Diametro</dt>   <dd>~${neo.diameter < 1 ? (neo.diameter * 1000).toFixed(0) + ' m' : neo.diameter.toFixed(2) + ' km'}</dd>
-      <dt>Pericoloso</dt> <dd class="${neo.hazard ? 'hazard-yes' : 'hazard-no'}">${neo.hazard ? '⚠ Sì' : '✓ No'}</dd>
-      <dt>Fonte</dt>      <dd>${neo.source}</dd>
-    </dl>
-    <a href="${neo.jplUrl}" target="_blank" rel="noopener" class="info-link">Apri su JPL SSD →</a>
+    <div class="info-name">${neo.name}</div>
+    <table class="info-table">
+      <tr><td>Data</td><td>${neo.date}</td></tr>
+      <tr><td>Distanza</td><td>${neo.distLd.toFixed(3)} LD &nbsp;(${(neo.distKm / 1e6).toFixed(3)} M km)</td></tr>
+      <tr><td>Velocità</td><td>${neo.vel.toFixed(2)} km/s</td></tr>
+      <tr><td>Diametro</td><td>~${neo.diameter < 1 ? (neo.diameter * 1000).toFixed(0) + ' m' : neo.diameter.toFixed(2) + ' km'}</td></tr>
+      <tr><td>Fonte</td><td>${neo.source}</td></tr>
+    </table>
+    <span class="${neo.hazard ? 'info-hazard-badge' : 'info-safe-badge'}">${neo.hazard ? '⚠ Potenzialmente pericoloso' : '✓ Non pericoloso'}</span>
+    <a href="${neo.jplUrl}" target="_blank" rel="noopener" class="info-jpl-link">Apri su JPL SSD →</a>
   `;
   panelInfo.hidden = false;
 }
@@ -507,10 +504,20 @@ function showTooltip(neo) {
   if (!tooltip) return;
   tooltip.textContent = `${neo.name} — ${neo.distLd.toFixed(2)} LD`;
   tooltip.hidden = false;
+  tooltip.classList.add('visible');
+  positionTooltip();
 }
 
 function hideTooltip() {
-  if (tooltip) tooltip.hidden = true;
+  if (!tooltip) return;
+  tooltip.hidden = true;
+  tooltip.classList.remove('visible');
+}
+
+function positionTooltip() {
+  if (!tooltip || tooltip.hidden) return;
+  tooltip.style.left = (pointerClientX + 14) + 'px';
+  tooltip.style.top  = (pointerClientY + 14) + 'px';
 }
 
 /* ============================================================
@@ -599,18 +606,7 @@ async function loadNeos() {
 /* ── JPL SSD Close Approach API ──────────────────────────── */
 
 async function fetchJpl(dateMin, dateMax, distMax) {
-  const url = JPL_CAD_URL + '?' + new URLSearchParams({
-    'dist-max':  distMax,
-    'date-min':  dateMin,
-    'date-max':  dateMax,
-    sort:        'dist',
-    body:        'Earth',
-    fullname:    'true',
-    diameter:    'true'
-  });
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('JPL CAD HTTP ' + res.status);
-  return res.json();
+  return window.NasaApi.fetchJplCad(dateMin, dateMax, distMax);
 }
 
 function processJpl(raw) {
@@ -740,14 +736,7 @@ async function fetchNasaChunked(startDate, endDate) {
 }
 
 async function fetchNasa(startDate, endDate) {
-  const url = NASA_NEO_URL + '?' + new URLSearchParams({
-    start_date: startDate,
-    end_date:   endDate,
-    api_key:    NASA_KEY
-  });
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('NASA NeoWs HTTP ' + res.status);
-  return res.json();
+  return window.NasaApi.fetchNeoFeed(startDate, endDate);
 }
 
 function buildNasaMap(raw) {
@@ -784,6 +773,7 @@ function mergeNasa(neos, nasaRaw) {
    Table rendering
    ============================================================ */
 function renderTable(neos) {
+  updateSortHeaders();
   let filtered = neos;
 
   if (filterMode === 'hazard') filtered = neos.filter(n => n.hazard);
@@ -798,9 +788,10 @@ function renderTable(neos) {
   filtered.sort((a, b) => {
     let av, bv;
     switch (tableSort.key) {
+      case 'name': av = a.name.toLowerCase(); bv = b.name.toLowerCase(); break;
       case 'dist': av = a.distLd; bv = b.distLd; break;
       case 'vel':  av = a.vel;    bv = b.vel;    break;
-      case 'size': av = a.diameter; bv = b.diameter; break;
+      case 'diam': av = a.diameter; bv = b.diameter; break;
       case 'date': av = a.date;   bv = b.date;   break;
       default:     av = a.distLd; bv = b.distLd;
     }
@@ -808,17 +799,27 @@ function renderTable(neos) {
   });
 
   neoTbody.innerHTML = filtered.map(neo => `
-    <tr class="neo-row ${neo.hazard ? 'is-hazard' : ''}" data-id="${neo.id}">
+    <tr class="neo-row ${neo.hazard ? 'hazard-row' : ''}" data-id="${neo.id}">
       <td class="td-name">${neo.name}</td>
+      <td class="td-date">${neo.date}</td>
       <td class="td-dist">${neo.distLd.toFixed(4)}</td>
       <td class="td-vel">${neo.vel.toFixed(2)}</td>
-      <td class="td-size">${neo.diameter < 1 ? (neo.diameter * 1000).toFixed(0) + ' m' : neo.diameter.toFixed(2) + ' km'}</td>
-      <td class="td-hazard">${neo.hazard ? '<span class="tag-hazard">⚠</span>' : '<span class="tag-safe">✓</span>'}</td>
+      <td class="td-diam">${neo.diameter < 1 ? (neo.diameter * 1000).toFixed(0) + ' m' : neo.diameter.toFixed(2) + ' km'}</td>
+      <td class="td-hazard">${neo.hazard ? '<span class="badge-hazard">⚠ Sì</span>' : '<span class="badge-safe">— No</span>'}</td>
     </tr>
   `).join('');
 
   neoTbody.querySelectorAll('.neo-row').forEach(row => {
     row.addEventListener('click', () => selectNeo(row.dataset.id));
+  });
+}
+
+function updateSortHeaders() {
+  document.querySelectorAll('[data-sort]').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+    if (th.dataset.sort === tableSort.key) {
+      th.classList.add(tableSort.dir > 0 ? 'sorted-asc' : 'sorted-desc');
+    }
   });
 }
 
@@ -860,31 +861,16 @@ function showError(msg) {
    Boot
    ============================================================ */
 function boot() {
-  const root        = document.documentElement;
-  const themeToggle = document.querySelector('[data-theme-toggle]');
-  const themeIcon   = document.querySelector('[data-theme-icon]');
-
-  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  root.setAttribute('data-theme', theme);
-
-  const renderIcon = () => {
-    if (!themeIcon) return;
-    themeIcon.innerHTML = theme === 'dark'
-      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>'
-      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-  };
-  renderIcon();
-  themeToggle?.addEventListener('click', () => {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', theme);
-    renderIcon();
-  });
-
+  // Theme toggle (icon, data-theme attribute, header scroll state) is already
+  // handled globally by scripts/main.js — duplicating it here caused two
+  // independent click listeners on the same button, as in every other page.
   try {
     initDateInputs();
     initScene();
     setupEvents();
     animate();
+    updateDateHint();
+    loadNeos();
   } catch (err) {
     console.error('[NEO Tracker] Boot error:', err);
     const p = document.querySelector('#panel-error p');
