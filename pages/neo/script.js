@@ -40,12 +40,11 @@ let searchTerm = '';
 /* ============================================================
    DOM refs
    ============================================================ */
-const glCanvas     = document.getElementById('gl-canvas');
-const viewport     = document.getElementById('neo-viewport');
-const loadBtn      = document.getElementById('load-neo');
-const startInput   = document.getElementById('start-date');
-const endInput     = document.getElementById('end-date');
-const distSelect   = document.getElementById('dist-max');
+const glCanvas        = document.getElementById('gl-canvas');
+const viewport        = document.getElementById('neo-viewport');
+const refreshBtn      = document.getElementById('refresh-btn');
+const dateRangeLabel  = document.getElementById('date-range-display');
+const distSelect      = document.getElementById('dist-max');
 const panelStats   = document.getElementById('panel-stats');
 const statTotal    = document.getElementById('stat-total');
 const statSafe     = document.getElementById('stat-safe');
@@ -68,15 +67,21 @@ const toggleCtrl   = document.getElementById('toggle-controls');
 const controlsBody = document.getElementById('controls-body');
 
 /* ============================================================
-   Default dates
+   Date range (always last 7 days, computed at call time)
    ============================================================ */
-(function () {
-  const today = new Date();
-  const end   = new Date(today);
-  end.setDate(end.getDate() + 6);
-  startInput.value = fmt(today);
-  endInput.value   = fmt(end);
-})();
+function getDateRange() {
+  const end   = new Date();
+  const start = new Date(end);
+  start.setDate(start.getDate() - 6); // 7 days inclusive
+  return { start: fmt(start), end: fmt(end) };
+}
+
+function updateDateLabel() {
+  const { start, end } = getDateRange();
+  const s = start.split('-').reverse().join('/');
+  const e = end.split('-').reverse().join('/');
+  if (dateRangeLabel) dateRangeLabel.textContent = `${s} – ${e}`;
+}
 
 function fmt(d) { return d.toISOString().slice(0, 10); }
 
@@ -592,15 +597,12 @@ function showInfoPanel(neo) {
    ============================================================ */
 
 async function loadNeos() {
-  const start   = startInput.value;
-  const end     = endInput.value;
-  const distMax = distSelect.value;
+  const { start, end } = getDateRange();
+  const distMax = distSelect ? distSelect.value : '0.05';
 
-  if (!start || !end) { showError('Seleziona entrambe le date.'); return; }
-  if (new Date(end) < new Date(start)) { showError('La data fine deve essere successiva alla data inizio.'); return; }
-
+  updateDateLabel();
   showLoading('Contatto NASA & JPL…');
-  loadBtn.disabled = true;
+  if (refreshBtn) refreshBtn.disabled = true;
 
   try {
     const diffDays = (new Date(end) - new Date(start)) / 86400000;
@@ -645,7 +647,7 @@ async function loadNeos() {
   } catch (err) {
     showError('Errore: ' + (err.message || 'Impossibile raggiungere le API.'));
   } finally {
-    loadBtn.disabled = false;
+    if (refreshBtn) refreshBtn.disabled = false;
   }
 }
 
@@ -924,13 +926,11 @@ retryBtn.addEventListener('click', () => {
   loadNeos();
 });
 
-/* ── Load button ─────────────────────────────────────────── */
-loadBtn.addEventListener('click', loadNeos);
+/* ── Refresh button ──────────────────────────────────────── */
+if (refreshBtn) refreshBtn.addEventListener('click', loadNeos);
 
-/* ── Enter on date inputs ─────────────────────────────────── */
-[startInput, endInput].forEach(inp => {
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') loadNeos(); });
-});
+/* ── Distance max change → reload ───────────────────────── */
+if (distSelect) distSelect.addEventListener('change', loadNeos);
 
 /* ============================================================
    Resize handler
@@ -949,15 +949,27 @@ const resizeObserver = new ResizeObserver(onResize);
 resizeObserver.observe(viewport);
 
 /* ============================================================
+   Daily auto-refresh scheduler
+   ============================================================ */
+function scheduleDailyRefresh() {
+  const now      = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 1, 0, 0); // 00:01 next day (1 min after midnight)
+  const msUntilMidnight = midnight - now;
+  setTimeout(() => {
+    loadNeos();
+    scheduleDailyRefresh(); // re-arm for the following day
+  }, msUntilMidnight);
+}
+
+/* ============================================================
    Boot
    ============================================================ */
-
-// Wait for the IIFE globals (http.js, nasaApi.js) to be ready.
-// Since this module runs after DOMContentLoaded and all defer scripts
-// have completed, window.NasaApi is available at call-time (not at
-// module parse time), which is fine.
-
 window.addEventListener('DOMContentLoaded', () => {
   initScene();
   animate();
+  // Auto-load immediately with the last 7 days
+  loadNeos();
+  // Schedule daily refresh at midnight
+  scheduleDailyRefresh();
 });

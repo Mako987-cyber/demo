@@ -67,12 +67,8 @@
         </div>
         <div class="panel-body" id="controls-body">
           <div class="ctrl-group">
-            <label for="start-date">Data inizio</label>
-            <input type="date" id="start-date" />
-          </div>
-          <div class="ctrl-group">
-            <label for="end-date">Data fine</label>
-            <input type="date" id="end-date" />
+            <span class="ctrl-label">Periodo</span>
+            <span class="date-range-display" id="date-range-display">Ultimi 7 giorni</span>
           </div>
           <div class="ctrl-group">
             <label for="dist-max">Distanza max</label>
@@ -82,10 +78,12 @@
               <option value="0.1">0.10 AU (~39 LD)</option>
             </select>
           </div>
-          <button class="neo-btn" id="load-neo">
-            Carica NEO
+          <button class="neo-btn" id="refresh-btn">
+            &#8635; Aggiorna ora
           </button>
           <div class="ctrl-hint">
+            <strong>Aggiornamento automatico</strong><br>
+            I dati si aggiornano ogni giorno a mezzanotte con i nuovi avvicinamenti.<br><br>
             <strong>Navigazione 3D</strong><br>
             Trascina &rarr; ruota &nbsp;&middot;&nbsp; Scroll &rarr; zoom<br>
             Click oggetto &rarr; dettagli
@@ -147,7 +145,7 @@
           <circle cx="52" cy="50" r="2" fill="#e05e40" opacity="0.6"/>
         </svg>
         <h2>NEO Tracker 3D</h2>
-        <p>Seleziona un intervallo di date e premi <strong>Carica NEO</strong> per visualizzare in 3D gli oggetti Near-Earth nel sistema Terra.</p>
+        <p>Caricamento degli incontri ravvicinati con la Terra degli ultimi 7 giorni&hellip;</p>
         <p class="welcome-sources">Dati real-time da <strong>NASA NeoWs</strong> &amp; <strong>JPL SSD Close Approach API</strong></p>
       </div>
 
