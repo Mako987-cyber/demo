@@ -89,8 +89,9 @@ function fmt(d) { return d.toISOString().slice(0, 10); }
    Three.js scene init
    ============================================================ */
 function initScene() {
-  const w = glCanvas.clientWidth  || viewport.clientWidth;
-  const h = glCanvas.clientHeight || viewport.clientHeight;
+  // glCanvas might not have rendered dimensions yet — force a layout read
+  const w = glCanvas.offsetWidth  || window.innerWidth;
+  const h = glCanvas.offsetHeight || Math.round(window.innerHeight * 0.7);
 
   renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -963,13 +964,23 @@ function scheduleDailyRefresh() {
 }
 
 /* ============================================================
-   Boot
+   Boot — ES modules are always deferred: DOM is ready here.
+   DOMContentLoaded must NOT be used because Three.js is fetched
+   from CDN asynchronously, so that event fires before this
+   module finishes loading its imports.
    ============================================================ */
-window.addEventListener('DOMContentLoaded', () => {
+try {
   initScene();
   animate();
-  // Auto-load immediately with the last 7 days
   loadNeos();
-  // Schedule daily refresh at midnight
   scheduleDailyRefresh();
-});
+} catch (err) {
+  console.error('[NEO Tracker] Boot error:', err);
+  // Surface the error visibly if scene init fails
+  const welcome = document.getElementById('panel-welcome');
+  if (welcome) {
+    welcome.hidden = false;
+    const p = welcome.querySelector('p');
+    if (p) p.textContent = 'Errore di avvio: ' + (err.message || err);
+  }
+}
