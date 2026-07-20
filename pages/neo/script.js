@@ -4,8 +4,10 @@
  * Sources: NASA NeoWs API + JPL SSD Close Approach API
  */
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/controls/OrbitControls.js';
+/* esm.sh rewrites all internal bare specifiers to absolute URLs,
+   making it safe to use without an importmap. */
+import * as THREE from 'https://esm.sh/three@0.167.0';
+import { OrbitControls } from 'https://esm.sh/three@0.167.0/examples/jsm/controls/OrbitControls';
 
 /* ============================================================
    Constants
@@ -681,7 +683,7 @@ function processJpl(raw) {
     const fullname = row[fi['fullname']] || des;
     const cd       = row[fi['cd']]       || '';
     const distAu   = parseFloat(row[fi['dist']]  || 0);
-    const vel      = parseFloat(row[fi['v-rel']] || 0);
+    const vel      = parseFloat(row[fi['v_rel']] || 0);
     const h        = row[fi['h']] !== undefined ? parseFloat(row[fi['h']]) : null;
     const diamRaw  = row[fi['diameter']];
     const diameter = diamRaw ? parseFloat(diamRaw) : estimateDiameter(h);
