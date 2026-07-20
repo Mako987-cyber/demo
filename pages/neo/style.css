@@ -2,6 +2,9 @@
    NEO Tracker 3D — style.css
    ================================================================= */
 
+/* ── Ensure [hidden] always wins over author display rules ───── */
+[hidden] { display: none !important; }
+
 /* ── Viewport (WebGL canvas container) ────────────────────────── */
 .neo-viewport {
   position: relative;
