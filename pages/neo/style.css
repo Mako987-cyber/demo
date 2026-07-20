@@ -1,0 +1,294 @@
+/* ==================== NEO TRACKER STYLES ==================== */
+
+.neo-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Controls */
+.neo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.neo-controls .control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 140px;
+}
+
+.neo-controls label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.neo-controls input[type="date"] {
+  padding: 0.625rem 0.875rem;
+  border: 2px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.925rem;
+  transition: border-color 0.2s ease;
+}
+
+.neo-controls input[type="date"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.neo-btn {
+  padding: 0.625rem 1.5rem;
+  background: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+
+.neo-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.neo-btn:active {
+  transform: scale(0.97);
+}
+
+.neo-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Stats bar */
+.neo-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.stat-pill .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot--safe   { background: #63aab3; }
+.dot--hazard { background: #e05e40; }
+.dot--total  { background: var(--color-text-secondary); }
+
+/* Canvas area */
+.neo-scene {
+  position: relative;
+  background: #090e14;
+  border-radius: 0.75rem;
+  border: 2px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+#neo-canvas {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+}
+
+/* Tooltip */
+.neo-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(9, 14, 20, 0.9);
+  border: 1px solid rgba(99, 170, 179, 0.45);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  max-width: 220px;
+  color: #edf0ee;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+  backdrop-filter: blur(6px);
+}
+
+.neo-tooltip.visible {
+  opacity: 1;
+}
+
+.neo-tooltip strong {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.375rem;
+  color: #63aab3;
+}
+
+.neo-tooltip .hazard-badge {
+  display: inline-block;
+  margin-top: 0.375rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #e05e40;
+  color: white;
+}
+
+/* Legend */
+.neo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-circle {
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Loading / error */
+.neo-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secondary);
+}
+
+.neo-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.neo-error {
+  color: #e05e40;
+  font-weight: 600;
+}
+
+/* List panel */
+.neo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.neo-item {
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.neo-item:hover,
+.neo-item.active {
+  border-color: var(--color-primary);
+  background: var(--color-bg);
+}
+
+.neo-item.hazard {
+  border-left: 4px solid #e05e40;
+}
+
+.neo-item-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.neo-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.neo-meta-chip {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.neo-meta-chip.danger {
+  background: rgba(224, 94, 64, 0.15);
+  color: #e05e40;
+}
+
+/* Section title */
+.neo-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .neo-controls {
+    flex-direction: column;
+  }
+  .neo-controls .control-group {
+    min-width: 0;
+    width: 100%;
+  }
+}
