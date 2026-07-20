@@ -5,6 +5,10 @@
  *
  * Uses Three.js r128 loaded as a classic UMD global (window.THREE).
  * No ES modules, no importmap — works on every browser / CDN edge.
+ *
+ * API key is injected at build time by Vercel via build.sh.
+ * The placeholder __NASA_API_KEY__ is replaced with the DEMO_KEY env var.
+ * Falls back to NASA DEMO_KEY if not injected.
  */
 
 /* global THREE */
@@ -14,7 +18,9 @@
    ============================================================ */
 const AU_TO_KM      = 149597870.7;
 const LUNAR_DIST_KM = 384400;
-const NASA_KEY      = 'pi2UlqIi7tEEGb6NrRYhETFeRgKSY3pfMa0RzyZS';
+// API key injected at build time by Vercel (see build.sh + vercel.json)
+// Falls back to 'DEMO_KEY' for local development
+const NASA_KEY      = window.__NASA_API_KEY__ || 'DEMO_KEY';
 const JPL_CAD_URL   = 'https://ssd-api.jpl.nasa.gov/cad.api';
 const NASA_NEO_URL  = 'https://api.nasa.gov/neo/rest/v1/feed';
 
@@ -267,350 +273,278 @@ function makeEarthTexture() {
   g.fillStyle = 'rgba(255,255,255,0.11)';
   [
     [0.08,0.32,90,19], [0.28,0.52,65,13], [0.43,0.39,55,11],
-    [0.60,0.56,72,15], [0.76,0.31,58,12], [0.92,0.47,66,14],
-    [0.18,0.66,48,11], [0.54,0.2,88,17], [0.82,0.72,52,10],
-    [0.36,0.78,44,10], [0.68,0.14,70,14], [0.50,0.65,50,12],
-  ].forEach(([rx, ry, rw, rh]) => {
-    g.beginPath();
-    g.ellipse(rx*W, ry*H, rw, rh, Math.random()*0.8, 0, Math.PI*2);
-    g.fill();
-  });
+    [0.60,0.56,72,15], [0.76,0.31,58,12], [0.90,0.48,70,14],
+    [0.15,0.68,80,16], [0.55,0.22,60,10], [0.70,0.72,75,17]
+  ].forEach(([x,y,w,h2]) => { g.fillRect(W*x,H*y,w,h2); });
 
-  return new THREE.CanvasTexture(c);
+  return c;
 }
 
 function buildEarth() {
-  const tex = makeEarthTexture();
-  const geo = new THREE.SphereGeometry(EARTH_R, 72, 72);
+  const geo = new THREE.SphereGeometry(EARTH_R, 64, 64);
+  const tex = new THREE.CanvasTexture(makeEarthTexture());
   const mat = new THREE.MeshPhongMaterial({
-    map:       tex,
-    specular:  new THREE.Color(0x336688),
-    shininess: 55,
-    emissive:  new THREE.Color(0x00050f),
-    emissiveIntensity: 0.4,
+    map:          tex,
+    shininess:    18,
+    specular:     new THREE.Color(0x1a3a5c),
   });
   earthMesh = new THREE.Mesh(geo, mat);
-  earthMesh.userData.isEarth = true;
   scene.add(earthMesh);
 
-  /* Atmosphere inner glow */
-  const atmGeo = new THREE.SphereGeometry(EARTH_R * 1.028, 32, 32);
-  const atmMat = new THREE.MeshPhongMaterial({
-    color: 0x2277dd,
-    transparent: true, opacity: 0.09,
-    side: THREE.FrontSide, depthWrite: false,
+  /* Atmosphere glow */
+  const atmoGeo = new THREE.SphereGeometry(EARTH_R * 1.025, 32, 32);
+  const atmoMat = new THREE.MeshPhongMaterial({
+    color:       0x4488cc,
+    transparent: true,
+    opacity:     0.12,
+    side:        THREE.FrontSide,
+    depthWrite:  false,
   });
-  scene.add(new THREE.Mesh(atmGeo, atmMat));
-
-  /* Atmosphere rim glow (back face) */
-  const rimGeo = new THREE.SphereGeometry(EARTH_R * 1.065, 32, 32);
-  const rimMat = new THREE.MeshPhongMaterial({
-    color: 0x44aaff,
-    transparent: true, opacity: 0.065,
-    side: THREE.BackSide, depthWrite: false,
-  });
-  scene.add(new THREE.Mesh(rimGeo, rimMat));
+  earthMesh.add(new THREE.Mesh(atmoGeo, atmoMat));
 }
 
 function buildMoon() {
-  const geo = new THREE.SphereGeometry(0.27, 24, 24);
-  const mat = new THREE.MeshPhongMaterial({
-    color: 0x9aa3a8, emissive: 0x0d1017, shininess: 4,
-  });
+  const geo = new THREE.SphereGeometry(0.27, 32, 32);
+  const mat = new THREE.MeshPhongMaterial({ color: 0x9a9a8a, shininess: 4 });
   moonMesh = new THREE.Mesh(geo, mat);
   scene.add(moonMesh);
+
+  /* Moon orbit ring */
+  const ring = new THREE.RingGeometry(MOON_ORBIT_VIS - 0.01, MOON_ORBIT_VIS + 0.01, 128);
+  const rmat = new THREE.MeshBasicMaterial({
+    color: 0x334455, side: THREE.DoubleSide, transparent: true, opacity: 0.4
+  });
+  scene.add(new THREE.Mesh(ring, rmat));
 }
 
 function buildLdRing() {
-  const pts = [];
-  for (let i = 0; i <= 160; i++) {
-    const t = (i / 160) * Math.PI * 2;
-    pts.push(new THREE.Vector3(
-      MOON_ORBIT_VIS * Math.cos(t), 0, MOON_ORBIT_VIS * Math.sin(t)
-    ));
-  }
-  const geo = new THREE.BufferGeometry().setFromPoints(pts);
-  const mat = new THREE.LineDashedMaterial({
-    color: 0x2a6070, dashSize: 0.4, gapSize: 0.35,
-    transparent: true, opacity: 0.5,
+  /* Lunar-distance reference ring */
+  const ring = new THREE.RingGeometry(MOON_ORBIT_VIS - 0.005, MOON_ORBIT_VIS + 0.005, 128);
+  const mat  = new THREE.MeshBasicMaterial({
+    color: 0x99bbcc, side: THREE.DoubleSide, transparent: true, opacity: 0.2
   });
-  const line = new THREE.Line(geo, mat);
-  line.computeLineDistances();
-  scene.add(line);
-
-  /* 1 LD label sprite */
-  const lc = document.createElement('canvas');
-  lc.width = 200; lc.height = 48;
-  const lg = lc.getContext('2d');
-  lg.fillStyle = 'rgba(99,170,179,0.75)';
-  lg.font = 'bold 22px sans-serif';
-  lg.fillText('1 LD', 8, 32);
-  const ltex = new THREE.CanvasTexture(lc);
-  const lMat = new THREE.SpriteMaterial({ map: ltex, transparent: true, opacity: 0.7 });
-  const sprite = new THREE.Sprite(lMat);
-  sprite.scale.set(1.8, 0.45, 1);
-  sprite.position.set(MOON_ORBIT_VIS + 0.6, 0.2, 0);
-  scene.add(sprite);
+  scene.add(new THREE.Mesh(ring, mat));
 }
 
 /* ============================================================
-   Orbit helpers
+   NEO scene objects
    ============================================================ */
 
-function logScale(val, minVal, maxVal) {
-  const lv = Math.log(val + 1);
-  const lo = Math.log(minVal + 1);
-  const lx = Math.log(maxVal + 1);
-  return (lv - lo) / ((lx - lo) || 1);
+function neoColor(neo) {
+  if (neo.hazard) return new THREE.Color(0xff4422);
+  if (neo.distLd < 5) return new THREE.Color(0xffaa22);
+  return new THREE.Color(0x44ddff);
 }
 
-/** Map miss distance → scene radius */
-function orbitRadius(distKm, minKm, maxKm) {
-  return NEO_ORBIT_MIN + logScale(distKm, minKm, maxKm) * (NEO_ORBIT_MAX - NEO_ORBIT_MIN);
-}
-
-/** Circular orbit position in 3D (Three.js Y-up) */
-function orbitPos(r, inc, raan, theta) {
-  // Circle in XZ plane → tilt by inclination (around X) → rotate by RAAN (around Y)
-  const x0 = r * Math.cos(theta);
-  const z0 = r * Math.sin(theta);
-  const cosI = Math.cos(inc), sinI = Math.sin(inc);
-  const y1 = -z0 * sinI;
-  const z1 =  z0 * cosI;
-  const cosO = Math.cos(raan), sinO = Math.sin(raan);
-  return new THREE.Vector3(x0 * cosO + z1 * sinO, y1, -x0 * sinO + z1 * cosO);
-}
-
-/** Build orbit Line */
-function buildOrbitLine(r, inc, raan, hazard) {
-  const pts = [];
-  for (let i = 0; i <= 128; i++) {
-    pts.push(orbitPos(r, inc, raan, (i / 128) * Math.PI * 2));
-  }
-  const geo = new THREE.BufferGeometry().setFromPoints(pts);
-  const mat = new THREE.LineBasicMaterial({
-    color:       hazard ? 0x5c1810 : 0x1e4d57,
-    transparent: true,
-    opacity:     hazard ? 0.55 : 0.45,
-  });
-  return new THREE.Line(geo, mat);
-}
-
-/** Build NEO sphere mesh */
-function buildNeoMesh(diameter, hazard) {
-  const dM  = (diameter || 0.005) * 1000;           // km → m
-  const sr  = Math.max(0.018, Math.min(0.11, 0.018 + Math.log10(dM + 1) * 0.035));
-  const geo = new THREE.SphereGeometry(sr, 8, 8);
-  const mat = new THREE.MeshPhongMaterial({
-    color:    hazard ? 0xe05e40 : 0x63aab3,
-    emissive: hazard ? new THREE.Color(0x280800) : new THREE.Color(0x061520),
-    shininess: 40,
-  });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.userData.neoId = null;   // filled later
-  return mesh;
-}
-
-/* ============================================================
-   NEO scene management
-   ============================================================ */
-
-function clearNeoScene() {
+function clearNeos() {
   neoObjects.forEach(({ mesh, line }) => {
-    scene.remove(mesh); scene.remove(line);
-    mesh.geometry.dispose(); mesh.material.dispose();
-    line.geometry.dispose(); line.material.dispose();
+    scene.remove(mesh);
+    if (line) scene.remove(line);
   });
   neoObjects = [];
+  selectedId  = null;
+  lastHover   = null;
 }
 
 function populateScene(neos) {
-  clearNeoScene();
+  clearNeos();
 
-  const distKms = neos.map(n => n.distKm);
-  const minKm   = Math.min(...distKms);
-  const maxKm   = Math.max(...distKms);
+  neos.forEach((neo, idx) => {
+    const r    = NEO_ORBIT_MIN + (neo.distLd / 60) * (NEO_ORBIT_MAX - NEO_ORBIT_MIN);
+    const inc  = neo.inc  || (Math.random() * Math.PI * 0.7);
+    const raan = neo.raan || (Math.random() * Math.PI * 2);
+    const theta = neo.phase || (idx * 2.399963);
 
-  neos.forEach(neo => {
-    const r    = orbitRadius(neo.distKm, minKm, maxKm);
-    const inc  = neo.inc;
-    const raan = neo.raan;
+    // Size: clamp diameter 0.05–10 km → visual 0.06–0.28
+    const dkm  = Math.max(0.05, Math.min(neo.diameter || 0.1, 10));
+    const size = 0.06 + (Math.log10(dkm + 0.05) + 1.3) * 0.09;
 
-    /* Angular speed: 20–70 s period, scaled by visual radius */
-    const T     = 18 + ((r - NEO_ORBIT_MIN) / (NEO_ORBIT_MAX - NEO_ORBIT_MIN)) * 52;
-    const omega = (Math.PI * 2) / T;
+    const geo = new THREE.SphereGeometry(size, 8, 8);
+    const mat = new THREE.MeshPhongMaterial({
+      color:    neoColor(neo),
+      emissive: neoColor(neo),
+      emissiveIntensity: 0.3,
+      shininess: 60,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
 
-    const line = buildOrbitLine(r, inc, raan, neo.hazard);
-    const mesh = buildNeoMesh(neo.diameter, neo.hazard);
-    mesh.userData.neoId = neo.id;
-
+    // Orbit path
+    const pts = [];
+    for (let i = 0; i <= 128; i++) {
+      const t = (i / 128) * Math.PI * 2;
+      const x = r * Math.cos(t);
+      const z = r * Math.sin(t);
+      const y = x * Math.tan(inc) * Math.sin(raan) + z * Math.tan(inc) * Math.cos(raan);
+      pts.push(new THREE.Vector3(x, y * 0.3, z));
+    }
+    const lineMat = new THREE.LineBasicMaterial({
+      color: neoColor(neo), transparent: true, opacity: 0.15
+    });
+    const line = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints(pts),
+      lineMat
+    );
     scene.add(line);
     scene.add(mesh);
 
-    neoObjects.push({ mesh, line, data: neo, r, inc, raan, theta: neo.phase, omega });
-  });
-}
-
-function highlightNeo(id) {
-  neoObjects.forEach(({ mesh, line, data }) => {
-    const active = data.id === id;
-    line.material.opacity = active ? 0.9 : (data.hazard ? 0.55 : 0.45);
-    line.material.color.set(active
-      ? (data.hazard ? 0xe05e40 : 0x63aab3)
-      : (data.hazard ? 0x5c1810 : 0x1e4d57));
-    mesh.material.emissive.set(active
-      ? (data.hazard ? new THREE.Color(0x6a1000) : new THREE.Color(0x0a3040))
-      : (data.hazard ? new THREE.Color(0x280800) : new THREE.Color(0x061520)));
-    mesh.scale.setScalar(active ? 1.6 : 1.0);
+    neoObjects.push({ mesh, line, data: neo, r, inc, raan, theta, omega: 0.002 + Math.random() * 0.003 });
   });
 }
 
 /* ============================================================
    Animation loop
    ============================================================ */
-
 function animate() {
   requestAnimationFrame(animate);
   const dt = clock.getDelta();
 
-  controls.update();
-
-  // Rotate Earth
-  if (earthMesh) earthMesh.rotation.y += dt * 0.04;
-
   // Moon orbit
-  moonTheta += dt * 0.065;
-  if (moonMesh) {
-    moonMesh.position.set(
-      MOON_ORBIT_VIS * Math.cos(moonTheta), 0,
-      MOON_ORBIT_VIS * Math.sin(moonTheta)
-    );
-    moonMesh.rotation.y += dt * 0.03;
-  }
+  moonTheta += 0.005 * dt * 60;
+  moonMesh.position.set(
+    MOON_ORBIT_VIS * Math.cos(moonTheta),
+    0,
+    MOON_ORBIT_VIS * Math.sin(moonTheta)
+  );
 
-  // NEO animation
-  neoObjects.forEach(n => {
-    n.theta += dt * n.omega;
-    n.mesh.position.copy(orbitPos(n.r, n.inc, n.raan, n.theta));
+  // Earth rotation
+  earthMesh.rotation.y += 0.002 * dt * 60;
+
+  // NEO orbits
+  neoObjects.forEach(obj => {
+    obj.theta += obj.omega * dt * 60;
+    const x = obj.r * Math.cos(obj.theta);
+    const z = obj.r * Math.sin(obj.theta);
+    const y = x * Math.tan(obj.inc) * Math.sin(obj.raan) + z * Math.tan(obj.inc) * Math.cos(obj.raan);
+    obj.mesh.position.set(x, y * 0.3, z);
   });
 
-  // Hover raycasting
-  doHoverRaycast();
+  // Raycasting for hover
+  raycaster.setFromCamera(pointer, camera);
+  const meshes = neoObjects.map(o => o.mesh);
+  const hits   = raycaster.intersectObjects(meshes);
+  const hitObj = hits.length ? neoObjects.find(o => o.mesh === hits[0].object) : null;
 
+  if (hitObj !== lastHover) {
+    if (lastHover && lastHover.data.id !== selectedId) {
+      lastHover.mesh.material.emissiveIntensity = 0.3;
+      lastHover.line.material.opacity = 0.15;
+    }
+    if (hitObj) {
+      hitObj.mesh.material.emissiveIntensity = 0.9;
+      hitObj.line.material.opacity = 0.6;
+      showTooltip(hitObj.data);
+    } else {
+      hideTooltip();
+    }
+    lastHover = hitObj;
+  }
+
+  controls.update();
   renderer.render(scene, camera);
 }
 
 /* ============================================================
-   Interaction: hover & click
+   Interaction
    ============================================================ */
+function setupEvents() {
+  window.addEventListener('resize', () => {
+    const w = glCanvas.offsetWidth;
+    const h = glCanvas.offsetHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  });
 
-function doHoverRaycast() {
-  if (!renderer) return;
-  raycaster.setFromCamera(pointer, camera);
-  const meshes = neoObjects.map(n => n.mesh);
-  const hits   = raycaster.intersectObjects(meshes);
+  glCanvas.addEventListener('mousemove', e => {
+    const rect = glCanvas.getBoundingClientRect();
+    pointer.x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
+    pointer.y = -((e.clientY - rect.top)   / rect.height) * 2 + 1;
+  });
 
-  if (hits.length > 0) {
-    const id  = hits[0].object.userData.neoId;
-    const neo = neoObjects.find(n => n.data.id === id);
-    if (neo && neo.data.id !== lastHover) {
-      lastHover = neo.data.id;
-      showTooltip(neo.data);
-    }
-    glCanvas.style.cursor = 'pointer';
-  } else {
-    if (lastHover !== null) { lastHover = null; hideTooltip(); }
-    glCanvas.style.cursor = selectedId ? 'grab' : 'grab';
-  }
-}
+  glCanvas.addEventListener('mouseleave', () => {
+    pointer.x = -9; pointer.y = -9;
+    hideTooltip();
+  });
 
-glCanvas.addEventListener('pointermove', e => {
-  const r = glCanvas.getBoundingClientRect();
-  pointer.x =  ((e.clientX - r.left) / r.width)  * 2 - 1;
-  pointer.y = -((e.clientY - r.top)  / r.height) * 2 + 1;
-  // Move tooltip near cursor
-  tooltip.style.left = (e.clientX - r.left + 14) + 'px';
-  tooltip.style.top  = (e.clientY - r.top  - 14) + 'px';
-});
+  glCanvas.addEventListener('click', () => {
+    if (lastHover) selectNeo(lastHover.data.id);
+  });
 
-glCanvas.addEventListener('pointerleave', () => {
-  pointer.x = -9; pointer.y = -9;
-  lastHover = null;
-  hideTooltip();
-});
+  closeInfoBtn?.addEventListener('click', () => {
+    panelInfo.hidden = true;
+    selectedId = null;
+    neoObjects.forEach(o => {
+      o.mesh.material.emissiveIntensity = 0.3;
+      o.line.material.opacity = 0.15;
+    });
+  });
 
-glCanvas.addEventListener('click', e => {
-  if (controls.autoRotate === false && e.movementX === 0 && e.movementY === 0) {
-    // Could be orbit-drag end; ignore small moves
-  }
-  raycaster.setFromCamera(pointer, camera);
-  const hits = raycaster.intersectObjects(neoObjects.map(n => n.mesh));
-  if (hits.length > 0) {
-    const id = hits[0].object.userData.neoId;
-    selectNeo(id);
-  } else {
-    deselectNeo();
-  }
-});
+  retryBtn?.addEventListener('click', loadNeos);
+  refreshBtn?.addEventListener('click', loadNeos);
 
-function selectNeo(id) {
-  selectedId = id;
-  const neoEntry = neoObjects.find(n => n.data.id === id);
-  if (!neoEntry) return;
-  controls.autoRotate = false;
-  highlightNeo(id);
-  showInfoPanel(neoEntry.data);
-  // Highlight table row
-  document.querySelectorAll('#neo-tbody tr').forEach(tr => {
-    tr.classList.toggle('active', tr.dataset.id === String(id));
+  neoSearch?.addEventListener('input', e => {
+    searchTerm = e.target.value.toLowerCase();
+    renderTable(allNeos);
+  });
+
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterMode = btn.dataset.filter;
+      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      renderTable(allNeos);
+    });
+  });
+
+  document.querySelectorAll('[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.sort;
+      tableSort.dir = tableSort.key === key ? -tableSort.dir : 1;
+      tableSort.key = key;
+      renderTable(allNeos);
+    });
+  });
+
+  toggleCtrl?.addEventListener('click', () => {
+    const open = controlsBody?.classList.toggle('is-open');
+    toggleCtrl.setAttribute('aria-expanded', String(Boolean(open)));
   });
 }
 
-function deselectNeo() {
-  selectedId = null;
-  controls.autoRotate = true;
-  highlightNeo(null);
-  panelInfo.hidden = true;
-  document.querySelectorAll('#neo-tbody tr').forEach(tr => tr.classList.remove('active'));
+function selectNeo(id) {
+  selectedId = id;
+  const obj  = neoObjects.find(o => o.data.id === id);
+  const neo  = allNeos.find(n => n.id === id);
+  if (!neo) return;
+
+  neoObjects.forEach(o => {
+    o.mesh.material.emissiveIntensity = o.data.id === id ? 1.0 : 0.3;
+    o.line.material.opacity           = o.data.id === id ? 0.7 : 0.15;
+  });
+
+  infoContent.innerHTML = `
+    <dl class="info-grid">
+      <dt>Nome</dt>       <dd>${neo.name}</dd>
+      <dt>Data</dt>       <dd>${neo.date}</dd>
+      <dt>Distanza</dt>   <dd>${neo.distLd.toFixed(3)} LD &nbsp;(${(neo.distKm / 1e6).toFixed(3)} M km)</dd>
+      <dt>Velocità</dt>   <dd>${neo.vel.toFixed(2)} km/s</dd>
+      <dt>Diametro</dt>   <dd>~${neo.diameter < 1 ? (neo.diameter * 1000).toFixed(0) + ' m' : neo.diameter.toFixed(2) + ' km'}</dd>
+      <dt>Pericoloso</dt> <dd class="${neo.hazard ? 'hazard-yes' : 'hazard-no'}">${neo.hazard ? '⚠ Sì' : '✓ No'}</dd>
+      <dt>Fonte</dt>      <dd>${neo.source}</dd>
+    </dl>
+    <a href="${neo.jplUrl}" target="_blank" rel="noopener" class="info-link">Apri su JPL SSD →</a>
+  `;
+  panelInfo.hidden = false;
 }
 
-closeInfoBtn.addEventListener('click', deselectNeo);
-
-/* ── Tooltip ─────────────────────────────────────────────── */
-
 function showTooltip(neo) {
-  tooltip.innerHTML = `<strong>${neo.name}</strong>${neo.distLd.toFixed(3)} LD &nbsp;·&nbsp; ${neo.vel.toFixed(2)} km/s`;
-  tooltip.classList.add('visible');
+  if (!tooltip) return;
+  tooltip.textContent = `${neo.name} — ${neo.distLd.toFixed(2)} LD`;
+  tooltip.hidden = false;
 }
 
 function hideTooltip() {
-  tooltip.classList.remove('visible');
-}
-
-/* ── Info panel ──────────────────────────────────────────── */
-
-function showInfoPanel(neo) {
-  const dStr = neo.diameter < 0.1
-    ? (neo.diameter * 1000).toFixed(0) + ' m'
-    : neo.diameter.toFixed(3) + ' km';
-
-  infoContent.innerHTML = `
-    <div class="info-name">${neo.name}</div>
-    <table class="info-table">
-      <tr><td>Data</td><td>${neo.date}</td></tr>
-      <tr><td>Distanza</td><td>${neo.distLd.toFixed(4)} LD</td></tr>
-      <tr><td>&nbsp;</td><td>${(neo.distKm / 1000).toFixed(0)}&thinsp;000 km</td></tr>
-      <tr><td>Velocità rel.</td><td>${neo.vel.toFixed(3)} km/s</td></tr>
-      <tr><td>Diametro est.</td><td>${dStr}</td></tr>
-      ${neo.h !== null ? `<tr><td>Magnitudine H</td><td>${neo.h}</td></tr>` : ''}
-      <tr><td>Fonte</td><td>${neo.source}</td></tr>
-    </table>
-    <span class="${neo.hazard ? 'info-hazard-badge' : 'info-safe-badge'}">
-      ${neo.hazard ? '⚠ Potenzialmente pericoloso' : '✓ Non pericoloso'}
-    </span>
-    ${neo.jplUrl ? `<a class="info-jpl-link" href="${neo.jplUrl}" target="_blank" rel="noopener">Scheda JPL →</a>` : ''}
-  `;
-  panelInfo.hidden = false;
+  if (tooltip) tooltip.hidden = true;
 }
 
 /* ============================================================
@@ -661,7 +595,24 @@ async function loadNeos() {
     }
 
     if (neos.length === 0) {
-      showError('Nessun oggetto rilevato nell\'intervallo e distanza selezionati.<br>Prova ad aumentare la distanza massima o l\'intervallo di date.');
+      // Check if we got raw NASA data but everything was filtered out by distance
+      const rawNasaData = nasaResult.status === 'fulfilled' ? nasaResult.value : null;
+      const totalObjects = rawNasaData
+        ? Object.values(rawNasaData.near_earth_objects || {}).reduce((acc, day) => acc + day.length, 0)
+        : 0;
+
+      if (totalObjects > 0) {
+        // Data exists but was filtered out — inform user to widen distance filter
+        showError(
+          `Trovati ${totalObjects} oggetti nel periodo, ma nessuno entro ${distMax} AU.<br>` +
+          'Prova ad aumentare la <strong>distanza massima</strong> o amplia l\'intervallo di date.'
+        );
+      } else {
+        showError(
+          'Nessun oggetto rilevato nell\'intervallo e distanza selezionati.<br>' +
+          'Prova ad aumentare la distanza massima o l\'intervallo di date.'
+        );
+      }
       return;
     }
 
@@ -779,6 +730,8 @@ function processNasaDirect(raw, distMaxAu) {
 
       const distKm = parseFloat(approach.miss_distance.kilometers);
       const distAu = distKm / AU_TO_KM;
+
+      // Filter by selected max distance (both values are in AU)
       if (distAu > maxAu) return;
 
       const distLd = parseFloat(approach.miss_distance.lunar);
@@ -879,211 +832,118 @@ function mergeNasa(neos, nasaRaw) {
 }
 
 /* ============================================================
-   Stats
+   Table rendering
    ============================================================ */
+function renderTable(neos) {
+  let filtered = neos;
 
-function updateStats(neos) {
-  const hazardCount = neos.filter(n => n.hazard).length;
-  statTotal.textContent  = neos.length + ' oggetti';
-  statSafe.textContent   = (neos.length - hazardCount) + ' sicuri';
-  statHazard.textContent = hazardCount + ' pericolosi';
+  if (filterMode === 'hazard') filtered = neos.filter(n => n.hazard);
+  if (filterMode === 'safe')   filtered = neos.filter(n => !n.hazard);
+  if (searchTerm) {
+    filtered = filtered.filter(n =>
+      n.name.toLowerCase().includes(searchTerm) ||
+      n.des.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  filtered.sort((a, b) => {
+    let av, bv;
+    switch (tableSort.key) {
+      case 'dist': av = a.distLd; bv = b.distLd; break;
+      case 'vel':  av = a.vel;    bv = b.vel;    break;
+      case 'size': av = a.diameter; bv = b.diameter; break;
+      case 'date': av = a.date;   bv = b.date;   break;
+      default:     av = a.distLd; bv = b.distLd;
+    }
+    return tableSort.dir * (av < bv ? -1 : av > bv ? 1 : 0);
+  });
+
+  neoTbody.innerHTML = filtered.map(neo => `
+    <tr class="neo-row ${neo.hazard ? 'is-hazard' : ''}" data-id="${neo.id}">
+      <td class="td-name">${neo.name}</td>
+      <td class="td-dist">${neo.distLd.toFixed(4)}</td>
+      <td class="td-vel">${neo.vel.toFixed(2)}</td>
+      <td class="td-size">${neo.diameter < 1 ? (neo.diameter * 1000).toFixed(0) + ' m' : neo.diameter.toFixed(2) + ' km'}</td>
+      <td class="td-hazard">${neo.hazard ? '<span class="tag-hazard">⚠</span>' : '<span class="tag-safe">✓</span>'}</td>
+    </tr>
+  `).join('');
+
+  neoTbody.querySelectorAll('.neo-row').forEach(row => {
+    row.addEventListener('click', () => selectNeo(row.dataset.id));
+  });
 }
 
 /* ============================================================
-   Table
+   Stats panel
    ============================================================ */
-
-function renderTable(neos) {
-  let filtered = neos.filter(n => {
-    if (filterMode === 'hazard' && !n.hazard) return false;
-    if (searchTerm && !n.name.toLowerCase().includes(searchTerm)) return false;
-    return true;
-  });
-
-  // Sort
-  const { key, dir } = tableSort;
-  filtered.sort((a, b) => {
-    let av, bv;
-    switch (key) {
-      case 'name': av = a.name; bv = b.name; return dir * av.localeCompare(bv);
-      case 'date': av = a.date; bv = b.date; return dir * av.localeCompare(bv);
-      case 'dist': av = a.distLd; bv = b.distLd; break;
-      case 'vel':  av = a.vel;    bv = b.vel;    break;
-      case 'diam': av = a.diameter; bv = b.diameter; break;
-      default: av = a.distLd; bv = b.distLd;
-    }
-    return dir * (av - bv);
-  });
-
-  neoTbody.innerHTML = filtered.map(neo => {
-    const dStr = neo.diameter < 0.1
-      ? (neo.diameter * 1000).toFixed(0) + ' m'
-      : neo.diameter.toFixed(3) + ' km';
-    return `
-      <tr data-id="${neo.id}" class="${neo.hazard ? 'hazard-row' : ''}">
-        <td class="td-name">${escHtml(neo.name)}</td>
-        <td class="td-date">${neo.date}</td>
-        <td class="td-dist">${neo.distLd.toFixed(4)}</td>
-        <td class="td-vel">${neo.vel.toFixed(3)}</td>
-        <td class="td-diam">${dStr}</td>
-        <td>${neo.hazard
-          ? '<span class="badge-hazard">⚠ Sì</span>'
-          : '<span class="badge-safe">—</span>'}</td>
-      </tr>`;
-  }).join('');
-
-  // Row click → select in 3D
-  neoTbody.querySelectorAll('tr').forEach(tr => {
-    tr.addEventListener('click', () => {
-      const id = tr.dataset.id;
-      if (id === selectedId) { deselectNeo(); return; }
-      selectNeo(id);
-      // Fly camera toward NEO position
-      const neo = neoObjects.find(n => n.data.id === id);
-      if (neo) {
-        const target = neo.mesh.position.clone().multiplyScalar(0.5);
-        controls.target.lerp(target, 0.5);
-      }
-    });
-  });
+function updateStats(neos) {
+  statTotal.textContent  = neos.length;
+  statSafe.textContent   = neos.filter(n => !n.hazard).length;
+  statHazard.textContent = neos.filter(n =>  n.hazard).length;
 }
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-/* ── Table sort headers ──────────────────────────────────── */
-document.querySelectorAll('#neo-table th[data-sort]').forEach(th => {
-  th.addEventListener('click', () => {
-    const key = th.dataset.sort;
-    if (tableSort.key === key) {
-      tableSort.dir *= -1;
-    } else {
-      tableSort.key = key;
-      tableSort.dir = 1;
-    }
-    document.querySelectorAll('#neo-table th').forEach(t => {
-      t.classList.remove('sorted-asc', 'sorted-desc');
-      const si = t.querySelector('.sort-icon');
-      if (si) si.textContent = '';
-    });
-    th.classList.add(tableSort.dir === 1 ? 'sorted-asc' : 'sorted-desc');
-    const si = th.querySelector('.sort-icon');
-    if (si) si.textContent = tableSort.dir === 1 ? '↑' : '↓';
-    if (allNeos.length) renderTable(allNeos);
-  });
-});
-
-/* ── Filter buttons ──────────────────────────────────────── */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    filterMode = btn.dataset.filter;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (allNeos.length) renderTable(allNeos);
-  });
-});
-
-/* ── Search ──────────────────────────────────────────────── */
-neoSearch.addEventListener('input', () => {
-  searchTerm = neoSearch.value.toLowerCase().trim();
-  if (allNeos.length) renderTable(allNeos);
-});
 
 /* ============================================================
    UI helpers
    ============================================================ */
-
 function showLoading(msg) {
-  if (loadingText) loadingText.textContent = msg || 'Caricamento\u2026';
   if (panelLoading) panelLoading.hidden = false;
+  if (loadingText)  loadingText.textContent = msg || 'Caricamento…';
   if (panelError)   panelError.hidden   = true;
-  if (panelWelcome) panelWelcome.hidden = true;
+  if (panelStats)   panelStats.hidden   = true;
+  if (panelLegend)  panelLegend.hidden  = true;
+  if (listSection)  listSection.hidden  = true;
 }
 
-function updateLoadingText(msg) { loadingText.textContent = msg; }
+function updateLoadingText(msg) {
+  if (loadingText) loadingText.textContent = msg;
+}
 
 function showError(msg) {
   errorText.innerHTML = msg;
   panelError.hidden   = false;
-  panelLoading.hidden = true;
-  panelWelcome.hidden = true;
-}
-
-/* ── Panel toggle ────────────────────────────────────────── */
-toggleCtrl.addEventListener('click', () => {
-  const expanded = toggleCtrl.getAttribute('aria-expanded') === 'true';
-  toggleCtrl.setAttribute('aria-expanded', String(!expanded));
-  controlsBody.classList.toggle('collapsed', expanded);
-});
-
-toggleCtrl.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCtrl.click(); }
-});
-
-/* ── Retry button ────────────────────────────────────────── */
-retryBtn.addEventListener('click', () => {
-  panelError.hidden = true;
-  panelWelcome.hidden = true;
-  loadNeos();
-});
-
-/* ── Refresh button ──────────────────────────────────────── */
-if (refreshBtn) refreshBtn.addEventListener('click', loadNeos);
-
-/* ── Distance max change → reload ───────────────────────── */
-if (distSelect) distSelect.addEventListener('change', loadNeos);
-
-/* ============================================================
-   Resize handler
-   ============================================================ */
-
-function onResize() {
-  if (!renderer) return;
-  const w = glCanvas.clientWidth;
-  const h = glCanvas.clientHeight;
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-
-const resizeObserver = new ResizeObserver(onResize);
-resizeObserver.observe(viewport);
-
-/* ============================================================
-   Daily auto-refresh scheduler
-   ============================================================ */
-function scheduleDailyRefresh() {
-  const now      = new Date();
-  const midnight = new Date(now);
-  midnight.setHours(24, 1, 0, 0); // 00:01 next day (1 min after midnight)
-  const msUntilMidnight = midnight - now;
-  setTimeout(() => {
-    loadNeos();
-    scheduleDailyRefresh(); // re-arm for the following day
-  }, msUntilMidnight);
+  if (panelLoading) panelLoading.hidden = true;
+  if (panelStats)   panelStats.hidden   = true;
+  if (panelLegend)  panelLegend.hidden  = true;
+  if (listSection)  listSection.hidden  = true;
 }
 
 /* ============================================================
-   Boot — ES modules are always deferred: DOM is ready here.
-   DOMContentLoaded must NOT be used because Three.js is fetched
-   from CDN asynchronously, so that event fires before this
-   module finishes loading its imports.
+   Boot
    ============================================================ */
-try {
-  initDateInputs();
-  updateDateHint();
-  initScene();
-  animate();
-  loadNeos();
-  scheduleDailyRefresh();
-} catch (err) {
-  console.error('[NEO Tracker] Boot error:', err);
-  // Surface the error visibly if scene init fails
-  const welcome = document.getElementById('panel-welcome');
-  if (welcome) {
-    welcome.hidden = false;
-    const p = welcome.querySelector('p');
+function boot() {
+  // Theme toggle (mirrors main.js logic for standalone page)
+  const root        = document.documentElement;
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+  const themeIcon   = document.querySelector('[data-theme-icon]');
+
+  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  root.setAttribute('data-theme', theme);
+
+  const renderIcon = () => {
+    if (!themeIcon) return;
+    themeIcon.innerHTML = theme === 'dark'
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>'
+      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+  };
+  renderIcon();
+  themeToggle?.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', theme);
+    renderIcon();
+  });
+
+  try {
+    initDateInputs();
+    initScene();
+    setupEvents();
+    animate();
+  } catch (err) {
+    console.error('[NEO Tracker] Boot error:', err);
+    // Surface the error visibly if scene init fails
+    const p = document.querySelector('#panel-error p');
+    if (panelError) panelError.hidden = false;
     if (p) p.textContent = 'Errore di avvio: ' + (err.message || err);
   }
 }
+
+document.addEventListener('DOMContentLoaded', boot);
