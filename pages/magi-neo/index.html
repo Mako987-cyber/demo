@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>MAGI SYSTEM // NEO TACTICAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./style.css"/>
+</head>
+<body class="magi-body">
+
+  <!-- CRT scanlines -->
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- NERV Header -->
+  <header class="magi-header">
+    <a class="magi-back-link" href="../../index.html">← RETURN</a>
+
+    <div class="magi-header__brand">
+      <div class="magi-header__logo">
+        <span class="magi-logo-nerv">NERV</span>
+        <span class="magi-logo-sep">//</span>
+        <span class="magi-logo-title">MAGI SYSTEM</span>
+      </div>
+      <div class="magi-header__subtitle">近地天体戦術分析システム // NEO TACTICAL ANALYSIS</div>
+    </div>
+
+    <div class="magi-header__nodes">
+      <div class="magi-node">
+        <span class="magi-node__dot magi-node__dot--on"></span>
+        <span class="magi-node__label">MELCHIOR-1</span>
+      </div>
+      <div class="magi-node">
+        <span class="magi-node__dot magi-node__dot--on"></span>
+        <span class="magi-node__label">BALTHASAR-2</span>
+      </div>
+      <div class="magi-node">
+        <span class="magi-node__dot magi-node__dot--on"></span>
+        <span class="magi-node__label">CASPAR-3</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tactical viewport -->
+  <main class="magi-main">
+    <div id="neo-viewport" class="magi-viewport">
+
+      <!-- Corner HUD decorations -->
+      <div class="vp-corner vp-corner--tl" aria-hidden="true">
+        <span class="vp-corner__label">TACTICAL DISPLAY</span>
+        <span class="vp-corner__sub">TOKYO-3 COMMAND CENTER</span>
+      </div>
+      <div class="vp-corner vp-corner--tr" aria-hidden="true">
+        <span class="vp-corner__clock" id="vp-clock">--:--:--</span>
+        <span class="vp-corner__sub">REAL-TIME MONITOR</span>
+      </div>
+      <div class="vp-corner vp-corner--bl" aria-hidden="true">
+        <span class="vp-corner__sub">GEHIRN BIOTECHNOLOGY</span>
+      </div>
+      <div class="vp-corner vp-corner--br" aria-hidden="true">
+        <span class="vp-corner__sub">CLASSIFIED // NERV HQ</span>
+      </div>
+
+      <!-- Reticle overlay -->
+      <div class="vp-reticle" aria-hidden="true">
+        <div class="reticle-h"></div>
+        <div class="reticle-v"></div>
+        <div class="reticle-ring"></div>
+      </div>
+
+      <canvas id="gl-canvas"></canvas>
+
+      <!-- MELCHIOR-1: Scientific Data Input -->
+      <div id="panel-controls" class="neo-panel magi-panel neo-panel--left">
+        <div class="panel-header magi-panel__header" id="panel-controls-header">
+          <div class="magi-panel__badge">M1</div>
+          <div class="magi-panel__info">
+            <div class="magi-panel__title">MELCHIOR-1</div>
+            <div class="magi-panel__sub">SCIENTIFIC DATA INPUT</div>
+          </div>
+          <svg class="panel-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4,6 8,10 12,6"/>
+          </svg>
+        </div>
+        <div class="panel-body" id="panel-controls-body">
+          <div class="magi-field">
+            <label class="magi-label" for="date-start">DATE RANGE ALPHA</label>
+            <input class="magi-input" type="date" id="date-start"/>
+          </div>
+          <div class="magi-field">
+            <label class="magi-label" for="date-end">DATE RANGE OMEGA</label>
+            <input class="magi-input" type="date" id="date-end"/>
+          </div>
+          <div class="magi-field">
+            <label class="magi-label" for="dist-max">MAX PROXIMITY [AU]</label>
+            <select class="magi-input magi-select" id="dist-max">
+              <option value="0.01">0.01 AU // EXTREME</option>
+              <option value="0.05" selected>0.05 AU // STANDARD</option>
+              <option value="0.10">0.10 AU // EXTENDED</option>
+            </select>
+          </div>
+          <div id="date-hint" class="magi-hint"></div>
+          <button class="magi-btn" id="btn-refresh">
+            <span class="magi-btn__pre">&gt;&gt;</span> EXECUTE SCAN
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats bar -->
+      <div id="panel-stats" class="magi-stats-bar">
+        <div class="magi-stat">
+          <span class="magi-stat__lbl">OBJECTS</span>
+          <span class="magi-stat__val" id="stat-total">---</span>
+        </div>
+        <div class="magi-stat-sep">|</div>
+        <div class="magi-stat">
+          <span class="magi-stat__lbl">NOMINAL</span>
+          <span class="magi-stat__val magi-stat__val--safe" id="stat-safe">---</span>
+        </div>
+        <div class="magi-stat-sep">|</div>
+        <div class="magi-stat">
+          <span class="magi-stat__lbl">HAZARDOUS</span>
+          <span class="magi-stat__val magi-stat__val--alert" id="stat-hazard">---</span>
+        </div>
+      </div>
+
+      <!-- CASPAR-3: Object Analysis -->
+      <div id="panel-info" class="neo-panel magi-panel neo-panel--right" hidden>
+        <div class="panel-header magi-panel__header" id="panel-info-header">
+          <div class="magi-panel__badge">C3</div>
+          <div class="magi-panel__info">
+            <div class="magi-panel__title">CASPAR-3</div>
+            <div class="magi-panel__sub">OBJECT ANALYSIS</div>
+          </div>
+          <button class="magi-close" id="panel-info-close" aria-label="Close">✕</button>
+        </div>
+        <div id="info-content" class="magi-info-body"></div>
+      </div>
+
+      <!-- Tooltip -->
+      <div id="neo-tooltip" class="magi-tooltip"></div>
+
+      <!-- Legend -->
+      <div id="panel-legend" class="magi-legend">
+        <div class="legend-row">
+          <span class="legend-dot" style="background:#ff2200;box-shadow:0 0 5px #ff2200"></span>
+          <span>HAZARDOUS</span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-dot" style="background:#ffaa00;box-shadow:0 0 5px #ffaa00"></span>
+          <span>&lt; 5 LD</span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-dot" style="background:#ff6600;box-shadow:0 0 5px #ff6600"></span>
+          <span>NOMINAL</span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-ring"></span>
+          <span>LUNAR ORBIT</span>
+        </div>
+      </div>
+
+      <!-- Loading overlay -->
+      <div id="panel-loading" class="magi-overlay">
+        <div class="magi-loading">
+          <div class="magi-loading__logo">MAGI</div>
+          <div class="magi-loading__sub">SYSTEM ONLINE</div>
+          <div class="magi-loading__spinners">
+            <div class="magi-spinner"></div>
+            <div class="magi-spinner magi-spinner--inner"></div>
+          </div>
+          <div id="loading-text" class="magi-loading__text">INITIALIZING...</div>
+          <div class="magi-loading__bar">
+            <div class="magi-loading__fill" id="loading-bar-fill"></div>
+          </div>
+          <div class="magi-loading__detail">神経工学研究所 // INSTITUTE OF NEURAL ENGINEERING</div>
+        </div>
+      </div>
+
+      <!-- Error overlay -->
+      <div id="panel-error" class="magi-overlay magi-overlay--error" hidden>
+        <div class="magi-error">
+          <div class="magi-error__title">⚠ SYSTEM FAILURE ⚠</div>
+          <div class="magi-error__sub">MAGI CONSENSUS ERROR</div>
+          <div id="error-message" class="magi-error__msg"></div>
+          <button class="magi-btn magi-btn--alert" id="btn-retry">
+            <span class="magi-btn__pre">&gt;&gt;</span> RETRY SCAN
+          </button>
+        </div>
+      </div>
+
+      <!-- Welcome overlay -->
+      <div id="panel-welcome" class="magi-overlay magi-overlay--welcome" hidden>
+        <div class="magi-welcome">
+          <div class="magi-welcome__emblem">
+            <div class="magi-welcome__ring"></div>
+            <div class="magi-welcome__inner">NERV</div>
+          </div>
+          <div class="magi-welcome__title">MAGI TACTICAL SYSTEM</div>
+          <div class="magi-welcome__jp">近地天体監視プログラム</div>
+          <div class="magi-welcome__desc">
+            Select a date range and click<br/>
+            <strong>EXECUTE SCAN</strong> to begin NEO analysis
+          </div>
+          <div class="magi-welcome__footer">
+            AUTHORIZED PERSONNEL ONLY // NERV HQ TOKYO-3
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /neo-viewport -->
+
+    <!-- BALTHASAR-2: Tactical Database -->
+    <section id="neo-list-section" class="magi-balthasar" hidden>
+      <div class="magi-balthasar__hdr">
+        <div class="magi-panel__badge">B2</div>
+        <div class="magi-panel__info">
+          <div class="magi-panel__title">BALTHASAR-2</div>
+          <div class="magi-panel__sub">TACTICAL DATABASE // <span id="table-count">0</span> OBJECTS</div>
+        </div>
+        <div class="magi-table-ctrl">
+          <div class="magi-filters">
+            <button class="magi-filter-btn magi-filter-btn--active" data-filter="all">ALL</button>
+            <button class="magi-filter-btn" data-filter="hazard">HAZARDOUS</button>
+            <button class="magi-filter-btn" data-filter="safe">NOMINAL</button>
+          </div>
+          <div class="magi-search-wrap">
+            <span class="magi-search-icon">&gt;</span>
+            <input class="magi-input magi-search" type="search" id="neo-search" placeholder="SEARCH DESIGNATION..."/>
+          </div>
+        </div>
+      </div>
+      <div class="magi-table-wrap">
+        <table class="magi-table" id="neo-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-col="name">DESIGNATION <span class="sort-arrow"></span></th>
+              <th class="sortable" data-col="date">DATE <span class="sort-arrow"></span></th>
+              <th class="sortable" data-col="dist">DIST [LD] <span class="sort-arrow"></span></th>
+              <th class="sortable" data-col="vel">V [km/s] <span class="sort-arrow"></span></th>
+              <th class="sortable" data-col="diam">DIAM [m] <span class="sort-arrow"></span></th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="neo-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="magi-footer">
+    <span>MAGI SYSTEM // GEHIRN BIOTECHNOLOGY // CLASSIFICATION: ABSOLUTE</span>
+    <span class="magi-footer__status">■ ONLINE</span>
+  </footer>
+
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="../../assets/vendor/OrbitControls.js"></script>
+  <script src="../api/http.js"></script>
+  <script src="../api/nasaApi.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
