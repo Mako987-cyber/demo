@@ -872,10 +872,11 @@ function updateStats(neos) {
 function showLoading(msg) {
   if (panelLoading) panelLoading.hidden = false;
   if (loadingText)  loadingText.textContent = msg || 'PROCESSING...';
-  if (panelError)   panelError.hidden  = true;
-  if (panelStats)   panelStats.hidden  = true;
-  if (panelLegend)  panelLegend.hidden = true;
-  if (listSection)  listSection.hidden = true;
+  if (panelError)   panelError.hidden   = true;
+  if (panelStats)   panelStats.hidden   = true;
+  if (panelLegend)  panelLegend.hidden  = true;
+  if (listSection)  listSection.hidden  = true;
+  if (panelWelcome) panelWelcome.hidden = true;
   setLoadingProgress(0);
 }
 
@@ -907,12 +908,8 @@ function boot() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* Show welcome overlay initially */
-    if (panelStats)   panelStats.hidden   = true;
-    if (panelLegend)  panelLegend.hidden  = true;
-    if (panelLoading) panelLoading.hidden = true;
-    if (panelWelcome) panelWelcome.hidden = false;
-
+    /* Welcome overlay starts visible (no hidden attr in HTML).
+       loadNeos() → showLoading() hides it when scan begins. */
     loadNeos();
   } catch (err) {
     console.error('[MAGI SYSTEM] Boot error:', err);

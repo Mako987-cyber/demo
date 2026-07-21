@@ -304,7 +304,7 @@ html, body {
 ══════════════════════════════ */
 .neo-panel {
   position: absolute;
-  z-index: 20;
+  z-index: 50;
 }
 .neo-panel--left  { top: 0.8rem; left: 0.8rem; }
 .neo-panel--right { top: 0.8rem; right: 0.8rem; }
