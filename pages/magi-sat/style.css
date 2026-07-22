@@ -301,7 +301,12 @@ body {
   transition: transform 0.2s;
 }
 
-.magi-panel.collapsed .panel-collapse-icon { transform: rotate(-90deg); }
+.magi-panel.collapsed .panel-collapse-icon { transform: rotate(-180deg); }
+
+/* Bottom list panel: icon points up (▴) when collapsed, rotates down when open */
+#sat-list-section .panel-collapse-icon { transition: transform 0.25s ease; }
+#sat-list-section:not(.collapsed) .panel-collapse-icon { transform: rotate(-180deg); }
+#sat-list-section.collapsed .panel-collapse-icon { transform: rotate(0deg); }
 .magi-panel.collapsed .panel-body { display: none; }
 
 .panel-body {
@@ -579,7 +584,7 @@ body {
 }
 
 .table-body {
-  max-height: 220px;
+  max-height: 300px;
   overflow-y: auto;
   padding: 0;
   scrollbar-width: thin;
