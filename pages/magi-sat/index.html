@@ -124,6 +124,27 @@
             </div>
           </div>
 
+          <div class="ctrl-section">
+            <div class="ctrl-label">INFRASTRUCTURE LAYERS</div>
+            <div id="layer-toggles">
+              <button class="group-btn" data-layer="chokepoints">
+                <span class="group-dot" style="background:#ff3300"></span>CHOKEPOINTS
+              </button>
+              <button class="group-btn" data-layer="landing_points">
+                <span class="group-dot" style="background:#44ccff"></span>CABLE LANDINGS
+              </button>
+              <button class="group-btn" data-layer="airports">
+                <span class="group-dot" style="background:#ffaa00"></span>AIRPORTS
+              </button>
+              <button class="group-btn" data-layer="power_plants">
+                <span class="group-dot" style="background:#88ff88"></span>POWER PLANTS
+              </button>
+              <button class="group-btn" data-layer="submarine_cables">
+                <span class="group-dot" style="background:#0088ff"></span>SUB CABLES
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -153,14 +174,7 @@
         <div class="panel-body">
           <div class="info-name" id="info-name">—</div>
           <table class="info-table">
-            <tr><th>NORAD ID</th><td id="info-id">—</td></tr>
-            <tr><th>GROUP</th><td id="info-group">—</td></tr>
-            <tr><th>EPOCH</th><td id="info-epoch">—</td></tr>
-            <tr><th>MEAN ALT</th><td id="info-alt">—</td></tr>
-            <tr><th>PERIOD</th><td id="info-period">—</td></tr>
-            <tr><th>INCLINATION</th><td id="info-inc">—</td></tr>
-            <tr><th>ECCENTRICITY</th><td id="info-ecc">—</td></tr>
-            <tr><th>RAAN</th><td id="info-raan">—</td></tr>
+            <tbody id="info-tbody"></tbody>
           </table>
           <a id="info-link" class="info-link" href="#" target="_blank" rel="noopener">
             VIEW ON N2YO ↗
@@ -241,6 +255,7 @@
   <script src="../../assets/vendor/OrbitControls.js"></script>
   <script src="../api/http.js"></script>
   <script src="../api/celestrakApi.js"></script>
+  <script src="../api/monitoringApi.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>

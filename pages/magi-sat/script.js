@@ -38,12 +38,47 @@ Object.keys(GROUP_DEFS).forEach(function (k) {
   GROUP_DEFS[k].visible = GROUP_DEFS[k].autoLoad;
 });
 
+// ── Infrastructure layer definitions ─────────────────────────
+var SURFACE_R = 1.003; // slightly above Earth surface
+
+var LAYER_DEFS = {
+  'chokepoints':      { label: 'CHOKEPOINTS',    color: 0xff3300, r: 0.012, type: 'point' },
+  'landing_points':   { label: 'CABLE LANDINGS', color: 0x44ccff, r: 0.007, type: 'point' },
+  'airports':         { label: 'AIRPORTS',       color: 0xffaa00, r: 0.005, type: 'point' },
+  'power_plants':     { label: 'POWER PLANTS',   color: 0x88ff88, r: 0.004, type: 'point' },
+  'submarine_cables': { label: 'SUB CABLES',     color: 0x0088ff, r: null,  type: 'line'  },
+};
+
+var FUEL_COLORS = {
+  'Solar':       0xffee00,
+  'Wind':        0x88ffcc,
+  'Hydro':       0x0088ff,
+  'Nuclear':     0xff2200,
+  'Gas':         0xff8800,
+  'Coal':        0x887766,
+  'Oil':         0x553322,
+  'Biomass':     0x44aa22,
+  'Geothermal':  0xff6600,
+  'Waste':       0x997755,
+};
+
+Object.keys(LAYER_DEFS).forEach(function (k) {
+  LAYER_DEFS[k].loaded   = false;
+  LAYER_DEFS[k].loading  = false;
+  LAYER_DEFS[k].visible  = false;
+  LAYER_DEFS[k].features = [];
+  LAYER_DEFS[k].renderObjs = [];
+});
+
 // ── Scene state ───────────────────────────────────────────────
 var renderer, scene, camera, controls, clock;
+var earthGroup;              // THREE.Group — Earth + atmosphere + ground resources
 var earthMesh, atmosphereMesh;
+var layerGroups = {};        // layerName → THREE.Group (child of earthGroup)
 var issOrbitLine = null;
 var selectedOrbitLine = null;
 var selectedSat = null;
+var selectedFeature = null;  // { layerName, idx } for ground resources
 var satGroups = {};      // groupName → { satellites[], renderObj }
 var timeMultiplier = 1;
 var simStartReal = 0;
@@ -174,6 +209,18 @@ function orbitPoints(sat, steps) {
 }
 
 // ── Three.js scene ────────────────────────────────────────────
+
+// Convert geographic coordinates to a Three.js sphere position.
+// Matches Three.js SphereGeometry UV mapping: lon=0,lat=0 → +X axis.
+function latLonTo3D(lat, lon, r) {
+  var u = (lon + 180) / 360;
+  var v = (90 - lat) / 180;
+  return new THREE.Vector3(
+    -r * Math.cos(u * TWO_PI) * Math.sin(v * Math.PI),
+     r * Math.cos(v * Math.PI),
+     r * Math.sin(u * TWO_PI) * Math.sin(v * Math.PI)
+  );
+}
 
 function initScene() {
   var canvas = document.getElementById('gl-canvas');
@@ -368,31 +415,34 @@ function makeEarthTex() {
 }
 
 function buildEarth() {
-  // MeshBasicMaterial → self-luminous, ignores lights (data-viz look)
-  earthMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 64, 32),
-    new THREE.MeshBasicMaterial({ map: makeEarthTex() })
+  earthGroup = new THREE.Group();
+  scene.add(earthGroup);
+
+  var mat = new THREE.MeshPhongMaterial({
+    specular:   new THREE.Color(0x112244),
+    shininess:  25,
+  });
+  earthMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 32), mat);
+  earthGroup.add(earthMesh);
+
+  // Load realistic NASA Blue Marble texture; fall back to procedural
+  new THREE.TextureLoader().load(
+    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/textures/land_ocean_ice_cloud_2048.jpg',
+    function (tex) { mat.map = tex; mat.needsUpdate = true; },
+    undefined,
+    function () { mat.map = makeEarthTex(); mat.needsUpdate = true; }
   );
-  scene.add(earthMesh);
 
-  // Cyan inner atmosphere rim (BackSide trick → visible only at sphere edge)
-  atmosphereMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1.03, 32, 16),
-    new THREE.MeshBasicMaterial({ color: 0x00eebb, transparent: true, opacity: 0.07, side: THREE.BackSide })
-  );
-  scene.add(atmosphereMesh);
-
-  // Mid cyan haze
-  scene.add(new THREE.Mesh(
-    new THREE.SphereGeometry(1.07, 32, 16),
-    new THREE.MeshBasicMaterial({ color: 0x00ccaa, transparent: true, opacity: 0.03, side: THREE.BackSide })
-  ));
-
-  // Outer deep glow
-  scene.add(new THREE.Mesh(
-    new THREE.SphereGeometry(1.18, 32, 16),
-    new THREE.MeshBasicMaterial({ color: 0x005533, transparent: true, opacity: 0.015, side: THREE.BackSide })
-  ));
+  // Cyan atmosphere layers (BackSide trick)
+  var atmoLayers = [[1.03, 0x00eebb, 0.07], [1.07, 0x00ccaa, 0.03], [1.18, 0x005533, 0.015]];
+  atmoLayers.forEach(function (cfg) {
+    var m = new THREE.Mesh(
+      new THREE.SphereGeometry(cfg[0], 32, 16),
+      new THREE.MeshBasicMaterial({ color: cfg[1], transparent: true, opacity: cfg[2], side: THREE.BackSide })
+    );
+    earthGroup.add(m);
+    if (cfg[0] === 1.03) atmosphereMesh = m;
+  });
 }
 
 // ── Group rendering ───────────────────────────────────────────
@@ -562,10 +612,8 @@ function animate() {
     lastPosUpdate = now;
   }
 
-  if (earthMesh) {
-    var rot = EARTH_ROT * dt * timeMultiplier;
-    earthMesh.rotation.y     += rot;
-    atmosphereMesh.rotation.y = earthMesh.rotation.y;
+  if (earthGroup) {
+    earthGroup.rotation.y += EARTH_ROT * dt * timeMultiplier;
   }
 
   updateHUD();
@@ -598,17 +646,60 @@ function refreshGroupBtn(groupName) {
 
 function updateInfoPanel(sat) {
   document.getElementById('panel-info').classList.remove('hidden');
-  setTxt('info-name',   sat.name);
-  setTxt('info-id',     sat.noradId);
-  setTxt('info-group',  GROUP_DEFS[sat.groupName] ? GROUP_DEFS[sat.groupName].label : sat.groupName);
-  setTxt('info-epoch',  new Date(sat.epochMs).toUTCString().slice(0, 25));
-  setTxt('info-alt',    sat.meanAlt_km > 0 ? Math.round(sat.meanAlt_km) + ' km' : '—');
-  setTxt('info-period', sat.period_min > 0 ? sat.period_min.toFixed(1) + ' min' : '—');
-  setTxt('info-inc',    sat.inclination.toFixed(2) + '°');
-  setTxt('info-ecc',    sat.eccentricity.toFixed(6));
-  setTxt('info-raan',   sat.raan.toFixed(2) + '°');
+  setTxt('info-name', sat.name);
+  var rows = [
+    ['NORAD ID',     sat.noradId],
+    ['GROUP',        GROUP_DEFS[sat.groupName] ? GROUP_DEFS[sat.groupName].label : sat.groupName],
+    ['EPOCH',        new Date(sat.epochMs).toUTCString().slice(0, 25)],
+    ['MEAN ALT',     sat.meanAlt_km > 0 ? Math.round(sat.meanAlt_km) + ' km' : '—'],
+    ['PERIOD',       sat.period_min > 0 ? sat.period_min.toFixed(1) + ' min' : '—'],
+    ['INCLINATION',  sat.inclination.toFixed(2) + '°'],
+    ['ECCENTRICITY', sat.eccentricity.toFixed(6)],
+    ['RAAN',         sat.raan.toFixed(2) + '°'],
+  ];
+  var tbody = document.getElementById('info-tbody');
+  if (tbody) tbody.innerHTML = rows.map(function (r) {
+    return '<tr><th>' + esc(r[0]) + '</th><td>' + esc(String(r[1])) + '</td></tr>';
+  }).join('');
   var link = document.getElementById('info-link');
-  if (link) link.href = 'https://www.n2yo.com/satellite/?s=' + sat.noradId;
+  if (link) {
+    link.href = 'https://www.n2yo.com/satellite/?s=' + sat.noradId;
+    link.classList.remove('hidden');
+  }
+}
+
+function setSelectedFeature(layerName, idx) {
+  selectedFeature = (layerName && idx >= 0) ? { layerName: layerName, idx: idx } : null;
+  if (!selectedFeature) {
+    document.getElementById('panel-info').classList.add('hidden');
+    return;
+  }
+  var f = LAYER_DEFS[layerName].features[idx];
+  updateFeaturePanel(layerName, f);
+}
+
+function updateFeaturePanel(layerName, f) {
+  document.getElementById('panel-info').classList.remove('hidden');
+  var def = LAYER_DEFS[layerName];
+  var displayName = f.name || f.cable_name || f.airport_name || f.plant_name ||
+                    f.station_name || f.title || '—';
+  setTxt('info-name', displayName);
+  var rows = [['LAYER', def.label]];
+  if (f.lat != null) rows.push(['LAT / LON', f.lat.toFixed(3) + '°  ' + f.lon.toFixed(3) + '°']);
+  if (layerName === 'power_plants') {
+    var fuel = f.primary_fuel || f.fuel_type || f.fuel;
+    if (fuel) rows.push(['FUEL', fuel]);
+    if (f.capacity_mw) rows.push(['CAPACITY', f.capacity_mw + ' MW']);
+  }
+  if (f.iata_code) rows.push(['IATA', f.iata_code]);
+  if (f.country)   rows.push(['COUNTRY', f.country]);
+  if (f.description && String(f.description).length < 120) rows.push(['INFO', f.description]);
+  var tbody = document.getElementById('info-tbody');
+  if (tbody) tbody.innerHTML = rows.map(function (r) {
+    return '<tr><th>' + esc(r[0]) + '</th><td>' + esc(String(r[1])) + '</td></tr>';
+  }).join('');
+  var link = document.getElementById('info-link');
+  if (link) link.classList.add('hidden');
 }
 
 function setTxt(id, val) {
@@ -708,6 +799,7 @@ function onCanvasClick(e) {
   mouse.y = ((e.clientY - rect.top)  / rect.height) * -2 + 1;
   raycaster.setFromCamera(mouse, camera);
 
+  // Check satellite groups first
   var keys = Object.keys(satGroups);
   for (var i = 0; i < keys.length; i++) {
     var gn = keys[i];
@@ -716,10 +808,35 @@ function onCanvasClick(e) {
     var hits = raycaster.intersectObject(g.renderObj.mesh);
     if (hits.length) {
       var idx = hits[0].instanceId !== undefined ? hits[0].instanceId : hits[0].index;
-      if (idx != null && g.satellites[idx]) { setSelectedSat(g.satellites[idx]); return; }
+      if (idx != null && g.satellites[idx]) {
+        selectedFeature = null;
+        setSelectedSat(g.satellites[idx]);
+        return;
+      }
     }
   }
+
+  // Check infrastructure point layers
+  var lkeys = Object.keys(layerGroups);
+  for (var li = 0; li < lkeys.length; li++) {
+    var ln  = lkeys[li];
+    var def = LAYER_DEFS[ln];
+    if (!def.visible || def.type !== 'point' || !def.renderObjs[0]) continue;
+    var hits2 = raycaster.intersectObject(def.renderObjs[0]);
+    if (hits2.length) {
+      var ridx = hits2[0].instanceId;
+      if (ridx != null) {
+        selectedSat = null;
+        if (selectedOrbitLine) { scene.remove(selectedOrbitLine); selectedOrbitLine = null; }
+        setSelectedFeature(ln, ridx);
+        return;
+      }
+    }
+  }
+
+  // Nothing hit
   setSelectedSat(null);
+  setSelectedFeature(null, -1);
 }
 
 function onCanvasMouseMove(e) {
@@ -731,6 +848,7 @@ function onCanvasMouseMove(e) {
   mouse.y = ((e.clientY - rect.top)  / rect.height) * -2 + 1;
   raycaster.setFromCamera(mouse, camera);
 
+  // Satellites
   var keys = Object.keys(satGroups);
   for (var i = 0; i < keys.length; i++) {
     var gn = keys[i];
@@ -749,6 +867,28 @@ function onCanvasMouseMove(e) {
       }
     }
   }
+
+  // Infrastructure layers
+  var lkeys = Object.keys(layerGroups);
+  for (var li = 0; li < lkeys.length; li++) {
+    var ln  = lkeys[li];
+    var def = LAYER_DEFS[ln];
+    if (!def.visible || def.type !== 'point' || !def.renderObjs[0]) continue;
+    var hits2 = raycaster.intersectObject(def.renderObjs[0]);
+    if (hits2.length) {
+      var ridx = hits2[0].instanceId;
+      if (ridx != null) {
+        var f = def.features[ridx];
+        var label = f.name || f.cable_name || f.airport_name || f.plant_name || def.label;
+        tooltip.textContent = label;
+        tooltip.style.left = (e.clientX - rect.left + 12) + 'px';
+        tooltip.style.top  = (e.clientY - rect.top  + 12) + 'px';
+        tooltip.classList.remove('hidden');
+        return;
+      }
+    }
+  }
+
   tooltip.classList.add('hidden');
 }
 
@@ -761,6 +901,11 @@ function setupEvents() {
   canvas.addEventListener('mouseleave', function () {
     var t = document.getElementById('sat-tooltip');
     if (t) t.classList.add('hidden');
+  });
+
+  // Layer toggle buttons (infrastructure)
+  document.querySelectorAll('[data-layer]').forEach(function (btn) {
+    btn.addEventListener('click', function () { toggleLayer(this.getAttribute('data-layer')); });
   });
 
   // Group toggle buttons
@@ -835,6 +980,104 @@ function setupEvents() {
     camera.aspect = cv.clientWidth / cv.clientHeight;
     camera.updateProjectionMatrix();
   });
+}
+
+// ── Infrastructure layer rendering ────────────────────────────
+
+function buildLayerRenderObjs(layerName, features) {
+  var def = LAYER_DEFS[layerName];
+  var grp = new THREE.Group();
+  grp.visible = def.visible;
+  earthGroup.add(grp);
+  layerGroups[layerName] = grp;
+  def.renderObjs = [];
+
+  if (def.type === 'point') {
+    var validFeatures = features.filter(function (f) {
+      return f.lat != null && f.lon != null && isFinite(f.lat) && isFinite(f.lon);
+    });
+    if (!validFeatures.length) return;
+    var sg = new THREE.SphereGeometry(def.r, 5, 4);
+    var sm = new THREE.MeshBasicMaterial({ color: def.color });
+    var im = new THREE.InstancedMesh(sg, sm, validFeatures.length);
+    im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    var needsColor = (layerName === 'power_plants');
+    if (needsColor) {
+      im.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(validFeatures.length * 3), 3);
+    }
+    var col = new THREE.Color();
+    validFeatures.forEach(function (f, i) {
+      var pos = latLonTo3D(f.lat, f.lon, SURFACE_R);
+      _dummy.position.copy(pos);
+      _dummy.updateMatrix();
+      im.setMatrixAt(i, _dummy.matrix);
+      if (needsColor) {
+        var fuel = f.primary_fuel || f.fuel_type || f.fuel || '';
+        col.setHex(FUEL_COLORS[fuel] || def.color);
+        im.setColorAt(i, col);
+      }
+    });
+    im.instanceMatrix.needsUpdate = true;
+    if (needsColor && im.instanceColor) im.instanceColor.needsUpdate = true;
+    grp.add(im);
+    def.renderObjs.push(im);
+    // Store valid features back so raycaster indices stay in sync
+    def.features = validFeatures;
+
+  } else { // line or multiline
+    features.forEach(function (f) {
+      function makeLine(coords) {
+        if (!coords || coords.length < 2) return;
+        var pts = coords.map(function (c) { return latLonTo3D(c[1], c[0], SURFACE_R); });
+        var line = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: def.color, transparent: true, opacity: 0.7 })
+        );
+        grp.add(line);
+        def.renderObjs.push(line);
+      }
+      if (f.coords)    makeLine(f.coords);
+      if (f.segments)  f.segments.forEach(makeLine);
+    });
+  }
+}
+
+function toggleLayer(layerName) {
+  var def = LAYER_DEFS[layerName];
+  if (def.loading) return;
+
+  if (def.loaded) {
+    def.visible = !def.visible;
+    if (layerGroups[layerName]) layerGroups[layerName].visible = def.visible;
+    refreshLayerBtn(layerName);
+    return;
+  }
+
+  def.loading = true;
+  refreshLayerBtn(layerName);
+
+  window.MonitoringApi.fetchLayer(layerName)
+    .then(function (data) {
+      def.loading  = false;
+      def.loaded   = true;
+      def.visible  = true;
+      def.features = Array.isArray(data) ? data : [];
+      buildLayerRenderObjs(layerName, def.features);
+      refreshLayerBtn(layerName);
+    })
+    .catch(function (err) {
+      def.loading = false;
+      console.error('[magi-sat] layer load failed:', layerName, err);
+      refreshLayerBtn(layerName);
+    });
+}
+
+function refreshLayerBtn(layerName) {
+  var btn = document.querySelector('[data-layer="' + layerName + '"]');
+  if (!btn) return;
+  var def = LAYER_DEFS[layerName];
+  btn.classList.toggle('active',  def.loaded && def.visible);
+  btn.classList.toggle('loading', !!def.loading);
 }
 
 // ── Loading sequence ──────────────────────────────────────────
