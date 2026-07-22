@@ -40,10 +40,23 @@ export default async function handler(req, res) {
 
     const features = rows.map(row => {
       const out = {};
-      let geom = null;
 
       for (const [k, v] of Object.entries(row)) {
-        // Detect WKB hex column: hex string, even length, > 40 chars
+        // PostgREST commonly serializes `geometry` columns as GeoJSON objects
+        // (not WKB hex) when the postgis extension is present.
+        if (v && typeof v === 'object' && typeof v.type === 'string' && Array.isArray(v.coordinates)) {
+          if (v.type === 'Point') {
+            out.lat = v.coordinates[1];
+            out.lon = v.coordinates[0];
+          } else if (v.type === 'LineString') {
+            out.coords = v.coordinates;
+          } else if (v.type === 'MultiLineString') {
+            out.segments = v.coordinates;
+          }
+          continue;
+        }
+
+        // Fallback: hex-encoded WKB string, even length, > 40 chars
         if (
           typeof v === 'string' &&
           v.length > 40 &&
@@ -51,20 +64,20 @@ export default async function handler(req, res) {
           /^[0-9a-fA-F]+$/.test(v.slice(0, 8))
         ) {
           const parsed = parseWKB(v);
-          if (parsed) { geom = parsed; continue; }
+          if (parsed) {
+            if (parsed.type === 'point') {
+              out.lat = parsed.lat;
+              out.lon = parsed.lon;
+            } else if (parsed.type === 'line') {
+              out.coords = parsed.coords;
+            } else if (parsed.type === 'multiline') {
+              out.segments = parsed.segments;
+            }
+            continue;
+          }
         }
-        out[k] = v;
-      }
 
-      if (geom) {
-        if (geom.type === 'point') {
-          out.lat = geom.lat;
-          out.lon = geom.lon;
-        } else if (geom.type === 'line') {
-          out.coords = geom.coords;
-        } else if (geom.type === 'multiline') {
-          out.segments = geom.segments;
-        }
+        out[k] = v;
       }
 
       return out;
