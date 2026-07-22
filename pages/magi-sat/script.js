@@ -427,7 +427,7 @@ function buildEarth() {
 
   // Load realistic NASA Blue Marble texture; fall back to procedural
   new THREE.TextureLoader().load(
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/textures/land_ocean_ice_cloud_2048.jpg',
+    '../../assets/textures/earth_2048.jpg',
     function (tex) { mat.map = tex; mat.needsUpdate = true; },
     undefined,
     function () { mat.map = makeEarthTex(); mat.needsUpdate = true; }
@@ -1062,12 +1062,18 @@ function toggleLayer(layerName) {
       def.loaded   = true;
       def.visible  = true;
       def.features = Array.isArray(data) ? data : [];
+      if (def.features.length === 0) {
+        console.warn('[magi-sat] layer returned 0 features:', layerName);
+      }
       buildLayerRenderObjs(layerName, def.features);
       refreshLayerBtn(layerName);
     })
     .catch(function (err) {
       def.loading = false;
+      def.error   = true;
       console.error('[magi-sat] layer load failed:', layerName, err);
+      var btn = document.querySelector('[data-layer="' + layerName + '"]');
+      if (btn) btn.title = 'Load failed — check Vercel deployment & Supabase env vars';
       refreshLayerBtn(layerName);
     });
 }
@@ -1076,8 +1082,9 @@ function refreshLayerBtn(layerName) {
   var btn = document.querySelector('[data-layer="' + layerName + '"]');
   if (!btn) return;
   var def = LAYER_DEFS[layerName];
-  btn.classList.toggle('active',  def.loaded && def.visible);
+  btn.classList.toggle('active',  def.loaded && def.visible && !def.error);
   btn.classList.toggle('loading', !!def.loading);
+  btn.classList.toggle('error',   !!def.error);
 }
 
 // ── Loading sequence ──────────────────────────────────────────

@@ -430,6 +430,12 @@ body {
   animation: magi-blink 1s step-end infinite;
 }
 
+.group-btn.error {
+  border-color: var(--c-red);
+  color: var(--c-red);
+  opacity: 0.7;
+}
+
 .group-dot {
   width: 7px;
   height: 7px;
