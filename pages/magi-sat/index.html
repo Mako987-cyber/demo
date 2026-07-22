@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MAGI Satellite Tactical Surveillance — NERV orbital satellite tracking in real-time 3D." />
+  <title>MAGI SAT — NERV Orbital Surveillance System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="magi-header">
+    <div class="magi-header__left">
+      <span class="nerv-logo" aria-label="NERV">NERV</span>
+      <div class="magi-header__sys">
+        <span class="sys-title">MAGI SATELLITE SURVEILLANCE SYSTEM</span>
+        <span class="sys-sub">ORBITAL TRACKING &amp; ANALYSIS / GEOSTATIONARY DIVISION</span>
+      </div>
+    </div>
+    <div class="magi-header__center">
+      <span class="jp-label" lang="ja">軌道衛星監視システム</span>
+      <span class="jp-sub" lang="ja">神経工学研究所 / 第三新東京市</span>
+    </div>
+    <div class="magi-header__right">
+      <span class="magi-node" data-node="mel" title="MELCHIOR-1">MEL</span>
+      <span class="magi-node" data-node="bal" title="BALTHASAR-2">BAL</span>
+      <span class="magi-node" data-node="cas" title="CASPAR-3">CAS</span>
+    </div>
+  </header>
+
+  <main class="magi-main">
+    <div id="sat-viewport">
+
+      <!-- HUD Corners -->
+      <div class="hud-corner hud-tl" aria-hidden="true">
+        <span class="hud-bracket">┌</span>
+        <span class="hud-label">NERV / GEO-OPS</span>
+      </div>
+      <div class="hud-corner hud-tr" aria-hidden="true">
+        <span class="hud-clock-wrap">
+          <span class="hud-label">UTC</span>
+          <span id="vp-clock" class="hud-clock">--:--:--</span>
+        </span>
+        <span class="hud-bracket">┐</span>
+      </div>
+      <div class="hud-corner hud-bl" aria-hidden="true">
+        <span class="hud-bracket">└</span>
+        <span id="vp-zone" class="hud-zone">LEO VIEW</span>
+      </div>
+      <div class="hud-corner hud-br" aria-hidden="true">
+        <span class="hud-label">CELESTRAK.ORG</span>
+        <span class="hud-bracket">┘</span>
+      </div>
+
+      <!-- Viewport center label -->
+      <div class="vp-center-label" aria-hidden="true">
+        <span class="vp-center-line"></span>
+        <span class="vp-center-text">EARTH</span>
+        <span class="vp-center-line"></span>
+      </div>
+
+      <!-- Canvas -->
+      <canvas id="gl-canvas" aria-label="3D satellite orbit visualization"></canvas>
+
+      <!-- MELCHIOR-1: Controls -->
+      <div id="panel-controls" class="magi-panel panel-left">
+        <div class="panel-header" data-toggle>
+          <span class="panel-id">MELCHIOR-1</span>
+          <span class="panel-title">ORBITAL SURVEILLANCE CTL</span>
+          <span class="panel-collapse-icon" aria-hidden="true">▾</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="ctrl-section">
+            <div class="ctrl-label">SATELLITE GROUPS</div>
+            <div id="group-toggles">
+              <button class="group-btn" data-group="stations">
+                <span class="group-dot" style="background:#ffffff"></span>SPACE STATIONS
+              </button>
+              <button class="group-btn" data-group="gps-ops">
+                <span class="group-dot" style="background:#44ff88"></span>GPS CONSTELLATION
+              </button>
+              <button class="group-btn" data-group="visual">
+                <span class="group-dot" style="background:#ff8800"></span>BRIGHTEST (100)
+              </button>
+              <button class="group-btn" data-group="starlink">
+                <span class="group-dot" style="background:#ffaa00"></span>STARLINK NETWORK
+              </button>
+              <button class="group-btn" data-group="glo-ops">
+                <span class="group-dot" style="background:#88ffcc"></span>GLONASS
+              </button>
+              <button class="group-btn" data-group="galileo">
+                <span class="group-dot" style="background:#44ccff"></span>GALILEO
+              </button>
+              <button class="group-btn" data-group="military">
+                <span class="group-dot" style="background:#ff2200"></span>MILITARY OPS
+              </button>
+              <button class="group-btn" data-group="weather">
+                <span class="group-dot" style="background:#aaddff"></span>WEATHER SAT
+              </button>
+              <button class="group-btn" data-group="last-30-days">
+                <span class="group-dot" style="background:#ff44aa"></span>RECENT LAUNCHES
+              </button>
+            </div>
+          </div>
+
+          <div class="ctrl-section">
+            <div class="ctrl-label">DISPLAY</div>
+            <button class="opt-btn active" id="btn-orbits">SHOW ORBITS: ON</button>
+            <button class="opt-btn active" id="btn-rotate">AUTO-ROTATE: ON</button>
+          </div>
+
+          <div class="ctrl-section">
+            <div class="ctrl-label">TIME SCALE</div>
+            <div class="ts-row">
+              <button class="ts-btn active" data-mult="1">1×</button>
+              <button class="ts-btn" data-mult="10">10×</button>
+              <button class="ts-btn" data-mult="100">100×</button>
+              <button class="ts-btn" data-mult="1000">1K×</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Stats panel -->
+      <div id="panel-stats" class="magi-panel panel-stats">
+        <div class="stat-row">
+          <span class="stat-label">TOTAL SAT</span>
+          <span id="stat-total" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">STATIONS</span>
+          <span id="stat-stations" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">GROUPS</span>
+          <span id="stat-groups" class="stat-value">0/9</span>
+        </div>
+      </div>
+
+      <!-- CASPAR-3: Selected satellite info -->
+      <div id="panel-info" class="magi-panel panel-right hidden">
+        <div class="panel-header" data-toggle>
+          <span class="panel-id">CASPAR-3</span>
+          <span class="panel-title">OBJECT ANALYSIS</span>
+          <span class="panel-collapse-icon" aria-hidden="true">▾</span>
+        </div>
+        <div class="panel-body">
+          <div class="info-name" id="info-name">—</div>
+          <table class="info-table">
+            <tr><th>NORAD ID</th><td id="info-id">—</td></tr>
+            <tr><th>GROUP</th><td id="info-group">—</td></tr>
+            <tr><th>EPOCH</th><td id="info-epoch">—</td></tr>
+            <tr><th>MEAN ALT</th><td id="info-alt">—</td></tr>
+            <tr><th>PERIOD</th><td id="info-period">—</td></tr>
+            <tr><th>INCLINATION</th><td id="info-inc">—</td></tr>
+            <tr><th>ECCENTRICITY</th><td id="info-ecc">—</td></tr>
+            <tr><th>RAAN</th><td id="info-raan">—</td></tr>
+          </table>
+          <a id="info-link" class="info-link" href="#" target="_blank" rel="noopener">
+            VIEW ON N2YO ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div id="panel-legend" class="magi-panel panel-legend" aria-label="Color legend">
+        <div class="legend-row"><span class="legend-dot" style="background:#ffffff"></span>SPACE STATION</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#44ff88"></span>GPS</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#ff8800"></span>BRIGHTEST</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#ffaa00"></span>STARLINK</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#ff2200"></span>MILITARY</div>
+      </div>
+
+      <!-- Tooltip -->
+      <div id="sat-tooltip" class="sat-tooltip hidden" aria-hidden="true"></div>
+
+      <!-- Loading overlay -->
+      <div id="panel-loading" class="magi-loading" role="status" aria-live="polite">
+        <div class="loading-inner">
+          <div class="loading-spinners">
+            <div class="spinner-cw" aria-hidden="true"></div>
+            <div class="nerv-emblem" aria-hidden="true">NERV</div>
+            <div class="spinner-ccw" aria-hidden="true"></div>
+          </div>
+          <div id="boot-msg" class="boot-msg">MAGI SYSTEM: INITIALIZING...</div>
+          <div class="boot-bar-wrap">
+            <div id="boot-bar" class="boot-bar" style="width:0%"></div>
+          </div>
+          <div id="boot-pct" class="boot-pct">0%</div>
+          <div class="boot-sub" lang="ja">システム起動中...</div>
+        </div>
+      </div>
+
+    </div><!-- /#sat-viewport -->
+
+    <!-- BALTHASAR-2: Satellite List -->
+    <section id="sat-list-section" class="magi-panel" aria-label="Satellite list">
+      <div class="panel-header" data-toggle>
+        <span class="panel-id">BALTHASAR-2</span>
+        <span class="panel-title">ORBITAL OBJECT DATABASE</span>
+        <span class="table-meta">
+          <input id="sat-search" class="sat-search" type="search" placeholder="SEARCH BY NAME OR ID..." aria-label="Search satellites" />
+          <span class="sat-count">OBJECTS: <span id="table-count">0</span></span>
+        </span>
+        <span class="panel-collapse-icon" aria-hidden="true">▾</span>
+      </div>
+      <div class="panel-body table-body">
+        <table class="sat-table" aria-label="Satellite data table">
+          <thead>
+            <tr>
+              <th data-sort="name">NAME</th>
+              <th data-sort="noradId">NORAD ID</th>
+              <th data-sort="groupLabel">GROUP</th>
+              <th data-sort="meanAlt_km">ALT (km)</th>
+              <th data-sort="inclination">INCL (°)</th>
+              <th data-sort="period_min">PERIOD (min)</th>
+            </tr>
+          </thead>
+          <tbody id="sat-tbody">
+            <tr><td colspan="6" class="empty-row">AWAITING DATA...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="magi-footer">
+    <span class="footer-left">NERV HQ / MAGI-3 SATELLITE SURVEILLANCE — <span id="footer-status" class="footer-status blink">INITIALIZING</span></span>
+    <span class="footer-center" lang="ja">全ての天使は監視下に置かれている</span>
+    <span class="footer-right">DATA: CELESTRAK.ORG / GP ELEMENTS / OMM FORMAT</span>
+  </footer>
+
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="../../assets/vendor/OrbitControls.js"></script>
+  <script src="../api/http.js"></script>
+  <script src="../api/celestrakApi.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
