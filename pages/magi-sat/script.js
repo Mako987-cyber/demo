@@ -245,82 +245,153 @@ function makeEarthTex() {
   cv.width = W; cv.height = H;
   var ctx = cv.getContext('2d');
 
-  // Ocean
-  var g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0,    '#000b25');
-  g.addColorStop(0.15, '#001848');
-  g.addColorStop(0.5,  '#002260');
-  g.addColorStop(0.85, '#001848');
-  g.addColorStop(1,    '#000b25');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
+  // lon/lat → canvas px
+  function px(lon, lat) {
+    return [(lon + 180) / 360 * W, (90 - lat) / 180 * H];
+  }
 
-  // Continents (approximate shapes)
-  ctx.fillStyle = 'rgba(18,72,28,0.88)';
-  var c = [
-    [215, 185, 85, 72, -0.2],  // North America
-    [268, 325, 46, 82,  0.1],  // South America
-    [488, 185, 52, 62,  0.0],  // Europe
-    [512, 315, 55, 92,  0.0],  // Africa
-    [680, 185, 128,72, -0.1],  // Asia
-    [755, 352, 54, 38,  0.0],  // Australia
-  ];
-  c.forEach(function(p) {
+  function drawContour(coords) {
     ctx.beginPath();
-    ctx.ellipse(p[0], p[1], p[2], p[3], p[4], 0, TWO_PI);
-    ctx.fill();
-  });
+    var p = px(coords[0][0], coords[0][1]);
+    ctx.moveTo(p[0], p[1]);
+    for (var i = 1; i < coords.length; i++) {
+      p = px(coords[i][0], coords[i][1]);
+      ctx.lineTo(p[0], p[1]);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
 
-  // Polar caps
-  var ice1 = ctx.createLinearGradient(0, 0, 0, 55);
-  ice1.addColorStop(0, 'rgba(195,215,255,0.92)');
-  ice1.addColorStop(1, 'rgba(195,215,255,0)');
-  ctx.fillStyle = ice1; ctx.fillRect(0, 0, W, 55);
-  var ice2 = ctx.createLinearGradient(0, H-55, 0, H);
-  ice2.addColorStop(0, 'rgba(195,215,255,0)');
-  ice2.addColorStop(1, 'rgba(195,215,255,0.92)');
-  ctx.fillStyle = ice2; ctx.fillRect(0, H-55, W, 55);
-
-  // NERV amber tint overlay
-  ctx.fillStyle = 'rgba(170,70,0,0.14)';
+  // ── Pure black base ──────────────────────────────────────
+  ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, W, H);
 
-  // Grid lines
-  ctx.strokeStyle = 'rgba(255,90,0,0.07)';
-  ctx.lineWidth = 1;
+  // Subtle scattered data-noise pixels
+  for (var i = 0; i < 3500; i++) {
+    var t = Math.random();
+    ctx.fillStyle = t > 0.6
+      ? 'rgba(0,210,140,' + (0.04 + Math.random() * 0.06) + ')'
+      : 'rgba(255,100,0,' + (0.02 + Math.random() * 0.03) + ')';
+    ctx.fillRect(Math.floor(Math.random() * W), Math.floor(Math.random() * H), 1, 1);
+  }
+
+  // ── Lat/lon grid ─────────────────────────────────────────
+  ctx.lineWidth = 0.5;
   for (var lat = -80; lat <= 80; lat += 20) {
     var y = ((90 - lat) / 180) * H;
+    ctx.strokeStyle = lat === 0 ? 'rgba(255,120,0,0.28)' : 'rgba(255,90,0,0.12)';
+    ctx.lineWidth   = lat === 0 ? 0.8 : 0.5;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
   }
-  for (var lon = 0; lon < 360; lon += 30) {
-    var x = (lon / 360) * W;
+  for (var lon = -180; lon < 180; lon += 30) {
+    var x = ((lon + 180) / 360) * W;
+    ctx.strokeStyle = 'rgba(255,90,0,0.10)';
+    ctx.lineWidth = 0.5;
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
   }
+
+  // ── Continent outlines (stroke only, orange glow) ────────
+  ctx.strokeStyle = '#ff7700';
+  ctx.lineWidth   = 1.8;
+  ctx.lineJoin    = 'round';
+  ctx.lineCap     = 'round';
+  ctx.shadowColor = '#ff5500';
+  ctx.shadowBlur  = 5;
+
+  // North America
+  drawContour([
+    [-168,72],[-152,60],[-130,55],[-124,49],[-120,37],
+    [-117,33],[-110,24],[-90,16],[-77,8],
+    [-75,10],[-65,44],[-60,47],[-55,47],
+    [-65,60],[-80,63],[-90,70],[-130,72],[-168,72]
+  ]);
+
+  // South America
+  drawContour([
+    [-75,12],[-50,5],[-35,-5],[-35,-15],
+    [-40,-20],[-43,-23],[-48,-28],[-52,-33],
+    [-58,-40],[-65,-55],[-68,-55],[-73,-50],
+    [-73,-42],[-78,-8],[-75,12]
+  ]);
+
+  // Europe
+  drawContour([
+    [-10,36],[2,36],[15,38],[20,37],[28,41],
+    [30,45],[28,62],[25,70],[15,71],
+    [5,62],[-5,58],[-8,52],[-10,44],[-10,36]
+  ]);
+
+  // Africa
+  drawContour([
+    [-5,37],[10,38],[25,37],[32,31],[38,12],
+    [44,12],[42,15],[44,20],[36,-5],
+    [36,-18],[33,-30],[26,-34],[18,-35],
+    [12,-22],[8,-5],[2,4],[-5,5],
+    [-15,5],[-17,14],[-13,25],[-8,35],[-5,37]
+  ]);
+
+  // Asia (simplified)
+  drawContour([
+    [28,42],[40,38],[52,28],[60,22],
+    [72,20],[80,8],[100,5],[105,10],
+    [120,22],[135,35],[140,40],[140,48],
+    [135,55],[120,58],[100,72],[70,73],
+    [50,70],[30,68],[28,42]
+  ]);
+
+  // Australia
+  drawContour([
+    [114,-22],[120,-18],[130,-12],[138,-14],
+    [145,-15],[150,-25],[155,-28],[152,-38],
+    [145,-40],[138,-36],[130,-32],[118,-28],[114,-22]
+  ]);
+
+  // Greenland
+  drawContour([
+    [-30,84],[-10,83],[-18,77],[-24,73],
+    [-44,70],[-55,73],[-58,77],[-44,83],[-30,84]
+  ]);
+
+  ctx.shadowBlur = 0;
+
+  // ── "EARTH" label ────────────────────────────────────────
+  ctx.font          = 'bold 20px "Share Tech Mono", Courier New, monospace';
+  ctx.textAlign     = 'center';
+  ctx.textBaseline  = 'middle';
+  ctx.shadowColor   = 'rgba(0,220,160,0.9)';
+  ctx.shadowBlur    = 10;
+  ctx.fillStyle     = 'rgba(0,220,160,0.65)';
+  ctx.fillText('EARTH', W / 2, H / 2);
+  ctx.shadowBlur    = 0;
 
   return new THREE.CanvasTexture(cv);
 }
 
 function buildEarth() {
+  // MeshBasicMaterial → self-luminous, ignores lights (data-viz look)
   earthMesh = new THREE.Mesh(
     new THREE.SphereGeometry(1, 64, 32),
-    new THREE.MeshPhongMaterial({
-      map: makeEarthTex(),
-      emissive: new THREE.Color(0x0e0400),
-      emissiveIntensity: 0.35,
-      shininess: 25,
-    })
+    new THREE.MeshBasicMaterial({ map: makeEarthTex() })
   );
   scene.add(earthMesh);
 
+  // Cyan inner atmosphere rim (BackSide trick → visible only at sphere edge)
   atmosphereMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1.04, 32, 16),
-    new THREE.MeshBasicMaterial({ color: 0xff4400, transparent: true, opacity: 0.07, side: THREE.BackSide })
+    new THREE.SphereGeometry(1.03, 32, 16),
+    new THREE.MeshBasicMaterial({ color: 0x00eebb, transparent: true, opacity: 0.07, side: THREE.BackSide })
   );
   scene.add(atmosphereMesh);
 
+  // Mid cyan haze
   scene.add(new THREE.Mesh(
-    new THREE.SphereGeometry(1.10, 32, 16),
-    new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.03, side: THREE.BackSide })
+    new THREE.SphereGeometry(1.07, 32, 16),
+    new THREE.MeshBasicMaterial({ color: 0x00ccaa, transparent: true, opacity: 0.03, side: THREE.BackSide })
+  ));
+
+  // Outer deep glow
+  scene.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.18, 32, 16),
+    new THREE.MeshBasicMaterial({ color: 0x005533, transparent: true, opacity: 0.015, side: THREE.BackSide })
   ));
 }
 
