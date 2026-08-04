@@ -98,10 +98,10 @@ function updateDateHint() {
   if (!dateRangeHint) return;
   if (days < 1) {
     dateRangeHint.textContent = '⚠ La data fine deve essere dopo la data inizio';
-    dateRangeHint.style.color = '#e05e40';
+    dateRangeHint.style.color = 'var(--glass-inverse-hazard)';
   } else {
     dateRangeHint.textContent = `${days} giorn${days === 1 ? 'o' : 'i'}`;
-    dateRangeHint.style.color = 'rgba(157,212,218,0.5)';
+    dateRangeHint.style.color = 'var(--glass-inverse-text-dim)';
   }
 }
 

@@ -68,14 +68,14 @@ function updateRateCards(latest, previous) {
 }
 
 function getChartPalette(ctx, isDark, top, bottom) {
-  const lineColor = isDark ? '#63aab3' : '#0a6b74';
+  const lineColor = isDark ? '#c3b1ff' : '#5b2ee5';
   const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
   const textColor = isDark ? 'rgba(255,255,255,0.62)' : 'rgba(0,0,0,0.58)';
   // Allineati a --color-positive / --color-negative: le stesse tinte della tabella.
-  const upColor = isDark ? '#34d399' : '#0e7049';
-  const downColor = isDark ? '#f87171' : '#b3261e';
+  const upColor = isDark ? '#7fe3a5' : '#0c6440';
+  const downColor = isDark ? '#ffa695' : '#a82a19';
   const gradient = ctx.createLinearGradient(0, top, 0, bottom);
-  gradient.addColorStop(0, isDark ? 'rgba(99,170,179,0.2)' : 'rgba(10,107,116,0.1)');
+  gradient.addColorStop(0, isDark ? 'rgba(195,177,255,0.24)' : 'rgba(91,46,229,0.14)');
   gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
   return { lineColor, gridColor, textColor, upColor, downColor, gradient };

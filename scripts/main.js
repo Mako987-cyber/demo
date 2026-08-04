@@ -6,7 +6,15 @@
   const navToggle = document.querySelector('[data-nav-toggle]');
   const navMenu = document.querySelector('[data-nav-menu]');
 
-  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Il viola profondo è l'identità del sito, non una variante: si apre così di
+  // default invece di seguire il sistema. La scelta esplicita dell'utente vince
+  // e viene ricordata — senza, su un sito multipagina il toggle si azzererebbe
+  // a ogni navigazione.
+  const STORE_KEY = 'am-theme';
+  let stored = null;
+  try { stored = localStorage.getItem(STORE_KEY); } catch { /* storage negato */ }
+
+  let theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
   root.setAttribute('data-theme', theme);
 
   const renderThemeIcon = () => {
@@ -21,6 +29,7 @@
   themeToggle?.addEventListener('click', () => {
     theme = theme === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', theme);
+    try { localStorage.setItem(STORE_KEY, theme); } catch { /* storage negato */ }
     renderThemeIcon();
   });
 
