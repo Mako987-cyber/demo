@@ -6,6 +6,9 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-padding-top: var(--space-16);
+  /* Il fondo vive su html e si propaga al canvas: così body::before (z-index -1)
+     può dipingere l'aurora sopra il fondo e sotto il contenuto. */
+  background: var(--color-bg);
 }
 body {
   min-height: 100dvh;
@@ -13,8 +16,40 @@ body {
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--color-text);
-  background: var(--color-bg);
+  background: transparent;
 }
+
+/* ── Aurora ─────────────────────────────────────────────────────────
+   Il fondo che il vetro rifrange. Fisso e fuori dal flusso: non scrolla,
+   quindi backdrop-filter non deve ricalcolarlo a ogni frame di scroll.
+   Il drift anima solo transform (compositor-only). Il blur è statico:
+   animare un raggio di blur ricostruirebbe il layer a ogni frame. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background-color: transparent;
+  /* Le posizioni sono in coordinate del layer, che con inset:-20% e' il 140%
+     del viewport: 32%–68% qui corrisponde a 25%–75% di schermo. Tenerle in
+     questa fascia porta il colore sotto il contenuto — ai bordi il vetro non
+     avrebbe nulla da rifrangere. */
+  background-image:
+    radial-gradient(52% 48% at 32% 30%, var(--aurora-1), transparent 70%),
+    radial-gradient(48% 46% at 68% 28%, var(--aurora-2), transparent 68%),
+    radial-gradient(54% 50% at 64% 70%, var(--aurora-3), transparent 70%),
+    radial-gradient(46% 44% at 34% 68%, var(--aurora-4), transparent 66%);
+  filter: blur(var(--aurora-blur, 34px));
+  animation: aurora-drift 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes aurora-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(2.5%, -2.5%, 0) scale(1.08); }
+}
+
 img, svg { display: block; max-width: 100%; height: auto; }
 a, button, input, textarea, select {
   transition: color var(--transition-interactive), background var(--transition-interactive), border-color var(--transition-interactive), box-shadow var(--transition-interactive), transform var(--transition-interactive);
@@ -61,4 +96,16 @@ p, li { text-wrap: pretty; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* La regola sopra non basta per l'aurora: comprimere la durata la bloccherebbe
+     sul fotogramma finale (già traslata e scalata) invece che a riposo. */
+  body::before {
+    animation: none !important;
+    transform: none;
+  }
+}
+
+/* Trasparenza ridotta: superfici piene e --glass-filter: none arrivano da tokens.css,
+   qui resta solo da fermare il drift dell'aurora. */
+@media (prefers-reduced-transparency: reduce) {
+  body::before { animation: none; }
 }

@@ -28,31 +28,38 @@
       display: flex;
       flex-direction: column;
       padding: 2rem;
-      border: 2px solid var(--color-border);
-      border-radius: 0.75rem;
-      background: var(--color-bg-secondary);
-      transition: all 0.3s ease;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      background-color: var(--glass-bg);
+      background-image: var(--glass-highlight);
+      background-repeat: no-repeat;
+      backdrop-filter: var(--glass-filter);
+      -webkit-backdrop-filter: var(--glass-filter);
+      box-shadow: var(--glass-shadow);
+      transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
       text-decoration: none;
       color: var(--color-text);
     }
 
     .project-card:hover {
-      border-color: var(--color-primary);
-      background: var(--color-bg);
+      border-color: var(--glass-border-strong);
+      background-color: var(--glass-bg-strong);
       transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--glass-shadow-lift);
     }
 
     .project-icon {
       width: 3rem;
       height: 3rem;
       margin-bottom: 1rem;
-      opacity: 0.8;
-      transition: transform 0.3s ease;
+      color: var(--color-primary);
+      opacity: 0.85;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
     .project-card:hover .project-icon {
       transform: scale(1.15);
+      opacity: 1;
     }
 
     .project-card h3 {
@@ -64,7 +71,7 @@
     .project-card p {
       margin: 0 0 1rem 0;
       font-size: 0.95rem;
-      color: var(--color-text-secondary);
+      color: var(--color-text-muted);
       flex-grow: 1;
     }
 
@@ -75,12 +82,13 @@
       margin-top: 1rem;
     }
 
+    /* Figlio di una card di vetro → superficie piena, niente backdrop-filter annidato. */
     .project-tag {
       display: inline-block;
       padding: 0.25rem 0.75rem;
       background: var(--color-primary);
-      color: white;
-      border-radius: 0.25rem;
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
       font-size: 0.75rem;
       font-weight: 600;
     }
@@ -89,18 +97,29 @@
       display: inline-block;
       margin-bottom: 2rem;
       padding: 0.75rem 1.5rem;
-      border: 2px solid var(--color-border);
-      border-radius: 0.5rem;
-      background: var(--color-bg-secondary);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      background-color: var(--glass-bg);
+      background-image: var(--glass-highlight);
+      backdrop-filter: var(--glass-filter-sm);
+      -webkit-backdrop-filter: var(--glass-filter-sm);
+      box-shadow: var(--glass-shadow);
       color: var(--color-text);
       text-decoration: none;
-      transition: all 0.3s ease;
+      transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
       font-weight: 500;
     }
 
     .back-link:hover {
-      border-color: var(--color-primary);
-      background: var(--color-bg);
+      border-color: var(--glass-border-strong);
+      background-color: var(--glass-bg-strong);
+      transform: translateY(-1px);
+      box-shadow: var(--glass-shadow-lift);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .project-card:hover, .back-link:hover { transform: none; }
+      .project-card:hover .project-icon { transform: none; }
     }
   </style>
 </head>

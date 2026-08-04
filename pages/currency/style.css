@@ -1,3 +1,6 @@
+/* Dashboard Valute — regola ibrida:
+   il vetro veste contenitori e controlli, i dati (celle, input) restano solidi. */
+
 .currency-container {
   max-width: 900px;
   margin: 0 auto;
@@ -16,18 +19,24 @@
 }
 
 .rate-card {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
   padding: 1.25rem;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
 }
 
 .rate-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-3px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .rate-header {
@@ -62,20 +71,20 @@
 }
 
 .rate-change.positive {
-  color: #10b981;
+  color: var(--color-positive);
 }
 
 .rate-change.negative {
-  color: #ef4444;
+  color: var(--color-negative);
 }
 
 .rate-change.neutral {
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
 .rate-label {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -104,27 +113,45 @@
   gap: 0.5rem;
 }
 
-.chart-toggle-btn {
+/* Controlli a pillola: vetro a riposo, pieni quando attivi — lo stato selezionato
+   deve reggere il contrasto senza dipendere da cosa scorre sotto. */
+.chart-toggle-btn,
+.history-tab {
   padding: 0.45rem 0.9rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  backdrop-filter: var(--glass-filter-sm);
+  -webkit-backdrop-filter: var(--glass-filter-sm);
+  box-shadow: var(--glass-shadow);
   color: var(--color-text);
   font-weight: 600;
   font-size: 0.82rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
   font-family: var(--font-body);
 }
 
-.chart-toggle-btn:hover {
-  border-color: var(--color-primary);
+.history-tab {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
 }
 
-.chart-toggle-btn.active {
-  background: var(--color-primary);
+.chart-toggle-btn:hover,
+.history-tab:hover {
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lift);
+}
+
+.chart-toggle-btn.active,
+.history-tab.active {
+  background-color: var(--color-primary);
+  background-image: none;
   border-color: var(--color-primary);
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .timeframe-control {
@@ -133,20 +160,21 @@
   gap: 0.65rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .timeframe-control select {
   padding: 0.45rem 0.7rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  border: 1px solid var(--data-border);
+  border-radius: var(--radius-md);
+  background: var(--data-surface);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 0.82rem;
   font-weight: 600;
+  box-shadow: var(--glass-shadow);
 }
 
 .timeframe-control select:focus {
@@ -161,33 +189,15 @@
   flex-wrap: wrap;
 }
 
-.history-tab {
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: var(--font-body);
-}
-
-.history-tab:hover {
-  border-color: var(--color-primary);
-}
-
-.history-tab.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: white;
-}
-
 .history-chart {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   position: relative;
@@ -199,31 +209,37 @@
   height: 100%;
 }
 
+/* Il vetro sta sul wrapper, non sulla tabella: un solo backdrop-filter per
+   l'intera superficie dati, niente blur per cella da ridipingere in scroll.
+   Variante "strong" perché fa da barrier layer sotto testo denso. */
 .history-table-wrapper {
   overflow-x: auto;
+  background-color: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
 }
 
 .history-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
-  overflow: hidden;
+  background: transparent;
 }
 
 .history-table th,
 .history-table td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--data-border);
   font-size: 0.9rem;
 }
 
 .history-table th {
-  background: var(--color-bg);
+  background: var(--data-surface-alt);
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -234,16 +250,16 @@
 }
 
 .history-table tr:hover td {
-  background: var(--color-bg);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .change-positive {
-  color: #10b981;
+  color: var(--color-positive);
   font-weight: 600;
 }
 
 .change-negative {
-  color: #ef4444;
+  color: var(--color-negative);
   font-weight: 600;
 }
 
@@ -258,9 +274,14 @@
 }
 
 .converter-card {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
   padding: 1.5rem;
 }
 
@@ -280,19 +301,20 @@
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   margin-bottom: 0.5rem;
 }
 
+/* Campi dentro una card di vetro → superficie piena, nessun filtro annidato. */
 .converter-field input,
 .converter-field select {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg);
+  border: 1px solid var(--data-border);
+  border-radius: var(--radius-md);
+  background: var(--data-surface);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 1rem;
@@ -311,9 +333,9 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border: 2px solid var(--color-border);
+  border: 1px solid var(--data-border);
   border-radius: 50%;
-  background: var(--color-bg);
+  background: var(--data-surface);
   color: var(--color-text);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -329,8 +351,9 @@
 .converter-result {
   margin-top: 1.25rem;
   padding: 1rem;
-  background: var(--color-bg);
-  border-radius: 0.5rem;
+  background: var(--data-surface-alt);
+  border: 1px solid var(--data-border);
+  border-radius: var(--radius-md);
   text-align: center;
 }
 
@@ -343,7 +366,7 @@
 .update-info {
   text-align: center;
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin-top: 1rem;
 }
 
@@ -351,18 +374,24 @@
   display: inline-block;
   margin-bottom: 2rem;
   padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  backdrop-filter: var(--glass-filter-sm);
+  -webkit-backdrop-filter: var(--glass-filter-sm);
+  box-shadow: var(--glass-shadow);
   color: var(--color-text);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
   font-weight: 500;
 }
 
 .back-link:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg);
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .loading {
@@ -405,4 +434,11 @@
   .chart-toggle-btn {
     flex: 1;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rate-card:hover,
+  .chart-toggle-btn:hover,
+  .history-tab:hover,
+  .back-link:hover { transform: none; }
 }

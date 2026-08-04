@@ -1,7 +1,12 @@
-/* Art direction: personal cloud engineer portfolio → sober premium consulting
-   Palette: neutral warm surfaces + teal accent for trust and technical clarity
+/* Art direction: personal cloud engineer portfolio → glassmorphism
+   Palette: aurora mesh (teal / viola / ambra / ciano) sotto superfici di vetro smerigliato
    Typography: Cabinet Grotesk + General Sans for structured, modern professionalism
-   Density: balanced, spacious enough to feel premium but still operational */
+   Density: balanced, spacious enough to feel premium but still operational
+
+   Regola portante — "ibrido": il vetro veste chrome, card e contenitori; i dati
+   (righe di tabella, celle, input) restano su superfici solide. Il vetro non si annida
+   mai dentro altro vetro: backdrop-filter non si somma e il figlio sfocherebbe il
+   backdrop del nonno, producendo un alone sporco. */
 
 :root,
 [data-theme="light"] {
@@ -29,19 +34,66 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
-  --color-bg: #f7f6f2;
+  --color-bg: #f4f3ef;
   --color-surface: #f9f8f5;
   --color-surface-2: #fbfbf9;
   --color-surface-offset: #eceae4;
   --color-border: #d4d1ca;
   --color-divider: #ddd9d2;
-  --color-text: #22282a;
-  --color-text-muted: #657175;
-  --color-text-faint: #98a3a7;
+  --color-text: #1b2124;
+  /* muted/faint scuriti rispetto al tema piatto precedente: devono reggere 4.5:1
+     compositati sul vetro chiaro sopra un blob aurora saturo, non solo sul fondo neutro. */
+  --color-text-muted: #4e595c;
+  --color-text-faint: #586366;
   --color-text-inverse: #f9f8f4;
   --color-primary: #0a6b74;
   --color-primary-hover: #094f56;
   --color-primary-highlight: #d7e6e8;
+
+  /* ── Aurora: il fondo che il vetro rifrange ──────────────────────
+     Senza questo layer il glassmorphism non esiste: su tinta unita una
+     superficie translucida legge come una macchia grigia. */
+  --aurora-1: rgba(10, 107, 116, 0.34);
+  --aurora-2: rgba(112, 76, 200, 0.30);
+  --aurora-3: rgba(226, 149, 62, 0.32);
+  --aurora-4: rgba(46, 178, 190, 0.30);
+  --aurora-blur: 34px;
+
+  /* ── Vetro ───────────────────────────────────────────────────────
+     12–16px è il punto di equilibrio fra effetto e costo GPU; saturate()
+     evita che i colori dietro il pannello sbiadiscano sul grigio. */
+  --glass-blur: 14px;
+  --glass-blur-sm: 10px;
+  --glass-saturate: 165%;
+  /* Il filtro passa da token, non scritto a mano nelle regole: così la preferenza
+     "trasparenza ridotta" lo azzera una volta sola e la scelta si propaga anche al
+     CSS delle singole pagine, senza doverne elencare i selettori. */
+  --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  --glass-filter-sm: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.80);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-border-soft: rgba(255, 255, 255, 0.45);
+  --glass-border-strong: rgba(10, 107, 116, 0.32);
+  /* Doppia ombra: una stretta che definisce il bordo, una ampia che stacca dal fondo. */
+  --glass-shadow: 0 1px 2px rgba(24, 38, 40, 0.05), 0 12px 32px rgba(24, 38, 40, 0.10);
+  --glass-shadow-lift: 0 2px 4px rgba(24, 38, 40, 0.07), 0 20px 48px rgba(24, 38, 40, 0.16);
+  /* Bisello: il vetro reale cattura la luce sullo spigolo superiore. */
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 58%);
+
+  /* ── Superfici solide (lato "dati" della regola ibrida) ──────────
+     Righe di tabella, celle, input: niente translucenza, niente repaint in scroll. */
+  --data-surface: #ffffff;
+  --data-surface-alt: #f0eeea;
+  --data-border: rgba(27, 33, 36, 0.10);
+
+  /* Colori semantici dei dati. I precedenti (#10b981, #ef4444, #3b82f6) erano
+     scritti a mano nelle pagine e su fondo chiaro stavano intorno a 2.5:1;
+     questi reggono 4.5:1 sulle superfici dati in entrambi i temi. */
+  --color-positive: #0e7049;
+  --color-negative: #b3261e;
+  --color-info: #1d4ed8;
 
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
@@ -58,20 +110,129 @@
 }
 
 [data-theme="dark"] {
-  --color-bg: #121516;
+  --color-bg: #0e1112;
   --color-surface: #171b1c;
   --color-surface-2: #1d2223;
   --color-surface-offset: #242a2c;
   --color-border: #31393b;
   --color-divider: #2a3032;
   --color-text: #edf0ee;
-  --color-text-muted: #a1acad;
-  --color-text-faint: #6e797a;
+  --color-text-muted: #aab5b6;
+  --color-text-faint: #939e9f;
   --color-text-inverse: #152022;
   --color-primary: #63aab3;
   --color-primary-hover: #7cbfc7;
   --color-primary-highlight: #213236;
+
+  --aurora-1: rgba(16, 148, 160, 0.30);
+  --aurora-2: rgba(130, 88, 232, 0.26);
+  --aurora-3: rgba(232, 150, 58, 0.20);
+  --aurora-4: rgba(52, 196, 210, 0.24);
+
+  --glass-bg: rgba(28, 34, 36, 0.62);
+  --glass-bg-strong: rgba(20, 25, 26, 0.82);
+  --glass-bg-subtle: rgba(34, 41, 43, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-border-soft: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(99, 170, 179, 0.38);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.30), 0 16px 40px rgba(0, 0, 0, 0.45);
+  --glass-shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.35), 0 24px 56px rgba(0, 0, 0, 0.55);
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0) 58%);
+
+  --data-surface: #16191a;
+  --data-surface-alt: #1e2325;
+  --data-border: rgba(255, 255, 255, 0.09);
+
+  --color-positive: #34d399;
+  --color-negative: #f87171;
+  --color-info: #7dd3fc;
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Vetro scuro indipendente dal tema ──────────────────────────────
+   Per le HUD sospese sopra un canvas WebGL: lì lo sfondo è lo spazio profondo
+   in entrambi i temi, quindi il pannello deve restare scuro anche in light. */
+:root {
+  --glass-inverse-bg: rgba(7, 12, 20, 0.72);
+  --glass-inverse-bg-strong: rgba(5, 9, 15, 0.88);
+  --glass-inverse-border: rgba(160, 214, 220, 0.22);
+  --glass-inverse-border-hover: rgba(160, 214, 220, 0.55);
+  --glass-inverse-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 18px 44px rgba(0, 0, 0, 0.5);
+  --glass-inverse-highlight: linear-gradient(180deg, rgba(180, 226, 232, 0.10), rgba(180, 226, 232, 0) 58%);
+  --glass-inverse-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  --glass-inverse-text: #cdd8da;
+  --glass-inverse-text-bright: #9dd4da;
+  --glass-inverse-text-dim: rgba(190, 222, 226, 0.62);
+  --glass-inverse-accent: #63aab3;
+  /* Hazard: colore semantico della scena NEO (oggetto potenzialmente pericoloso). */
+  --glass-inverse-hazard: #e05e40;
+
+  /* Alias di compatibilità.
+     Queste due righe riparano ~67 riferimenti che puntavano a variabili mai
+     dichiarate (le pagine dati usavano --color-bg-secondary / --color-text-secondary
+     mentre i token esponevano --color-surface / --color-text-muted): finora quelle
+     card rendevano con sfondo trasparente. Ora risolvono, e per giunta a vetro. */
+  --color-bg-secondary: var(--glass-bg);
+  --color-text-secondary: var(--color-text-muted);
+}
+
+/* ── Fallback: browser senza backdrop-filter ───────────────────────
+   Senza il blur la translucenza sarebbe solo testo su fondo sporco: si compensa
+   alzando l'opacità fino a rendere le superfici praticamente piene. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root, [data-theme="light"] {
+    --glass-bg: rgba(255, 255, 255, 0.94);
+    --glass-bg-strong: rgba(255, 255, 255, 0.97);
+    --glass-bg-subtle: rgba(255, 255, 255, 0.88);
+  }
+  [data-theme="dark"] {
+    --glass-bg: rgba(28, 34, 36, 0.94);
+    --glass-bg-strong: rgba(20, 25, 26, 0.97);
+    --glass-bg-subtle: rgba(34, 41, 43, 0.88);
+  }
+  :root {
+    --glass-inverse-bg: rgba(7, 12, 20, 0.95);
+    --glass-inverse-bg-strong: rgba(5, 9, 15, 0.98);
+  }
+}
+
+/* ── Preferenza di sistema: trasparenza ridotta ────────────────────
+   Superfici piene e aurora quasi spenta. Il blur viene disattivato in base.css. */
+@media (prefers-reduced-transparency: reduce) {
+  :root, [data-theme="light"] {
+    --glass-bg: #ffffff;
+    --glass-bg-strong: #ffffff;
+    --glass-bg-subtle: #faf9f7;
+    --glass-border: var(--color-border);
+    --glass-border-soft: var(--color-divider);
+    --glass-highlight: none;
+    --aurora-1: rgba(10, 107, 116, 0.05);
+    --aurora-2: rgba(112, 76, 200, 0.04);
+    --aurora-3: rgba(226, 149, 62, 0.04);
+    --aurora-4: rgba(46, 178, 190, 0.04);
+  }
+  [data-theme="dark"] {
+    --glass-bg: #171b1c;
+    --glass-bg-strong: #121516;
+    --glass-bg-subtle: #1d2223;
+    --glass-border: var(--color-border);
+    --glass-border-soft: var(--color-divider);
+    --glass-highlight: none;
+    --aurora-1: rgba(16, 148, 160, 0.05);
+    --aurora-2: rgba(130, 88, 232, 0.04);
+    --aurora-3: rgba(232, 150, 58, 0.04);
+    --aurora-4: rgba(52, 196, 210, 0.04);
+  }
+  :root {
+    --glass-inverse-bg: #070c14;
+    --glass-inverse-bg-strong: #05090f;
+    --glass-inverse-highlight: none;
+    /* Spegne il blur ovunque in un colpo solo, CSS di pagina compreso. */
+    --glass-filter: none;
+    --glass-filter-sm: none;
+    --glass-inverse-filter: none;
+  }
 }

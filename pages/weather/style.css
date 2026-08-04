@@ -15,16 +15,19 @@
   margin: 0 auto;
 }
 
+/* Gli input restano su superficie piena: sono campi di inserimento dati,
+   il vetro sotto un cursore di testo penalizza solo la leggibilità. */
 .search-input {
   flex: 1;
   padding: 0.875rem 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  border: 1px solid var(--data-border);
+  border-radius: var(--radius-md);
+  background: var(--data-surface);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  box-shadow: var(--glass-shadow);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .search-input:focus {
@@ -35,18 +38,20 @@
 .search-button {
   padding: 0.875rem 1.5rem;
   background: var(--color-primary);
-  color: white;
-  border: 2px solid var(--color-primary);
-  border-radius: 0.5rem;
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: var(--font-body);
   font-size: 1rem;
+  box-shadow: var(--glass-shadow);
 }
 
 .search-button:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--color-primary-hover);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .search-button:active {
@@ -60,9 +65,14 @@
 
 /* Current Weather Card */
 .current-card {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
   padding: 2rem;
   margin-bottom: 2rem;
 }
@@ -97,7 +107,7 @@
   gap: 1.5rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: 1px solid var(--data-border);
 }
 
 .current-temp {
@@ -130,18 +140,19 @@
   gap: 0.75rem;
 }
 
+/* Figlio di .current-card (vetro) → solido. */
 .current-item {
   text-align: center;
   padding: 0.75rem 0.5rem;
-  background: var(--color-bg);
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
+  background: var(--data-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--data-border);
   transition: all 0.3s ease;
 }
 
 .current-item:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--glass-shadow);
 }
 
 .current-item-label {
@@ -182,26 +193,32 @@
 }
 
 .forecast-card {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
   padding: 1.25rem 0.75rem;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
   cursor: pointer;
   user-select: none;
 }
 
 .forecast-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-3px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .forecast-card.active {
   border-color: var(--color-primary);
-  background: var(--color-bg);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  background-color: var(--glass-bg-strong);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .forecast-day {
@@ -242,7 +259,7 @@
 }
 
 .forecast-precip {
-  color: #3b82f6;
+  color: var(--color-info);
   font-weight: 600;
 }
 
@@ -250,17 +267,20 @@
 .loading-state {
   text-align: center;
   padding: 3rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   font-size: 1.1rem;
 }
 
 .error-state {
   text-align: center;
   padding: 2rem;
-  background: var(--color-bg-secondary);
-  border: 2px solid #ef4444;
-  border-radius: 0.75rem;
-  color: #ef4444;
+  background-color: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--color-negative);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+  color: var(--color-negative);
   font-weight: 500;
 }
 
@@ -268,18 +288,24 @@
   display: inline-block;
   margin-bottom: 2rem;
   padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  backdrop-filter: var(--glass-filter-sm);
+  -webkit-backdrop-filter: var(--glass-filter-sm);
+  box-shadow: var(--glass-shadow);
   color: var(--color-text);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
   font-weight: 500;
 }
 
 .back-link:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg);
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 @media (max-width: 600px) {
@@ -321,10 +347,17 @@
   margin-bottom: 1.25rem;
 }
 
+/* Lista oraria: UN SOLO backdrop-filter, sul contenitore. Le righe restano
+   trasparenti — così non si annida vetro su vetro e non c'è un blur per riga da
+   ridipingere durante lo scroll. Il contenitore usa la variante "strong" perché
+   fa da barrier layer sotto testo denso. */
 .hourly-container {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
   overflow: hidden;
   max-height: 520px;
   overflow-y: auto;
@@ -335,8 +368,8 @@
   grid-template-columns: 60px 40px 1fr 1fr 1fr 1fr;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: var(--color-bg);
-  border-bottom: 2px solid var(--color-border);
+  background: var(--data-surface-alt);
+  border-bottom: 1px solid var(--data-border);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -345,7 +378,7 @@
 .hourly-col-label {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -356,7 +389,7 @@
   gap: 0.5rem;
   padding: 0.6rem 1rem;
   align-items: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--data-border);
   transition: background 0.2s ease;
 }
 
@@ -365,7 +398,7 @@
 }
 
 .hourly-row:hover {
-  background: var(--color-bg);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .hourly-time {
@@ -395,12 +428,12 @@
 }
 
 .hourly-precip {
-  color: #3b82f6;
+  color: var(--color-info);
   font-weight: 600;
 }
 
 .hourly-precip-none {
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
 .hourly-container::-webkit-scrollbar {
@@ -412,8 +445,12 @@
 }
 
 .hourly-container::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--data-border);
   border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forecast-card:hover, .back-link:hover { transform: none; }
 }
 
 @media (max-width: 600px) {

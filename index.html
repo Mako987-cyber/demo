@@ -38,7 +38,7 @@
 
     .menu-subtitle {
       font-size: 1.125rem;
-      color: var(--color-text-secondary);
+      color: var(--color-text-muted);
       margin-bottom: 3rem;
       line-height: 1.6;
     }
@@ -59,19 +59,24 @@
     .menu-link {
       display: block;
       padding: 2rem;
-      border: 2px solid var(--color-border);
-      border-radius: 0.75rem;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
       text-decoration: none;
       color: var(--color-text);
-      transition: all 0.3s ease;
-      background: var(--color-bg-secondary);
+      background-color: var(--glass-bg);
+      background-image: var(--glass-highlight);
+      background-repeat: no-repeat;
+      backdrop-filter: var(--glass-filter);
+      -webkit-backdrop-filter: var(--glass-filter);
+      box-shadow: var(--glass-shadow);
+      transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
     }
 
     .menu-link:hover {
-      border-color: var(--color-primary);
-      background: var(--color-bg);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      border-color: var(--glass-border-strong);
+      background-color: var(--glass-bg-strong);
+      transform: translateY(-4px);
+      box-shadow: var(--glass-shadow-lift);
     }
 
     .menu-link h2 {
@@ -83,7 +88,7 @@
     .menu-link p {
       margin: 0;
       font-size: 0.95rem;
-      color: var(--color-text-secondary);
+      color: var(--color-text-muted);
     }
 
     .menu-icon {
@@ -91,12 +96,14 @@
       width: 3rem;
       height: 3rem;
       margin-bottom: 1rem;
-      opacity: 0.8;
-      transition: transform 0.3s ease;
+      color: var(--color-primary);
+      opacity: 0.85;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
     .menu-link:hover .menu-icon {
       transform: scale(1.1);
+      opacity: 1;
     }
 
     @media (min-width: 768px) {
@@ -119,8 +126,13 @@
 
     .footer-note {
       font-size: 0.875rem;
-      color: var(--color-text-secondary);
+      color: var(--color-text-muted);
       margin-top: 2rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-link:hover { transform: none; }
+      .menu-link:hover .menu-icon { transform: none; }
     }
   </style>
 </head>
