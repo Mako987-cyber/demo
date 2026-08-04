@@ -1,38 +1,8 @@
-:root {
-  --vw-pink: #ff4fcf;
-  --vw-cyan: #3be9ff;
-  --vw-blue: #1a1b48;
-  --vw-ink: #090414;
-  --vw-peach: #ffb36b;
-  --vw-grid: rgba(59, 233, 255, 0.18);
-  --vw-panel: rgba(9, 4, 20, 0.78);
-  --vw-text: #f6d8ff;
-}
-
-body {
-  min-height: 100vh;
-  color: var(--vw-text);
-  background:
-    radial-gradient(1000px 520px at 50% 5%, rgba(255, 79, 207, 0.22), transparent 60%),
-    radial-gradient(900px 500px at 80% 90%, rgba(59, 233, 255, 0.2), transparent 60%),
-    linear-gradient(180deg, #1d1d52 0%, #160c2f 38%, #0a0519 70%, #05020f 100%);
-  position: relative;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(var(--vw-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--vw-grid) 1px, transparent 1px);
-  background-size: 62px 62px;
-  opacity: 0.35;
-  transform: perspective(350px) rotateX(62deg) translateY(30%);
-  transform-origin: center bottom;
-}
+/* Space Invaders — allineato al sistema glass condiviso.
+   La palette vaporwave locale (:root --vw-*) e gli override di body sono stati
+   rimossi: il fondo ora è l'aurora condivisa di base.css, e i pannelli usano
+   gli stessi token di vetro del resto del sito.
+   Il canvas resta scuro: gli sprite hanno bisogno di quel contrasto. */
 
 .back-projects {
   margin-left: auto;
@@ -43,14 +13,14 @@ body::before {
   max-width: 860px;
   margin: 2rem auto;
   padding: 1.25rem;
-  border: 1px solid rgba(255, 79, 207, 0.55);
-  border-radius: 1.25rem;
-  background: linear-gradient(180deg, rgba(24, 14, 52, 0.75), var(--vw-panel));
-  box-shadow:
-    0 0 0 1px rgba(59, 233, 255, 0.22) inset,
-    0 20px 45px rgba(0, 0, 0, 0.4),
-    0 0 35px rgba(255, 79, 207, 0.22);
-  backdrop-filter: blur(6px);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .game-header {
@@ -63,30 +33,27 @@ body::before {
   font-size: 0.8rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--vw-cyan);
-  text-shadow: 0 0 10px rgba(59, 233, 255, 0.8);
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 .game-header h1 {
   margin: 0;
-  font-family: "Cabinet Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(1.5rem, 4.8vw, 2.55rem);
   line-height: 1.1;
-  letter-spacing: 0.09em;
-  color: #ffd6f8;
-  text-shadow:
-    0 0 8px rgba(255, 79, 207, 0.9),
-    0 0 24px rgba(255, 79, 207, 0.45),
-    0 0 42px rgba(59, 233, 255, 0.3);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
 }
 
+/* Figli di un contenitore di vetro → superfici piene, nessun filtro annidato. */
 .game-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.65rem;
   margin-bottom: 1rem;
-  font-family: "General Sans", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -95,11 +62,16 @@ body::before {
 .game-stats > div {
   text-align: center;
   padding: 0.55rem 0.4rem;
-  border: 1px solid rgba(59, 233, 255, 0.4);
-  border-radius: 0.75rem;
-  color: var(--vw-cyan);
-  background: rgba(8, 12, 36, 0.6);
-  text-shadow: 0 0 12px rgba(59, 233, 255, 0.8);
+  border: 1px solid var(--data-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  background: var(--data-surface);
+  font-weight: 600;
+}
+
+.game-stats span {
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 #gameCanvas {
@@ -107,13 +79,10 @@ body::before {
   width: 100%;
   max-width: 800px;
   aspect-ratio: 4 / 3;
-  background: linear-gradient(180deg, #1a2052 0%, #151041 45%, #09061d 100%);
-  border: 2px solid rgba(255, 79, 207, 0.75);
-  border-radius: 0.9rem;
-  box-shadow:
-    0 0 0 1px rgba(59, 233, 255, 0.38),
-    0 0 28px rgba(255, 79, 207, 0.35),
-    0 0 45px rgba(59, 233, 255, 0.16);
+  background: #080d12;
+  border: 1px solid var(--data-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
   margin: 0 auto 1.2rem;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -121,13 +90,12 @@ body::before {
 
 .game-over {
   text-align: center;
-  font-family: "Cabinet Grotesk", sans-serif;
-  color: #ffd5e4;
+  font-family: var(--font-display);
+  color: var(--color-negative);
   font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   margin-top: 0.8rem;
-  text-shadow: 0 0 14px rgba(255, 80, 160, 0.8);
 }
 
 .button-row {
@@ -139,41 +107,30 @@ body::before {
 }
 
 .btn-game {
-  position: relative;
-  overflow: hidden;
   padding: 0.82rem 1.45rem;
   min-width: 185px;
-  border: 1px solid rgba(255, 179, 107, 0.8);
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 79, 207, 0.2), rgba(59, 233, 255, 0.2));
-  color: #fff0fb;
-  font-family: "General Sans", sans-serif;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background-color: var(--glass-bg-strong);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  box-shadow: var(--glass-shadow);
+  color: var(--color-text);
+  font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
-}
-
-.btn-game::before {
-  content: "";
-  position: absolute;
-  inset: -30% auto -30% -35%;
-  width: 30%;
-  transform: rotate(12deg);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
-  transition: left 0.35s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
 }
 
 .btn-game:hover {
-  transform: translateY(-2px) scale(1.02);
-  border-color: var(--vw-cyan);
-  box-shadow: 0 0 15px rgba(59, 233, 255, 0.45), 0 0 28px rgba(255, 79, 207, 0.35);
-}
-
-.btn-game:hover::before {
-  left: 120%;
+  transform: translateY(-2px);
+  border-color: var(--glass-border-strong);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .btn-game:active {
@@ -183,20 +140,19 @@ body::before {
 .game-controls {
   margin-top: 1.2rem;
   padding: 1rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(59, 233, 255, 0.45);
-  background: linear-gradient(180deg, rgba(7, 12, 38, 0.82), rgba(7, 8, 26, 0.92));
-  box-shadow: 0 0 0 1px rgba(255, 79, 207, 0.2) inset;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--data-border);
+  background: var(--data-surface);
 }
 
 .game-controls h3 {
   margin: 0 0 0.65rem;
-  font-family: "Cabinet Grotesk", sans-serif;
+  font-family: var(--font-display);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--vw-peach);
+  color: var(--color-primary);
 }
 
 .controls-list {
@@ -206,34 +162,44 @@ body::before {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: "General Sans", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.9rem;
+  color: var(--color-text-muted);
 }
 
 .controls-list li {
   padding: 0.35rem 0.45rem;
-  border-left: 2px solid rgba(255, 79, 207, 0.6);
-  background: rgba(255, 79, 207, 0.08);
+  border-left: 2px solid var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .back-link {
   display: inline-block;
   margin-top: 1rem;
   text-decoration: none;
-  color: var(--vw-cyan);
-  border: 1px solid rgba(59, 233, 255, 0.7);
-  border-radius: 999px;
-  padding: 0.58rem 1rem;
-  font-family: "General Sans", sans-serif;
+  color: var(--color-text);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  backdrop-filter: var(--glass-filter-sm);
+  -webkit-backdrop-filter: var(--glass-filter-sm);
+  box-shadow: var(--glass-shadow);
+  padding: 0.58rem 1.15rem;
+  font-family: var(--font-body);
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  transition: all 0.25s ease;
+  font-weight: 600;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
 }
 
 .back-link:hover {
-  color: #081029;
-  background: var(--vw-cyan);
-  box-shadow: 0 0 18px rgba(59, 233, 255, 0.45);
+  color: var(--color-text-inverse);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 @media (max-width: 760px) {
@@ -255,4 +221,8 @@ body::before {
   .controls-list {
     grid-template-columns: 1fr;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-game:hover, .back-link:hover { transform: none; }
 }

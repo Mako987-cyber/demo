@@ -8,10 +8,17 @@
   margin-bottom: 2rem;
 }
 
+/* La card è l'unico oggetto della pagina: vetro pieno, con il barrier layer
+   sotto la frase generata perché è testo grande su superficie translucida. */
 .naas-card {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.75rem;
+  background-color: var(--glass-bg-strong);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow-lift);
   padding: 2.5rem;
   text-align: center;
   margin-bottom: 3rem;
@@ -54,18 +61,20 @@
 .generate-btn {
   padding: 1rem 2.5rem;
   background: var(--color-primary);
-  color: white;
-  border: 2px solid var(--color-primary);
-  border-radius: 0.5rem;
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-full);
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: var(--font-body);
+  box-shadow: var(--glass-shadow);
 }
 
 .generate-btn:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: var(--color-primary-hover);
+  box-shadow: var(--glass-shadow-lift);
   transform: translateY(-2px);
 }
 
@@ -96,15 +105,20 @@
 }
 
 .history-item {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
   padding: 1rem 1.25rem;
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
   animation: fadeIn 0.3s ease;
 }
 
@@ -114,13 +128,16 @@
 }
 
 .history-item:hover {
-  border-color: var(--color-primary);
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 .history-number {
   font-size: 0.75rem;
   font-weight: 700;
-  color: white;
+  color: var(--color-text-inverse);
   background: var(--color-primary);
   width: 24px;
   height: 24px;
@@ -138,7 +155,7 @@
 
 .empty-state {
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   padding: 1.5rem;
 }
@@ -147,18 +164,24 @@
   display: inline-block;
   margin-bottom: 2rem;
   padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  backdrop-filter: var(--glass-filter-sm);
+  -webkit-backdrop-filter: var(--glass-filter-sm);
+  box-shadow: var(--glass-shadow);
   color: var(--color-text);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
   font-weight: 500;
 }
 
 .back-link:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg);
+  border-color: var(--glass-border-strong);
+  background-color: var(--glass-bg-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lift);
 }
 
 @media (max-width: 600px) {
@@ -173,4 +196,11 @@
   .no-text {
     font-size: 1.1rem;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .generate-btn:hover,
+  .history-item:hover,
+  .back-link:hover { transform: none; }
+  .history-item { animation: none; }
 }
