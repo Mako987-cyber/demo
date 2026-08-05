@@ -38,6 +38,7 @@
 .contact-panel { padding: var(--space-6); }
 .info-card h3,
 .service-panel h2,
+.service-panel h3,
 .contact-panel h1 { font-size: var(--text-lg); margin-bottom: var(--space-3); }
 .featured-panel {
   display: grid;

@@ -1073,7 +1073,7 @@ function toggleLayer(layerName) {
       def.error   = true;
       console.error('[magi-sat] layer load failed:', layerName, err);
       var btn = document.querySelector('[data-layer="' + layerName + '"]');
-      if (btn) btn.title = 'Load failed — check Vercel deployment & Supabase env vars';
+      if (btn) btn.title = 'LAYER FEED UNAVAILABLE // MAGI LINK ERROR';
       refreshLayerBtn(layerName);
     });
 }
