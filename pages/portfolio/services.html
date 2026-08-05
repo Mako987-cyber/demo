@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Servizi cloud: Microsoft 365, Azure, Entra ID, Intune, automazione PowerShell, Terraform e consulenza infrastrutturale per ambienti enterprise." />
-  <title>Servizi · Aniello Mollo Cloud Engineer</title>
+  <meta name="description" content="Servizi di infrastruttura: backup e disaster recovery con Commvault, Veeam e Azure Backup, server e reti, virtualizzazione, cloud Azure e Microsoft 365, identità Entra ID e automazione PowerShell e Terraform." />
+  <title>Servizi · Aniello Mollo Infrastructure &amp; Cloud Engineer</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
@@ -55,87 +55,161 @@
     <section class="section page-hero">
       <div class="container section-intro reveal">
         <span class="eyebrow">Servizi</span>
-        <h1>Microsoft cloud, automazione e gestione endpoint per ambienti enterprise.</h1>
-        <p>Interventi concreti su tenant esistenti, nuove implementazioni e ottimizzazione operativa. Specializzazione su stack Microsoft con esperienza diretta in contesti banking e finance.</p>
+        <h1>Infrastruttura, cloud e continuità operativa.</h1>
+        <p>Interventi su ambienti esistenti, nuove implementazioni e messa in ordine di infrastrutture cresciute senza governance. On-premises, cloud e ibrido, con esperienza diretta in contesti banking e finance.</p>
       </div>
     </section>
 
+    <!-- 1 · CONTINUITÀ OPERATIVA -->
     <section class="section section--bordered">
+      <div class="container section-intro reveal">
+        <span class="eyebrow">01 · Continuità operativa</span>
+        <h2>Se qualcosa si rompe, si torna online.</h2>
+        <p>Il backup è l'unica parte dell'infrastruttura che si scopre rotta nel momento peggiore. Qui si lavora perché quel momento sia già stato provato.</p>
+      </div>
       <div class="container service-layout">
 
         <article class="service-panel reveal">
-          <h2>Microsoft 365 Administration</h2>
-          <p>Gestione completa del tenant M365: Exchange Online (mailbox, distribution group, migrazioni da on-prem), Teams (governance canali privati, membership auditing), SharePoint (permessi sito, accessi esterni). Configurazione Conditional Access e MFA per compliance aziendale.</p>
+          <h3>Backup e disaster recovery</h3>
+          <p>Progettazione e gestione dei backup con Commvault, Veeam e Azure Backup: policy di retention, regola 3-2-1, copie off-site e protezione dei dati Microsoft 365. RPO e RTO concordati prima, non stimati dopo l'incidente. Con test di ripristino periodici, perché un backup mai ripristinato è solo un'ipotesi.</p>
           <div class="tag-row">
-            <span class="tag">Exchange Online</span>
-            <span class="tag">Teams</span>
-            <span class="tag">SharePoint</span>
+            <span class="tag">Commvault</span>
+            <span class="tag">Veeam</span>
+            <span class="tag">Azure Backup</span>
+            <span class="tag">Site Recovery</span>
+          </div>
+        </article>
+
+        <article class="service-panel reveal">
+          <h3>Sicurezza e hardening</h3>
+          <p>Riduzione della superficie di attacco su identità, endpoint e infrastruttura: Conditional Access e MFA, Defender for Endpoint, revisione dei ruoli privilegiati, clean-up degli account orfani e compliance TLS. Interventi mirati e documentati, non checklist generiche.</p>
+          <div class="tag-row">
             <span class="tag">Conditional Access</span>
-          </div>
-        </article>
-
-        <article class="service-panel reveal">
-          <h2>Entra ID &amp; Identity Security</h2>
-          <p>Configurazione e hardening di Entra ID (Azure AD): gestione utenti e gruppi, identity protection, Privileged Identity Management, integrazione con Active Directory on-prem, revisione dei ruoli e clean-up di account orfani.</p>
-          <div class="tag-row">
-            <span class="tag">Entra ID</span>
-            <span class="tag">Azure AD</span>
-            <span class="tag">Identity Protection</span>
-            <span class="tag">PIM</span>
-          </div>
-        </article>
-
-        <article class="service-panel reveal">
-          <h2>Intune &amp; Endpoint Management</h2>
-          <p>Deployment e gestione di policy Intune per dispositivi BYOD e corporate: Autopilot enrollment, compliance policies, configurazione Defender for Endpoint, gestione app e profili di configurazione per Windows, iOS e macOS.</p>
-          <div class="tag-row">
-            <span class="tag">Intune</span>
-            <span class="tag">Autopilot</span>
+            <span class="tag">MFA</span>
             <span class="tag">Defender</span>
-            <span class="tag">MDM/MAM</span>
+            <span class="tag">Hardening</span>
           </div>
         </article>
 
         <article class="service-panel reveal">
-          <h2>Automazione PowerShell &amp; Graph API</h2>
-          <p>Sviluppo di script PowerShell per provisioning utenti, compliance reporting, auditing permessi SharePoint, Teams membership e rilevamento app su fleet aziendali. Integrazione con Microsoft Graph API per operazioni di massa e reportistica automatizzata.</p>
+          <h3>Migrazioni e cambi di piattaforma</h3>
+          <p>Passaggi pianificati invece che subiti: Exchange Server → Exchange Online, sincronizzazione Active Directory, consolidamento di server e tenant, rollout di dispositivi. Finestre di fermo concordate in anticipo e piano di rientro pronto prima di iniziare.</p>
           <div class="tag-row">
-            <span class="tag">PowerShell</span>
-            <span class="tag">Graph API</span>
-            <span class="tag">Automazione</span>
-            <span class="tag">Reporting</span>
-          </div>
-        </article>
-
-        <article class="service-panel reveal">
-          <h2>Azure &amp; Infrastructure as Code</h2>
-          <p>Provisioning infrastruttura Azure con Terraform, gestione Storage Accounts, configurazione CLI per autenticazione DevOps, TLS compliance auditing e accesso sicuro tramite IAM. Supporto AWS per scenari EC2/SSM con policy IAM per single-instance SSH.</p>
-          <div class="tag-row">
-            <span class="tag">Azure</span>
-            <span class="tag">Terraform</span>
-            <span class="tag">DevOps</span>
-            <span class="tag">AWS</span>
-          </div>
-        </article>
-
-        <article class="service-panel reveal">
-          <h2>Hybrid IT &amp; Migrazione Cloud</h2>
-          <p>Integrazione ambienti on-premises con Azure: Active Directory sync, migrazione Exchange Server → Exchange Online, deployment SCCM, rollout dispositivi e gestione del ciclo di vita endpoint in ambienti ibridi. Approccio ITIL con rispetto degli SLA.</p>
-          <div class="tag-row">
-            <span class="tag">Active Directory</span>
             <span class="tag">Exchange Migration</span>
-            <span class="tag">SCCM</span>
+            <span class="tag">AD Sync</span>
+            <span class="tag">Hybrid</span>
             <span class="tag">ITIL</span>
           </div>
         </article>
 
       </div>
     </section>
+
+    <!-- 2 · INFRASTRUTTURA E RETI -->
+    <section class="section section--bordered">
+      <div class="container section-intro reveal">
+        <span class="eyebrow">02 · Infrastruttura e reti</span>
+        <h2>Quello che sta sotto e non deve farsi notare.</h2>
+        <p>Server, rete e dispositivi sono il livello che nessuno guarda finché funziona. Gestirli bene significa che continui a non guardarli.</p>
+      </div>
+      <div class="container service-layout">
+
+        <article class="service-panel reveal">
+          <h3>Server e virtualizzazione</h3>
+          <p>Gestione di server Windows e Linux in produzione: Active Directory, Exchange Server, database server, host virtuali e storage. Manutenzione, patching e dimensionamento per ambienti che non possono permettersi sorprese a fine mese.</p>
+          <div class="tag-row">
+            <span class="tag">Windows Server</span>
+            <span class="tag">Linux</span>
+            <span class="tag">Active Directory</span>
+            <span class="tag">Storage</span>
+          </div>
+        </article>
+
+        <article class="service-panel reveal">
+          <h3>Reti e connettività</h3>
+          <p>Progettazione e gestione di reti cablate e wireless, segmentazione, VPN site-to-site e accesso remoto sicuro. Esperienza diretta su reti wireless campus-wide con centinaia di utenti connessi in contemporanea.</p>
+          <div class="tag-row">
+            <span class="tag">LAN/WLAN</span>
+            <span class="tag">VPN</span>
+            <span class="tag">Segmentazione</span>
+            <span class="tag">Aerohive</span>
+          </div>
+        </article>
+
+        <article class="service-panel reveal">
+          <h3>Gestione endpoint e dispositivi</h3>
+          <p>Governo di flotte Windows, iOS e macOS: Intune con Autopilot enrollment, compliance policy e profili di configurazione, SCCM per imaging e distribuzione software, MobileIron e Jamf Pro sul parco mobile. Dispositivi aziendali e BYOD sotto le stesse regole.</p>
+          <div class="tag-row">
+            <span class="tag">Intune</span>
+            <span class="tag">Autopilot</span>
+            <span class="tag">SCCM</span>
+            <span class="tag">Jamf Pro</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- 3 · CLOUD E AUTOMAZIONE -->
+    <section class="section section--bordered">
+      <div class="container section-intro reveal">
+        <span class="eyebrow">03 · Cloud e automazione</span>
+        <h2>Cloud governato, lavoro manuale in meno.</h2>
+        <p>Un tenant ordinato e attività ripetitive trasformate in script: è così che i ticket ricorrenti smettono di tornare.</p>
+      </div>
+      <div class="container service-layout">
+
+        <article class="service-panel reveal">
+          <h3>Cloud Azure e Microsoft 365</h3>
+          <p>Amministrazione completa del tenant: Exchange Online (mailbox, distribution group), Teams (governance dei canali privati, auditing delle membership), SharePoint (permessi di sito, accessi esterni), Storage Accounts e risorse Azure. AWS come seconda piattaforma per scenari EC2, S3, SSM e IAM.</p>
+          <div class="tag-row">
+            <span class="tag">Azure</span>
+            <span class="tag">Microsoft 365</span>
+            <span class="tag">Exchange Online</span>
+            <span class="tag">AWS</span>
+          </div>
+        </article>
+
+        <article class="service-panel reveal">
+          <h3>Identità e accessi</h3>
+          <p>Configurazione e hardening di Entra ID: gestione di utenti e gruppi, Identity Protection, Privileged Identity Management, integrazione con Active Directory on-premises e revisione periodica dei ruoli. Chi può fare cosa, scritto da qualche parte e verificabile.</p>
+          <div class="tag-row">
+            <span class="tag">Entra ID</span>
+            <span class="tag">PIM</span>
+            <span class="tag">Identity Protection</span>
+            <span class="tag">Azure AD</span>
+          </div>
+        </article>
+
+        <article class="service-panel reveal">
+          <h3>Automazione e Infrastructure as Code</h3>
+          <p>Script PowerShell e Microsoft Graph API per provisioning utenti, compliance reporting, auditing dei permessi e inventario applicativo su flotte di 200+ dispositivi. Provisioning con Terraform e pipeline CI/CD su Azure DevOps e Git: ambienti riproducibili, non ricostruiti a memoria.</p>
+          <div class="tag-row">
+            <span class="tag">PowerShell</span>
+            <span class="tag">Graph API</span>
+            <span class="tag">Terraform</span>
+            <span class="tag">CI/CD</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- CHIUSURA -->
+    <section class="section section--bordered">
+      <div class="container cta-band reveal">
+        <div>
+          <h2>Non sai da quale di questi partire?</h2>
+          <p>Si comincia sempre allo stesso modo: capire cosa c'è, cosa è protetto e cosa no. Scrivimi e ne parliamo.</p>
+        </div>
+        <a class="btn btn--primary" href="/pages/portfolio/contact.html">Parliamone</a>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer__inner">
-      <span>Aniello Mollo · Cloud Engineer</span>
+      <span>Aniello Mollo · Infrastructure &amp; Cloud Engineer</span>
       <span>Monza, Italy · Consulenza in remoto e ibrida</span>
     </div>
   </footer>
