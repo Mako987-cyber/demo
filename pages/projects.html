@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Progetti interattivi: Space Invaders, Weather Tool e altre applicazioni web." />
   <title>Progetti</title>
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" href="../../favicon.ico" sizes="32x32" />
-  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#5b2ee5" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0d1117" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../styles/tokens.css" />
-  <link rel="stylesheet" href="../../styles/base.css" />
-  <link rel="stylesheet" href="../../styles/components.css" />
-  <link rel="stylesheet" href="../../styles/layout.css" />
+  <link rel="stylesheet" href="/styles/tokens.css" />
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/components.css" />
+  <link rel="stylesheet" href="/styles/layout.css" />
   <style>
     .projects-header {
       text-align: center;
@@ -132,19 +132,31 @@
 
   <header class="site-header" data-header>
     <div class="container navbar">
-      <a class="brand" href="../../index.html" aria-label="Home">
+      <a class="brand" href="/" aria-label="Home">
         <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <ellipse cx="16" cy="17" rx="12.4" ry="5.5" transform="rotate(-27 16 17)"
-                     stroke="var(--color-accent-soft)" stroke-width="1.7" opacity="0.95"/>
-            <path d="M8.2 23.4 16 8.6 23.8 23.4" stroke="currentColor" stroke-width="2.6"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M11.8 17.8h8.4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
-            <circle cx="25.4" cy="10.8" r="2.5" fill="var(--color-accent-soft)"/>
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 45 L23.5 19 L34 45 L34 19 L42 31 L50 19 L50 45"/>
+              <path d="M17.6 34.5 H29.4"/>
+            </g>
           </svg>
         </span>
-        <span class="brand__text">Progetti</span>
+        <span class="brand__text">Aniello Mollo</span>
       </a>
+
+      <nav class="site-nav" aria-label="Navigazione principale">
+        <button class="icon-button nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+          <span class="sr-only">Apri menu</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="nav-menu" id="nav-menu" data-nav-menu>
+          <a href="/">Home</a>
+          <a href="/pages/portfolio/services.html">Servizi</a>
+          <a href="/pages/projects.html" class="is-active" aria-current="page">Progetti</a>
+          <a href="/pages/portfolio/profile.html">Profilo</a>
+          <a class="btn btn--primary btn--nav" href="/pages/portfolio/contact.html">Contatti</a>
+        </div>
+      </nav>
 
       <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
         <span data-theme-icon aria-hidden="true"></span>
@@ -155,18 +167,18 @@
   <main id="main-content">
     <section class="section">
       <div class="container">
-        <a href="../../index.html" class="back-link">← Torna al Menu</a>
+        <a href="/" class="back-link">← Torna alla home</a>
 
         <div class="projects-header reveal">
-          <h1>Progetti Interattivi</h1>
+          <h1>Progetti e prova tecnica</h1>
           <p style="color: var(--color-text-secondary); margin-top: 1rem; font-size: 1.125rem;">
-            Una collezione di applicazioni web e giochi per esplorare diverse tecnologie e creatività.
+            Applicazioni funzionanti con dati reali: integrazione di API pubbliche, visualizzazione 3D in WebGL, funzioni serverless e propagazione orbitale. Il codice è pubblico su GitHub.
           </p>
         </div>
 
         <div class="projects-grid">
           <!-- Space Invaders -->
-          <a href="../space-invaders/" class="project-card reveal">
+          <a href="/pages/space-invaders/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="18" height="18" rx="2"/>
               <circle cx="8" cy="8" r="1"/>
@@ -175,7 +187,7 @@
               <circle cx="12" cy="18" r="1"/>
             </svg>
             <h3>Space Invaders</h3>
-            <p>Un giochino retrò stile anni 80 con astronave controllabile, nemici verde fluo e progressione dei livelli.</p>
+            <p>Implementazione in Canvas 2D senza librerie: game loop, rilevamento collisioni e progressione dei livelli.</p>
             <div class="project-tags">
               <span class="project-tag">Gioco</span>
               <span class="project-tag">Canvas</span>
@@ -184,7 +196,7 @@
           </a>
 
           <!-- Weather Tool -->
-          <a href="../weather/" class="project-card reveal">
+          <a href="/pages/weather/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
               <circle cx="12" cy="12" r="2"/>
@@ -199,7 +211,7 @@
           </a>
 
           <!-- Dashboard Valute -->
-          <a href="../currency/" class="project-card reveal">
+          <a href="/pages/currency/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
             </svg>
@@ -213,7 +225,7 @@
           </a>
 
           <!-- Dashboard Crypto -->
-          <a href="../crypto/" class="project-card reveal">
+          <a href="/pages/crypto/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 8h6m-5 4h4m-3 4h2"/>
               <circle cx="12" cy="12" r="10"/>
@@ -229,7 +241,7 @@
           </a>
 
           <!-- NEO Tracker 3D -->
-          <a href="../neo/" class="project-card reveal">
+          <a href="/pages/neo/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
               <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"/>
@@ -247,7 +259,7 @@
           </a>
 
           <!-- MAGI System NEO Tactical -->
-          <a href="../magi-neo/" class="project-card reveal">
+          <a href="/pages/magi-neo/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
               <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"/>
@@ -265,7 +277,7 @@
           </a>
 
           <!-- MAGI SAT -->
-          <a href="../magi-sat/" class="project-card reveal">
+          <a href="/pages/magi-sat/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="4"/>
               <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(20 12 12)" opacity="0.5"/>
@@ -285,7 +297,7 @@
           </a>
 
           <!-- No as a Service -->
-          <a href="../naas/" class="project-card reveal">
+          <a href="/pages/naas/" class="project-card reveal">
             <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <path d="M4.93 4.93l14.14 14.14"/>
@@ -310,6 +322,6 @@
     </div>
   </footer>
 
-  <script src="../../scripts/main.js" defer></script>
+  <script src="/scripts/main.js" defer></script>
 </body>
 </html>
