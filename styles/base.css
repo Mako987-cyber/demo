@@ -22,8 +22,11 @@ body {
 /* ── Aurora ─────────────────────────────────────────────────────────
    Il fondo che il vetro rifrange. Fisso e fuori dal flusso: non scrolla,
    quindi backdrop-filter non deve ricalcolarlo a ogni frame di scroll.
-   Il drift anima solo transform (compositor-only). Il blur è statico:
-   animare un raggio di blur ricostruirebbe il layer a ogni frame. */
+
+   Statico di proposito: il drift lento andava bene per un sito-vetrina, ma su
+   una pagina che deve vendere una consulenza infrastrutturale un fondo che si
+   muove legge come consumer e distrae dalla lettura. Rimuoverlo elimina anche
+   il costo di compositing continuo. */
 body::before {
   content: "";
   position: fixed;
@@ -40,14 +43,7 @@ body::before {
     radial-gradient(48% 46% at 68% 28%, var(--aurora-2), transparent 68%),
     radial-gradient(54% 50% at 64% 70%, var(--aurora-3), transparent 70%),
     radial-gradient(46% 44% at 34% 68%, var(--aurora-4), transparent 66%);
-  filter: blur(var(--aurora-blur, 34px));
-  animation: aurora-drift 38s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes aurora-drift {
-  from { transform: translate3d(0, 0, 0) scale(1); }
-  to   { transform: translate3d(2.5%, -2.5%, 0) scale(1.08); }
+  filter: blur(var(--aurora-blur, 40px));
 }
 
 img, svg { display: block; max-width: 100%; height: auto; }
@@ -96,16 +92,7 @@ p, li { text-wrap: pretty; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  /* La regola sopra non basta per l'aurora: comprimere la durata la bloccherebbe
-     sul fotogramma finale (già traslata e scalata) invece che a riposo. */
-  body::before {
-    animation: none !important;
-    transform: none;
-  }
 }
 
-/* Trasparenza ridotta: superfici piene e --glass-filter: none arrivano da tokens.css,
-   qui resta solo da fermare il drift dell'aurora. */
-@media (prefers-reduced-transparency: reduce) {
-  body::before { animation: none; }
-}
+/* Trasparenza ridotta: superfici piene e --glass-filter: none arrivano da tokens.css.
+   L'aurora è già statica, quindi non serve altro qui. */

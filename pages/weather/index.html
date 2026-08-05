@@ -5,36 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Weather Tool - Meteo corrente e previsioni 7 giorni" />
   <title>Meteo</title>
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" href="../../favicon.ico" sizes="32x32" />
-  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#5b2ee5" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0d1117" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../styles/tokens.css" />
-  <link rel="stylesheet" href="../../styles/base.css" />
-  <link rel="stylesheet" href="../../styles/components.css" />
-  <link rel="stylesheet" href="../../styles/layout.css" />
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="/styles/tokens.css" />
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/components.css" />
+  <link rel="stylesheet" href="/styles/layout.css" />
+  <link rel="stylesheet" href="/pages/weather/style.css" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
 
   <header class="site-header" data-header>
     <div class="container navbar">
-      <a class="brand" href="../../index.html" aria-label="Home">
+      <a class="brand" href="/" aria-label="Home">
         <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <ellipse cx="16" cy="17" rx="12.4" ry="5.5" transform="rotate(-27 16 17)"
-                     stroke="var(--color-accent-soft)" stroke-width="1.7" opacity="0.95"/>
-            <path d="M8.2 23.4 16 8.6 23.8 23.4" stroke="currentColor" stroke-width="2.6"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M11.8 17.8h8.4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
-            <circle cx="25.4" cy="10.8" r="2.5" fill="var(--color-accent-soft)"/>
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 45 L23.5 19 L34 45 L34 19 L42 31 L50 19 L50 45"/>
+              <path d="M17.6 34.5 H29.4"/>
+            </g>
           </svg>
         </span>
-        <span class="brand__text">Meteo</span>
+        <span class="brand__text">Aniello Mollo</span>
       </a>
+
+      <nav class="site-nav" aria-label="Navigazione principale">
+        <button class="icon-button nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+          <span class="sr-only">Apri menu</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="nav-menu" id="nav-menu" data-nav-menu>
+          <a href="/">Home</a>
+          <a href="/pages/portfolio/services.html">Servizi</a>
+          <a href="/pages/projects.html" class="is-active" aria-current="page">Progetti</a>
+          <a href="/pages/portfolio/profile.html">Profilo</a>
+          <a class="btn btn--primary btn--nav" href="/pages/portfolio/contact.html">Contatti</a>
+        </div>
+      </nav>
 
       <button class="icon-button" type="button" aria-label="Cambia tema" data-theme-toggle>
         <span data-theme-icon aria-hidden="true"></span>
@@ -45,7 +57,7 @@
   <main id="main-content">
     <section class="section">
       <div class="container weather-container">
-        <a href="../projects.html" class="back-link">&larr; Torna ai Progetti</a>
+        <a href="/pages/projects.html" class="back-link">&larr; Torna ai Progetti</a>
 
         <div class="search-section reveal">
           <h1>Meteo &amp; Previsioni</h1>
@@ -77,9 +89,9 @@
     </div>
   </footer>
 
-  <script src="../../scripts/main.js" defer></script>
-  <script src="../api/http.js" defer></script>
-  <script src="../api/weatherApi.js" defer></script>
-  <script src="./script.js" defer></script>
+  <script src="/scripts/main.js" defer></script>
+  <script src="/pages/api/http.js" defer></script>
+  <script src="/pages/api/weatherApi.js" defer></script>
+  <script src="/pages/weather/script.js" defer></script>
 </body>
 </html>

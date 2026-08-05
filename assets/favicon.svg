@@ -1,14 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
-  <defs>
-    <linearGradient id="fav-tile" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#7b45ff"/>
-      <stop offset="1" stop-color="#3a1bb0"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="18" fill="url(#fav-tile)"/>
-  <circle cx="49.6" cy="17.6" r="7.4" fill="#ff7a1f"/>
-  <path d="M16.6 47.4 L32 15.4 L47.4 47.4" fill="none" stroke="#fff"
-        stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M23.7 36.2 H40.3" fill="none" stroke="#fff"
-        stroke-width="7.4" stroke-linecap="round"/>
+  <rect width="64" height="64" rx="9.6" fill="#0d1117"/>
+  <g fill="none" stroke="#2ecc8f" stroke-width="4.3"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 45 L23.5 19 L34 45 L34 19 L42 31 L50 19 L50 45"/>
+    <path d="M17.6 34.5 H29.4"/>
+  </g>
 </svg>

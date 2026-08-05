@@ -41,18 +41,22 @@
   border-radius: 0.85rem;
   display: grid;
   place-items: center;
-  /* Stessa tile del favicon: viola pieno, non translucido — il logo deve
+  /* Stessa tile del favicon: grafite pieno, non translucido — il logo deve
      restare riconoscibile ovunque, non dipendere da cosa gli scorre dietro. */
-  background: linear-gradient(145deg, #7b45ff, #5b2ee5 55%, #3a1bb0);
-  color: #ffffff;
+  background: #0d1117;
+  color: #2ecc8f;
   box-shadow: var(--glass-shadow);
 }
-.brand__mark svg { width: 78%; height: 78%; }
+.brand__mark svg { width: 82%; height: 82%; }
 .brand__text { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; }
 .site-nav { display: flex; align-items: center; gap: var(--space-4); }
 .nav-menu { display: flex; align-items: center; gap: var(--space-5); }
-.nav-menu a { font-size: var(--text-sm); color: var(--color-text-muted); }
-.nav-menu a:hover, .nav-menu a.is-active { color: var(--color-text); }
+/* :not(.btn) è necessario, non cosmetico: `.nav-menu a` ha specificità 0-1-1 e
+   sovrascriverebbe il colore di `.btn--primary` (0-1-0), lasciando la CTA
+   "Contatti" con il colore dei link di testo sopra il fondo pieno. */
+.nav-menu a:not(.btn) { font-size: var(--text-sm); color: var(--color-text-muted); }
+.nav-menu a:not(.btn):hover,
+.nav-menu a:not(.btn).is-active { color: var(--color-text); }
 .icon-button {
   width: 2.75rem;
   height: 2.75rem;
@@ -71,9 +75,13 @@
   background-color: var(--glass-bg-strong);
 }
 .nav-toggle { display: none; }
-.section { padding: clamp(var(--space-12), 8vw, var(--space-24)) 0; }
-.section--hero { padding-top: clamp(var(--space-16), 10vw, 8rem); }
+/* Densità: un sito che vende una consulenza deve mostrare la prova senza far
+   scrollare. Sezioni più corte del previgente clamp(12,8vw,24). */
+.section { padding: clamp(var(--space-10), 5.5vw, var(--space-16)) 0; }
+.section--hero { padding-top: clamp(var(--space-12), 6vw, var(--space-20)); }
+.section--tight { padding: var(--space-8) 0; }
 .section--bordered { border-top: 1px solid var(--glass-border-soft); }
+.section-action { margin-top: var(--space-8); }
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -119,6 +127,83 @@
   border-color: var(--glass-border-strong);
   transform: translateY(-1px);
   box-shadow: var(--glass-shadow-lift);
+}
+/* La CTA in navigazione deve staccarsi dai link di testo senza dominarli:
+   più compatta del bottone di pagina, stessa gerarchia cromatica. */
+.btn--nav {
+  min-height: 0;
+  padding: 0.5rem 0.95rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+}
+
+/* ── Striscia di prova ──────────────────────────────────────────────
+   Le metriche erano sepolte in una card laterale dell'hero. Qui diventano
+   il primo argomento dopo la proposta di valore. */
+.proof-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+}
+.proof-item {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-5);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+  border-left: 3px solid var(--color-primary);
+}
+.proof-item strong {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  line-height: 1;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+.proof-item span { font-size: var(--text-sm); color: var(--color-text-muted); }
+.proof-context {
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  max-width: 72ch;
+}
+.proof-context strong { color: var(--color-text); font-weight: 600; }
+
+/* ── Banda di chiusura ──────────────────────────────────────────── */
+.cta-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-8);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  background-color: var(--glass-bg);
+  background-image: var(--glass-highlight);
+  background-repeat: no-repeat;
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+}
+.cta-band h2 { font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-2); }
+.cta-band p { color: var(--color-text-muted); font-size: var(--text-sm); max-width: 58ch; }
+/* Riduce l'attrito prima del contatto: chi valuta un fornitore vuole sapere
+   in anticipo tempi e impegno. */
+.contact-note {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--data-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
 /* Il gruppo di pannelli del portfolio: una sola regola veste home, servizi,
@@ -172,8 +257,13 @@
 .contact-link strong { font-size: var(--text-sm); }
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.is-visible { opacity: 1; transform: none; }
+@media (max-width: 1024px) {
+  .proof-strip { grid-template-columns: 1fr; }
+}
 @media (max-width: 760px) {
   .nav-toggle { display: grid; }
+  .btn--nav { width: 100%; margin-top: var(--space-2); }
+  .cta-band { flex-direction: column; align-items: flex-start; }
   .nav-menu {
     position: absolute;
     top: 100%; left: 0; right: 0;

@@ -36,33 +36,34 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
-  --color-bg: #e7e1fb;
-  --color-surface: #f7f5ff;
-  --color-surface-2: #fbfaff;
-  --color-surface-offset: #e6e1fa;
-  --color-border: #cec6f0;
-  --color-divider: #ddd6f5;
-  --color-text: #17103f;
-  /* muted/faint tarati per reggere 4.5:1 compositati sul vetro chiaro sopra i blob
-     aurora, che ora sono molto più saturi: la soglia si gioca lì, non sul fondo. */
-  --color-text-muted: #453a70;
-  --color-text-faint: #514678;
-  --color-text-inverse: #fbfaff;
-  --color-primary: #5b2ee5;
-  --color-primary-hover: #4820c4;
-  --color-primary-highlight: #e2daff;
-  /* Arancio: il contrappunto caldo che impedisce al viola di appiattirsi. */
-  --color-accent: #9c3500;
-  --color-accent-soft: #ff7a1f;
+  --color-bg: #eef1ef;
+  --color-surface: #f7f9f8;
+  --color-surface-2: #fbfcfb;
+  --color-surface-offset: #e4e8e6;
+  --color-border: #c8d0cc;
+  --color-divider: #d8dedb;
+  --color-text: #0d1117;
+  /* muted/faint tarati per reggere 4.5:1 compositati sul vetro sopra l'aurora,
+     non solo sul fondo neutro: la soglia si gioca lì. */
+  --color-text-muted: #3f4a48;
+  --color-text-faint: #4d5754;
+  --color-text-inverse: #f7f9f8;
+  /* Smeraldo scurito: su superfici chiare #10b981 sta sotto 2:1. */
+  --color-primary: #05704a;
+  --color-primary-hover: #045c3c;
+  --color-primary-highlight: #d6ebe1;
+  --color-accent: #05704a;
+  --color-accent-soft: #10b981;
 
   /* ── Aurora: il fondo che il vetro rifrange ──────────────────────
-     Senza questo layer il glassmorphism non esiste: su tinta unita una
-     superficie translucida legge come una macchia grigia. */
-  --aurora-1: rgba(91, 46, 229, 0.40);
-  --aurora-2: rgba(255, 122, 31, 0.36);
-  --aurora-3: rgba(226, 46, 168, 0.32);
-  --aurora-4: rgba(46, 150, 255, 0.34);
-  --aurora-blur: 34px;
+     Serve ancora — su tinta unita una superficie translucida legge come una
+     macchia grigia — ma qui è una velatura, non un mesh colorato: smeraldo e
+     acciaio appena percettibili. Sopra il 20% il sito smette di sembrare serio. */
+  --aurora-1: rgba(5, 112, 74, 0.16);
+  --aurora-2: rgba(51, 84, 110, 0.16);
+  --aurora-3: rgba(16, 185, 129, 0.12);
+  --aurora-4: rgba(70, 96, 116, 0.14);
+  --aurora-blur: 40px;
 
   /* ── Vetro ───────────────────────────────────────────────────────
      12–16px è il punto di equilibrio fra effetto e costo GPU; saturate()
@@ -75,35 +76,35 @@
      CSS delle singole pagine, senza doverne elencare i selettori. */
   --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   --glass-filter-sm: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-bg-strong: rgba(255, 255, 255, 0.80);
-  --glass-bg-subtle: rgba(255, 255, 255, 0.42);
-  --glass-border: rgba(255, 255, 255, 0.75);
-  --glass-border-soft: rgba(255, 255, 255, 0.45);
-  --glass-border-strong: rgba(91, 46, 229, 0.42);
-  /* Doppia ombra: una stretta che definisce il bordo, una ampia che stacca dal fondo. */
-  --glass-shadow: 0 1px 2px rgba(35, 20, 90, 0.07), 0 12px 32px rgba(35, 20, 90, 0.14);
-  --glass-shadow-lift: 0 2px 4px rgba(35, 20, 90, 0.10), 0 20px 48px rgba(35, 20, 90, 0.22);
-  /* Bisello: il vetro reale cattura la luce sullo spigolo superiore. */
-  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 58%);
+  --glass-bg: rgba(255, 255, 255, 0.66);
+  --glass-bg-strong: rgba(255, 255, 255, 0.84);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.46);
+  --glass-border: rgba(13, 17, 23, 0.10);
+  --glass-border-soft: rgba(13, 17, 23, 0.06);
+  --glass-border-strong: rgba(5, 112, 74, 0.34);
+  /* Ombre corte e verticali: la diffusione ampia legge come profondità decorativa,
+     qui serve solo lo stacco dal fondo. */
+  --glass-shadow: 0 1px 2px rgba(13, 17, 23, 0.05), 0 6px 16px rgba(13, 17, 23, 0.07);
+  --glass-shadow-lift: 0 2px 4px rgba(13, 17, 23, 0.07), 0 12px 28px rgba(13, 17, 23, 0.12);
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 56%);
 
   /* ── Superfici solide (lato "dati" della regola ibrida) ──────────
      Righe di tabella, celle, input: niente translucenza, niente repaint in scroll. */
   --data-surface: #ffffff;
-  --data-surface-alt: #f1edfe;
-  --data-border: rgba(23, 16, 63, 0.12);
+  --data-surface-alt: #eef1ef;
+  --data-border: rgba(13, 17, 23, 0.12);
 
   /* Colori semantici dei dati. I precedenti (#10b981, #ef4444, #3b82f6) erano
      scritti a mano nelle pagine e su fondo chiaro stavano intorno a 2.5:1;
      questi reggono 4.5:1 sulle superfici dati in entrambi i temi. */
-  --color-positive: #0c6440;
+  --color-positive: #05704a;
   --color-negative: #a82a19;
   --color-info: #1d4ed8;
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.25rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
   --radius-full: 9999px;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -114,52 +115,52 @@
   --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Tema scuro: fondo indaco profondo con pannelli di vetro CHIARI, non scuri.
-   È la combinazione della reference — bianco al 14-22% sopra il viola resta
-   abbastanza scuro da reggere il testo bianco, e lascia passare il colore. */
+/* Tema scuro (default): grafite su grafite. Il vetro è una schiaritura del
+   fondo, non un colore diverso — è ciò che distingue una superficie tecnica
+   sobria da un pannello decorativo. */
 [data-theme="dark"] {
-  --color-bg: #170f3d;
-  --color-surface: #241a55;
-  --color-surface-2: #2c2064;
-  --color-surface-offset: #332676;
-  --color-border: #453394;
-  --color-divider: #3a2b7e;
-  --color-text: #f4f1ff;
-  --color-text-muted: #cbc2f2;
-  --color-text-faint: #b3a9e6;
-  --color-text-inverse: #17103f;
-  --color-primary: #c3b1ff;
-  --color-primary-hover: #d8ccff;
-  --color-primary-highlight: #33257f;
-  --color-accent: #ffb877;
-  --color-accent-soft: #ffc79b;
+  --color-bg: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-2: #1c222b;
+  --color-surface-offset: #222831;
+  --color-border: #30363d;
+  --color-divider: #262c34;
+  --color-text: #e6edf3;
+  --color-text-muted: #b3bec8;
+  --color-text-faint: #97a3ae;
+  --color-text-inverse: #0d1117;
+  --color-primary: #2ecc8f;
+  --color-primary-hover: #46dda2;
+  --color-primary-highlight: #10281f;
+  --color-accent: #2ecc8f;
+  --color-accent-soft: #10b981;
 
-  --aurora-1: rgba(80, 36, 207, 0.46);
-  --aurora-2: rgba(219, 91, 16, 0.44);
-  --aurora-3: rgba(196, 40, 150, 0.38);
-  --aurora-4: rgba(29, 85, 200, 0.34);
+  --aurora-1: rgba(16, 185, 129, 0.16);
+  --aurora-2: rgba(70, 110, 150, 0.16);
+  --aurora-3: rgba(16, 185, 129, 0.10);
+  --aurora-4: rgba(90, 120, 145, 0.13);
 
-  --glass-bg: rgba(58, 40, 144, 0.54);
-  --glass-bg-strong: rgba(58, 40, 144, 0.70);
-  --glass-bg-subtle: rgba(58, 40, 144, 0.38);
-  --glass-border: rgba(255, 255, 255, 0.26);
-  --glass-border-soft: rgba(255, 255, 255, 0.14);
-  --glass-border-strong: rgba(255, 255, 255, 0.52);
-  --glass-shadow: 0 1px 2px rgba(8, 4, 30, 0.40), 0 16px 40px rgba(8, 4, 30, 0.52);
-  --glass-shadow-lift: 0 2px 6px rgba(8, 4, 30, 0.46), 0 24px 56px rgba(8, 4, 30, 0.62);
-  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0) 58%);
+  --glass-bg: rgba(38, 46, 56, 0.62);
+  --glass-bg-strong: rgba(30, 37, 46, 0.82);
+  --glass-bg-subtle: rgba(38, 46, 56, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-border-soft: rgba(255, 255, 255, 0.06);
+  --glass-border-strong: rgba(46, 204, 143, 0.42);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.34), 0 6px 18px rgba(0, 0, 0, 0.40);
+  --glass-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.40), 0 14px 32px rgba(0, 0, 0, 0.50);
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 56%);
 
-  --data-surface: #241a55;
-  --data-surface-alt: #2c2064;
-  --data-border: rgba(255, 255, 255, 0.16);
+  --data-surface: #161b22;
+  --data-surface-alt: #1c222b;
+  --data-border: rgba(255, 255, 255, 0.10);
 
-  --color-positive: #7fe3a5;
-  --color-negative: #ffa695;
-  --color-info: #a8cffd;
+  --color-positive: #3fce90;
+  --color-negative: #ff8f7a;
+  --color-info: #79b8ff;
 
-  --shadow-sm: 0 1px 2px rgba(8, 4, 30, 0.3);
-  --shadow-md: 0 12px 30px rgba(8, 4, 30, 0.4);
-  --shadow-lg: 0 20px 60px rgba(8, 4, 30, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.5);
 }
 
 /* ── Vetro scuro indipendente dal tema ──────────────────────────────
@@ -176,7 +177,7 @@
   --glass-inverse-text: #cdd8da;
   --glass-inverse-text-bright: #9dd4da;
   --glass-inverse-text-dim: rgba(190, 222, 226, 0.62);
-  --glass-inverse-accent: #a996ff;
+  --glass-inverse-accent: #4fd1a5;
   /* Hazard: colore semantico della scena NEO (oggetto potenzialmente pericoloso). */
   --glass-inverse-hazard: #e05e40;
 
@@ -199,9 +200,9 @@
     --glass-bg-subtle: rgba(255, 255, 255, 0.88);
   }
   [data-theme="dark"] {
-    --glass-bg: rgba(36, 26, 85, 0.94);
-    --glass-bg-strong: rgba(29, 20, 71, 0.97);
-    --glass-bg-subtle: rgba(44, 32, 100, 0.88);
+    --glass-bg: rgba(30, 37, 46, 0.95);
+    --glass-bg-strong: rgba(22, 27, 34, 0.98);
+    --glass-bg-subtle: rgba(38, 46, 56, 0.90);
   }
   :root {
     --glass-inverse-bg: rgba(7, 12, 20, 0.95);
@@ -215,26 +216,26 @@
   :root, [data-theme="light"] {
     --glass-bg: #ffffff;
     --glass-bg-strong: #ffffff;
-    --glass-bg-subtle: #f7f5ff;
+    --glass-bg-subtle: #f7f9f8;
     --glass-border: var(--color-border);
     --glass-border-soft: var(--color-divider);
     --glass-highlight: none;
-    --aurora-1: rgba(91, 46, 229, 0.06);
-    --aurora-2: rgba(255, 122, 31, 0.05);
-    --aurora-3: rgba(226, 46, 168, 0.05);
-    --aurora-4: rgba(46, 150, 255, 0.05);
+    --aurora-1: rgba(5, 112, 74, 0.05);
+    --aurora-2: rgba(51, 84, 110, 0.05);
+    --aurora-3: rgba(16, 185, 129, 0.04);
+    --aurora-4: rgba(70, 96, 116, 0.04);
   }
   [data-theme="dark"] {
-    --glass-bg: #241a55;
-    --glass-bg-strong: #1d1447;
-    --glass-bg-subtle: #2c2064;
+    --glass-bg: #1e252e;
+    --glass-bg-strong: #161b22;
+    --glass-bg-subtle: #222831;
     --glass-border: var(--color-border);
     --glass-border-soft: var(--color-divider);
     --glass-highlight: none;
-    --aurora-1: rgba(112, 62, 255, 0.06);
-    --aurora-2: rgba(255, 122, 31, 0.05);
-    --aurora-3: rgba(236, 56, 178, 0.05);
-    --aurora-4: rgba(46, 150, 255, 0.05);
+    --aurora-1: rgba(16, 185, 129, 0.05);
+    --aurora-2: rgba(70, 110, 150, 0.05);
+    --aurora-3: rgba(16, 185, 129, 0.04);
+    --aurora-4: rgba(90, 120, 145, 0.04);
   }
   :root {
     --glass-inverse-bg: #070c14;

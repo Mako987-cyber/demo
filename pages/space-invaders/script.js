@@ -82,9 +82,9 @@ const gameState = {
 
   drawPlayer() {
     const p = this.player;
-    this.ctx.fillStyle = '#c9b6ff';
+    this.ctx.fillStyle = '#5ee7a8';
     this.ctx.shadowBlur = 12;
-    this.ctx.shadowColor = '#c9b6ff';
+    this.ctx.shadowColor = '#5ee7a8';
 
     this.ctx.beginPath();
     this.ctx.moveTo(p.x + p.width / 2, p.y);
@@ -97,13 +97,13 @@ const gameState = {
   },
 
   drawEnemies() {
-    this.ctx.fillStyle = '#e94ec0';
+    this.ctx.fillStyle = '#e8746b';
     this.ctx.shadowBlur = 8;
-    this.ctx.shadowColor = '#e94ec0';
+    this.ctx.shadowColor = '#e8746b';
 
     this.enemies.forEach(enemy => {
       this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-      this.ctx.strokeStyle = '#ffd2f2';
+      this.ctx.strokeStyle = '#ffd9d4';
       this.ctx.lineWidth = 1;
       this.ctx.strokeRect(enemy.x + 5, enemy.y + 5, enemy.width - 10, enemy.height - 10);
     });
@@ -112,9 +112,9 @@ const gameState = {
   },
 
   drawBullets() {
-    this.ctx.fillStyle = '#ff9b4d';
+    this.ctx.fillStyle = '#e8c15e';
     this.ctx.shadowBlur = 5;
-    this.ctx.shadowColor = '#ff9b4d';
+    this.ctx.shadowColor = '#e8c15e';
 
     this.bullets.forEach(bullet => {
       this.ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
@@ -124,9 +124,9 @@ const gameState = {
   },
 
   drawEnemyBullets() {
-    this.ctx.fillStyle = '#ff6b4a';
+    this.ctx.fillStyle = '#e8746b';
     this.ctx.shadowBlur = 5;
-    this.ctx.shadowColor = '#ff6b4a';
+    this.ctx.shadowColor = '#e8746b';
 
     this.enemyBullets.forEach(bullet => {
       this.ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
@@ -249,10 +249,10 @@ const gameState = {
 
   loop() {
     const ctx = this.ctx;
-    ctx.fillStyle = '#120b33';
+    ctx.fillStyle = '#0b0f14';
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    ctx.strokeStyle = 'rgba(160, 130, 255, 0.16)';
+    ctx.strokeStyle = 'rgba(94, 231, 168, 0.13)';
     ctx.lineWidth = 1;
     for (let y = this.canvas.height * 0.58; y < this.canvas.height; y += 32) {
       ctx.beginPath();
@@ -284,23 +284,23 @@ const gameState = {
     this.updateUI();
 
     if (!this.running && !document.getElementById('gameOverMessage').style.display.includes('block')) {
-      ctx.fillStyle = '#c9b6ff';
+      ctx.fillStyle = '#5ee7a8';
       ctx.font = '700 22px "Cabinet Grotesk", sans-serif';
       ctx.textAlign = 'center';
       ctx.shadowBlur = 10;
-      ctx.shadowColor = '#c9b6ff';
+      ctx.shadowColor = '#5ee7a8';
       ctx.fillText('PREMI "NUOVA PARTITA" PER INIZIARE', this.canvas.width / 2, this.canvas.height / 2);
       ctx.shadowBlur = 0;
     }
 
     if (this.paused) {
-      ctx.fillStyle = 'rgba(18, 11, 51, 0.72)';
+      ctx.fillStyle = 'rgba(11, 15, 20, 0.74)';
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      ctx.fillStyle = '#ff9b4d';
+      ctx.fillStyle = '#e8c15e';
       ctx.font = '700 40px "Cabinet Grotesk", sans-serif';
       ctx.textAlign = 'center';
       ctx.shadowBlur = 10;
-      ctx.shadowColor = '#ff9b4d';
+      ctx.shadowColor = '#e8c15e';
       ctx.fillText('PAUSA', this.canvas.width / 2, this.canvas.height / 2);
       ctx.shadowBlur = 0;
     }

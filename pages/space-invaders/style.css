@@ -4,10 +4,6 @@
    gli stessi token di vetro del resto del sito.
    Il canvas resta scuro: gli sprite hanno bisogno di quel contrasto. */
 
-.back-projects {
-  margin-left: auto;
-}
-
 .game-container {
   width: 100%;
   max-width: 860px;
@@ -79,7 +75,7 @@
   width: 100%;
   max-width: 800px;
   aspect-ratio: 4 / 3;
-  background: #120b33;
+  background: #0b0f14;
   border: 1px solid var(--data-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--glass-shadow);
