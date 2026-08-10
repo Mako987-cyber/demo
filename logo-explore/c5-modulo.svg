@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
+  <title>AM — modulo monolinea</title>
+  <rect width="64" height="64" rx="9.6" fill="#0d1117"/>
+  <g fill="none" stroke="#2ecc8f" stroke-width="6" stroke-linecap="butt" stroke-linejoin="miter">
+    <path d="M9.1 47 L16.6 19.5 H18.6 L26.1 47"/>
+    <path d="M12.6 38 H22.6" stroke-width="5.5"/>
+    <path d="M34.5 44.5 V19.5 L43.5 43 H45.5 L54.5 19.5 V44.5"/>
+  </g>
+</svg>
