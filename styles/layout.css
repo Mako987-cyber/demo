@@ -77,7 +77,8 @@
 .contact-panel--stacked { display: grid; gap: var(--space-3); }
 .page-main { min-height: calc(100dvh - 12rem); }
 .site-footer { padding: var(--space-8) 0 var(--space-10); color: var(--color-text-faint); }
-.footer__inner { display: flex; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.footer__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.footer__meta { display: flex; align-items: center; gap: var(--space-4); }
 @media (max-width: 1024px) {
   .hero__grid,
   .profile-grid,
