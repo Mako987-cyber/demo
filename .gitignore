@@ -18,3 +18,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Python — i generatori del marchio in logo-explore/build/
+__pycache__/
+*.pyc

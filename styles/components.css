@@ -47,7 +47,9 @@
   color: #2ecc8f;
   box-shadow: var(--glass-shadow);
 }
-.brand__mark svg { width: 82%; height: 82%; }
+/* 92%: il marchio nuovo porta gia' 8/64 di margine dentro il viewBox, quindi
+   scala meno del vecchio a parita' di aria attorno (≈7px sulla tile da 44). */
+.brand__mark svg { width: 92%; height: 92%; }
 .brand__text { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; }
 .site-nav { display: flex; align-items: center; gap: var(--space-4); }
 .nav-menu { display: flex; align-items: center; gap: var(--space-5); }
