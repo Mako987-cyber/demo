@@ -51,6 +51,15 @@
    scala meno del vecchio a parita' di aria attorno (≈7px sulla tile da 44). */
 .brand__mark svg { width: 92%; height: 92%; }
 .brand__text { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; }
+.brand__lines { display: grid; gap: 0.1rem; line-height: 1.15; }
+/* Endorsement della società: deve leggersi come sottotitolo del nome, mai
+   competere con esso — da qui il peso e la dimensione ridotti. */
+.brand__tagline {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
 .site-nav { display: flex; align-items: center; gap: var(--space-4); }
 .nav-menu { display: flex; align-items: center; gap: var(--space-5); }
 /* :not(.btn) è necessario, non cosmetico: `.nav-menu a` ha specificità 0-1-1 e

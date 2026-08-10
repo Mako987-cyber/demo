@@ -60,4 +60,9 @@
   }, { threshold: 0.12 });
 
   document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+
+  // Anno del copyright aggiornato a runtime. L'HTML contiene comunque l'anno
+  // corrente come fallback: senza JS la riga resta valida, non vuota.
+  const year = String(new Date().getFullYear());
+  document.querySelectorAll('[data-year]').forEach((el) => { el.textContent = year; });
 })();
