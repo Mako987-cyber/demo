@@ -13,10 +13,12 @@
       onprem: ['Active Directory', 'Hypervisor', 'LAN / WLAN', 'Exchange Server', 'Storage', 'VPN'],
       cloud: ['Azure', 'Microsoft 365', 'Entra ID', 'Intune', 'Terraform', 'Graph API'],
     },
-    // Fasce verticali libere: sopra e sotto il blocco di testo centrale.
-    zones: [[8, 26], [72, 90]],
+    /* Fasce verticali libere: i margini laterali della colonna di testo.
+       Sotto non si può più andare — da metà banda in giù c'è lo schema, e
+       una parola sopra i cavi leggerebbe come un'etichetta del diagramma. */
+    zones: [[14, 30], [34, 52]],
     // Distanza dai bordi laterali, in percentuale.
-    inset: [5, 22],
+    inset: [3, 15],
   };
 
   /* Su schermi stretti il testo centrale mangia quasi tutta la banda: le stesse
@@ -24,8 +26,8 @@
      parole — sei per lato su 390px sarebbero comunque illeggibili. */
   const narrow = window.matchMedia('(max-width: 760px)').matches;
   if (narrow) {
-    CONFIG.zones = [[3, 12], [88, 96]];
-    CONFIG.inset = [4, 16];
+    CONFIG.zones = [[4, 13]];
+    CONFIG.inset = [3, 12];
     CONFIG.words.onprem = CONFIG.words.onprem.slice(0, 3);
     CONFIG.words.cloud = CONFIG.words.cloud.slice(0, 3);
   }

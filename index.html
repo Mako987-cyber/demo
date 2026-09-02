@@ -60,26 +60,34 @@
     <section class="hero-fx">
       <div class="hero-fx__bg" aria-hidden="true">
         <div class="fx-layer" data-hero-fx>
-          <!-- Schema di rete: quattro cavi LAN entrano da sinistra e arrivano
-               alle porte del server; da lì due uplink salgono verso la nuvola.
+          <!-- Schema di cablaggio: sei cavi LAN entrano da sinistra e arrivano
+               alle porte del rack; da lì due uplink raggiungono la nuvola.
                I tracciati stanno in <defs> e vengono usati due volte a testa —
                una come cavo, una come segnale che lo percorre — così la
                geometria è scritta una sola volta. -->
-          <svg class="fx-scene" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid meet"
+          <svg class="fx-scene" viewBox="0 0 1440 340" preserveAspectRatio="xMidYMid meet"
                fill="none" aria-hidden="true" focusable="false">
             <defs>
-              <path id="fx-lan-1" pathLength="100" vector-effect="non-scaling-stroke" d="M0 110 H480 V248 H640"/>
-              <path id="fx-lan-2" pathLength="100" vector-effect="non-scaling-stroke" d="M0 250 H520 V283 H640"/>
-              <path id="fx-lan-3" pathLength="100" vector-effect="non-scaling-stroke" d="M0 430 H520 V318 H640"/>
-              <path id="fx-lan-4" pathLength="100" vector-effect="non-scaling-stroke" d="M0 530 H480 V353 H640"/>
-              <path id="fx-up-1" pathLength="100" vector-effect="non-scaling-stroke" d="M780 292 H860 V320 H1000"/>
-              <path id="fx-up-2" pathLength="100" vector-effect="non-scaling-stroke" d="M780 336 H900 V358 H1050"/>
+              <path id="fx-lan-1" pathLength="100" vector-effect="non-scaling-stroke" d="M0 10 H430 V83 H640"/>
+              <path id="fx-lan-2" pathLength="100" vector-effect="non-scaling-stroke" d="M0 55 H470 V118 H640"/>
+              <path id="fx-lan-3" pathLength="100" vector-effect="non-scaling-stroke" d="M0 105 H505 V153 H640"/>
+              <path id="fx-lan-4" pathLength="100" vector-effect="non-scaling-stroke" d="M0 200 H505 V188 H640"/>
+              <path id="fx-lan-5" pathLength="100" vector-effect="non-scaling-stroke" d="M0 270 H470 V223 H640"/>
+              <path id="fx-lan-6" pathLength="100" vector-effect="non-scaling-stroke" d="M0 330 H430 V258 H640"/>
+              <path id="fx-up-1" pathLength="100" vector-effect="non-scaling-stroke" d="M800 120 H960 V150 H1180"/>
+              <path id="fx-up-2" pathLength="100" vector-effect="non-scaling-stroke" d="M800 210 H1020 V178 H1225"/>
+              <!-- Una sola sagoma di nuvola, riusata a due scale: quella dietro
+                   piccola e in alto a sinistra, quella davanti grande e spostata
+                   in basso a destra, come nel riferimento. -->
+              <path id="fx-cloud" vector-effect="non-scaling-stroke" d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
             </defs>
 
             <use class="fx-cable" href="#fx-lan-1"/>
             <use class="fx-cable" href="#fx-lan-2"/>
             <use class="fx-cable" href="#fx-lan-3"/>
             <use class="fx-cable" href="#fx-lan-4"/>
+            <use class="fx-cable" href="#fx-lan-5"/>
+            <use class="fx-cable" href="#fx-lan-6"/>
             <use class="fx-uplink" href="#fx-up-1"/>
             <use class="fx-uplink" href="#fx-up-2"/>
 
@@ -87,28 +95,37 @@
             <use class="fx-signal fx-signal--in fx-delay-1" href="#fx-lan-2"/>
             <use class="fx-signal fx-signal--in fx-delay-2" href="#fx-lan-3"/>
             <use class="fx-signal fx-signal--in fx-delay-3" href="#fx-lan-4"/>
+            <use class="fx-signal fx-signal--in fx-delay-4" href="#fx-lan-5"/>
+            <use class="fx-signal fx-signal--in fx-delay-5" href="#fx-lan-6"/>
             <use class="fx-signal fx-signal--up" href="#fx-up-1"/>
-            <use class="fx-signal fx-signal--down fx-delay-4" href="#fx-up-2"/>
+            <use class="fx-signal fx-signal--down fx-delay-6" href="#fx-up-2"/>
 
             <g class="fx-server">
-              <rect class="fx-server__body" x="640" y="225" width="140" height="150" rx="8"/>
-              <rect class="fx-server__unit" x="650" y="234" width="120" height="28" rx="3"/>
-              <rect class="fx-server__unit" x="650" y="269" width="120" height="28" rx="3"/>
-              <rect class="fx-server__unit" x="650" y="304" width="120" height="28" rx="3"/>
-              <rect class="fx-server__unit" x="650" y="339" width="120" height="28" rx="3"/>
-              <line class="fx-server__vent" x1="676" y1="248" x2="758" y2="248"/>
-              <line class="fx-server__vent" x1="676" y1="283" x2="758" y2="283"/>
-              <line class="fx-server__vent" x1="676" y1="318" x2="758" y2="318"/>
-              <line class="fx-server__vent" x1="676" y1="353" x2="758" y2="353"/>
-              <circle class="fx-led" cx="662" cy="248" r="4"/>
-              <circle class="fx-led fx-led--2" cx="662" cy="283" r="4"/>
-              <circle class="fx-led fx-led--3" cx="662" cy="318" r="4"/>
-              <circle class="fx-led fx-led--4" cx="662" cy="353" r="4"/>
+              <rect class="fx-server__body" x="640" y="60" width="160" height="220" rx="8"/>
+              <rect class="fx-server__unit" x="652" y="70" width="136" height="26" rx="3"/>
+              <rect class="fx-server__unit" x="652" y="105" width="136" height="26" rx="3"/>
+              <rect class="fx-server__unit" x="652" y="140" width="136" height="26" rx="3"/>
+              <rect class="fx-server__unit" x="652" y="175" width="136" height="26" rx="3"/>
+              <rect class="fx-server__unit" x="652" y="210" width="136" height="26" rx="3"/>
+              <rect class="fx-server__unit" x="652" y="245" width="136" height="26" rx="3"/>
+              <line class="fx-server__vent" x1="680" y1="83" x2="778" y2="83"/>
+              <line class="fx-server__vent" x1="680" y1="118" x2="778" y2="118"/>
+              <line class="fx-server__vent" x1="680" y1="153" x2="778" y2="153"/>
+              <line class="fx-server__vent" x1="680" y1="188" x2="778" y2="188"/>
+              <line class="fx-server__vent" x1="680" y1="223" x2="778" y2="223"/>
+              <line class="fx-server__vent" x1="680" y1="258" x2="778" y2="258"/>
+              <circle class="fx-led" cx="664" cy="83" r="4"/>
+              <circle class="fx-led fx-led--2" cx="664" cy="118" r="4"/>
+              <circle class="fx-led fx-led--3" cx="664" cy="153" r="4"/>
+              <circle class="fx-led fx-led--4" cx="664" cy="188" r="4"/>
+              <circle class="fx-led fx-led--5" cx="664" cy="223" r="4"/>
+              <circle class="fx-led fx-led--6" cx="664" cy="258" r="4"/>
             </g>
 
-            <path class="fx-cloud-shape" vector-effect="non-scaling-stroke"
-                  transform="translate(953 263) scale(6.8)"
-                  d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+            <use class="fx-cloud-shape fx-cloud-shape--back" href="#fx-cloud"
+                 transform="translate(1055 20) scale(5.5)"/>
+            <use class="fx-cloud-shape" href="#fx-cloud"
+                 transform="translate(1128 46) scale(7.5)"/>
           </svg>
         </div>
       </div>
@@ -123,10 +140,6 @@
         <p class="hero-fx__lede">
           On-premises da una parte, cloud dall'altra, un punto solo in cui le due
           cose devono funzionare insieme. È lì che lavoro.
-        </p>
-        <p class="hero-fx__cue">
-          Continua
-          <span aria-hidden="true"></span>
         </p>
       </div>
     </section>
