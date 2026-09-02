@@ -19,8 +19,7 @@
    l'originale bianco-su-nero non funzionerebbe. */
 
 .hero-fx {
-  --fx-scene-height: calc(100vw * 340 / 1440);
-  --fx-height: clamp(30rem, 82vh, 46rem);
+  --fx-height: clamp(26rem, 70vh, 42rem);
 
   --fx-grid-size: 44px;
   --fx-grid-opacity: 0.07;
@@ -32,7 +31,7 @@
 
   --fx-word: rgba(230, 237, 243, 0.58);
 
-  --fx-cable-opacity: 0.34;
+  --fx-cable-opacity: 0.28;
   --fx-signal-speed: 4.4s;
 
   position: relative;
@@ -40,9 +39,8 @@
   overflow: hidden;
   min-height: var(--fx-height);
   display: grid;
-  align-content: start;
-  padding-top: clamp(var(--space-10), 5.5vw, var(--space-16));
-  padding-bottom: var(--fx-scene-height);
+  align-content: center;
+  padding-block: clamp(var(--space-12), 7vw, var(--space-20));
   border-bottom: 1px solid var(--glass-border-soft);
 }
 
@@ -50,7 +48,7 @@
   --fx-grid-opacity: 0.09;
   --fx-onprem: #33546e;
   --fx-word: rgba(13, 17, 23, 0.52);
-  --fx-cable-opacity: 0.3;
+  --fx-cable-opacity: 0.24;
 }
 
 /* ── Contenuto ──────────────────────────────────────────────────── */
@@ -129,6 +127,29 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+.hero-fx__cue {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  animation: fx-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.72s both;
+}
+.hero-fx__cue span {
+  width: 1px;
+  height: 2.25rem;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--fx-hardware) 24%, transparent), transparent);
+  animation: fx-cue 2.6s ease-in-out infinite;
+}
+@keyframes fx-cue {
+  0%, 100% { opacity: 0.35; transform: scaleY(0.7); transform-origin: top; }
+  50%      { opacity: 1;    transform: scaleY(1);   transform-origin: top; }
+}
+
 /* ── Il fondo ───────────────────────────────────────────────────── */
 
 .hero-fx__bg {
@@ -137,6 +158,20 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+}
+
+/* Velo centrale: lo schema ripassa dietro a un wordmark alto quasi cento
+   pixel. Senza questo strato le lettere perdono contrasto proprio dove la
+   scena è più fitta. Al 46% protegge la lettura e lascia leggere il rack
+   sotto — che è il punto dell'effetto, non un dettaglio da coprire. */
+.hero-fx__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse 46% 36% at 50% 50%,
+    color-mix(in srgb, var(--color-bg) 46%, transparent) 0%,
+    transparent 76%);
 }
 
 .fx-layer {
@@ -177,19 +212,19 @@
 
 /* ── Lo schema di rete ──────────────────────────────────────────── */
 
-/* Ancorata in basso e alta quanto il padding che la banda le riserva: le due
-   fasce coincidono per costruzione, a qualsiasi larghezza.
-
-   aspect-ratio invece di un'altezza fissa: con "meet" un contenitore di
-   proporzioni diverse dal viewBox lascia due bande vuote ai lati, e i cavi
-   smetterebbero di entrare dal bordo dello schermo — che è tutto l'effetto. */
+/* Larghezza piena e rapporto bloccato: la mappatura resta 1:1 in orizzontale
+   a qualsiasi finestra, quindi i cavi entrano sempre dal bordo dello schermo —
+   che è tutto l'effetto. Con "meet" e un'altezza libera, un contenitore di
+   proporzioni diverse dal viewBox lascerebbe due bande vuote ai lati e i cavi
+   partirebbero a mezz'aria. Se la scena viene più alta della banda, il taglio
+   se lo prende l'overflow: sopra e sotto ci sono solo margini vuoti. */
 .fx-scene {
   position: absolute;
   left: 0;
-  right: 0;
-  bottom: 0;
+  top: 50%;
+  translate: 0 -50%;
   width: 100%;
-  aspect-ratio: 1440 / 340;
+  aspect-ratio: 1440 / 600;
   height: auto;
 }
 
@@ -257,7 +292,7 @@
   fill: color-mix(in srgb, var(--color-bg) 55%, transparent);
   stroke: var(--fx-hardware);
   stroke-width: 1.75;
-  opacity: 0.55;
+  opacity: 0.45;
 }
 /* Le unità sono rettangoli veri, non linee divisorie: è quello che fa leggere
    l'oggetto come un server invece che come un riquadro. */
@@ -265,7 +300,7 @@
   fill: none;
   stroke: var(--fx-hardware);
   stroke-width: 1.25;
-  opacity: 0.34;
+  opacity: 0.3;
 }
 /* Feritoie: un tratteggio corto legge come griglia di aerazione senza dover
    disegnare venti linee. */
@@ -274,7 +309,7 @@
   stroke-width: 1.5;
   stroke-dasharray: 3 5;
   stroke-linecap: round;
-  opacity: 0.3;
+  opacity: 0.24;
 }
 .fx-led {
   fill: var(--fx-cloud);
@@ -308,7 +343,7 @@
   stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-opacity: 0.55;
+  stroke-opacity: 0.5;
   animation: fx-cloud-breathe 6s ease-in-out infinite;
 }
 .fx-cloud-shape--back { animation-delay: -3s; }
@@ -350,13 +385,14 @@
 @media (max-width: 760px) {
   .hero-fx {
     --fx-grid-size: 32px;
-    /* Piu' bassa che su desktop: la scena qui e' alta solo un quarto, e con
-       il minimo precedente restava un vuoto fra il testo e lo schema. */
-    --fx-height: clamp(20rem, 54vh, 28rem);
+    --fx-height: clamp(24rem, 66vh, 32rem);
   }
-  /* Niente ingrandimento con ritaglio: la scena è larga 4:1 e su 390px un
-     ritaglio taglierebbe fuori la nuvola, che è il punto d'arrivo del
-     racconto. Meglio intera e piccola che a metà. */
+  /* Ingrandita e ancorata a destra: centrata, il ritaglio taglierebbe fuori
+     la nuvola, che è il punto d'arrivo del racconto. Da destra restano dentro
+     sia il rack sia la nuvola, e i cavi continuano a entrare dal bordo
+     sinistro dello schermo — sono tagliati a metà corsa, ma è esattamente
+     come si legge un cavo che arriva da fuori campo. */
+  .fx-scene { left: auto; right: 0; width: 145%; }
   .fx-word { font-size: 0.6875rem; letter-spacing: 0.1em; }
 }
 
@@ -370,7 +406,8 @@
    ciò che vive solo nel movimento e lasciare in piedi lo schema. */
 @media (prefers-reduced-motion: reduce) {
   .fx-word,
-  .fx-signal { display: none; }
+  .fx-signal,
+  .hero-fx__cue span { display: none; }
   .fx-led { opacity: 0.9; }
   .fx-cloud-shape { stroke-opacity: 0.6; }
 }
