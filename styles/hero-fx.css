@@ -1,14 +1,20 @@
-/* ── Banda d'apertura: il nome + il fondo animato ───────────────────
-   Riferimento: l'hero di setitright.it — griglia che pulsa, due onde che
-   entrano dai lati, parole che affiorano e si spengono, orbite di particelle
-   e un punto centrale che pulsa emettendo anelli.
+/* ── Banda d'apertura: il nome, sopra uno schema di rete animato ────
+   La scena si legge da sinistra a destra come un diagramma di rete: quattro
+   cavi LAN entrano dal bordo, il segnale li percorre e arriva alle porte di
+   un server al centro; da lì due uplink salgono verso la nuvola. È la stessa
+   narrazione del sito — il ferro on-premises, il punto in cui tutto passa,
+   il cloud — ma detta con gli oggetti invece che per astrazione.
 
-   Qui l'effetto racconta la cosa giusta per questo sito: a sinistra il mondo
-   on-premises, a destra il cloud, al centro il punto in cui i due si fondono —
-   l'ibrido. Non è decorazione presa a prestito: è la tesi del sito, disegnata.
+   I cavi sono instradati ad angolo retto, come in uno schema di cablaggio:
+   una curva morbida avrebbe fatto "illustrazione", questo fa "impianto".
 
-   Tutto è costruito su token di tema, quindi la banda vive anche in light:
-   l'originale è bianco su nero e basta, questo è grafite/smeraldo come il resto. */
+   Il segnale non è un oggetto che si muove: è un tratteggio che scorre lungo
+   il tracciato (stroke-dashoffset). Costa un'animazione sola per cavo e non
+   può mai staccarsi dal percorso. Ogni path dichiara pathLength="100", così
+   la stessa animazione vale per tracciati di lunghezza diversa.
+
+   Tutto vive su token di tema: la banda funziona anche in light, dove
+   l'originale bianco-su-nero non funzionerebbe. */
 
 .hero-fx {
   --fx-height: clamp(24rem, 66vh, 40rem);
@@ -19,15 +25,12 @@
 
   --fx-onprem: #79b8ff;   /* il lato fisico: acciaio */
   --fx-cloud: var(--color-primary);
-  --fx-core: var(--color-primary);
+  --fx-hardware: var(--color-text);
 
   --fx-word: rgba(230, 237, 243, 0.58);
-  --fx-line: rgba(230, 237, 243, 0.16);
-  --fx-wave-opacity: 0.14;
 
-  --fx-orbit-speed: 22s;
-  --fx-wave-speed: 20s;
-  --fx-particle-size: 6px;
+  --fx-cable-opacity: 0.2;
+  --fx-signal-speed: 4.4s;
 
   position: relative;
   isolation: isolate;
@@ -43,8 +46,7 @@
   --fx-grid-opacity: 0.09;
   --fx-onprem: #33546e;
   --fx-word: rgba(13, 17, 23, 0.52);
-  --fx-line: rgba(13, 17, 23, 0.14);
-  --fx-wave-opacity: 0.12;
+  --fx-cable-opacity: 0.18;
 }
 
 /* ── Contenuto ──────────────────────────────────────────────────── */
@@ -137,7 +139,8 @@
 .hero-fx__cue span {
   width: 1px;
   height: 2.25rem;
-  background: linear-gradient(to bottom, var(--fx-line), transparent);
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--fx-hardware) 24%, transparent), transparent);
   animation: fx-cue 2.6s ease-in-out infinite;
 }
 @keyframes fx-cue {
@@ -145,7 +148,7 @@
   50%      { opacity: 1;    transform: scaleY(1);   transform-origin: top; }
 }
 
-/* ── Il fondo animato ───────────────────────────────────────────── */
+/* ── Il fondo ───────────────────────────────────────────────────── */
 
 .hero-fx__bg {
   position: absolute;
@@ -155,18 +158,18 @@
   pointer-events: none;
 }
 
-/* Velo centrale: il nucleo pulsa esattamente dietro il payoff. Senza questo
-   strato il testo perde contrasto proprio nel momento in cui il nucleo e'
-   al massimo. Al 52% protegge la lettura e lascia comunque trasparire il
-   bagliore — che e' il punto dell'effetto, non un dettaglio da coprire. */
+/* Velo centrale: lo schema passa dietro un wordmark alto quasi cento pixel.
+   Senza questo strato le lettere perdono contrasto proprio dove la scena è
+   più fitta. Al 46% protegge la lettura e lascia leggere il server sotto —
+   che è il punto dell'effetto, non un dettaglio da coprire. */
 .hero-fx__bg::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(ellipse 44% 34% at 50% 50%,
-    color-mix(in srgb, var(--color-bg) 52%, transparent) 0%,
-    transparent 74%);
+  background: radial-gradient(ellipse 46% 36% at 50% 50%,
+    color-mix(in srgb, var(--color-bg) 46%, transparent) 0%,
+    transparent 76%);
 }
 
 .fx-layer {
@@ -175,7 +178,7 @@
   overflow: hidden;
 }
 
-/* Griglia che respira */
+/* Griglia che respira: la carta millimetrata sotto lo schema. */
 .fx-layer::before {
   content: "";
   position: absolute;
@@ -205,49 +208,125 @@
     transparent 0%, transparent 48%, var(--color-bg) 100%);
 }
 
-/* Le due onde: entrano dai lati e si spingono verso il centro, sfalsate di
-   mezzo ciclo così non arrivano mai insieme. */
-.fx-wave {
+/* ── Lo schema di rete ──────────────────────────────────────────── */
+
+.fx-scene {
   position: absolute;
-  top: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  opacity: var(--fx-wave-opacity);
-}
-.fx-wave--onprem {
-  left: -50%;
-  transform-origin: left center;
-  background: radial-gradient(ellipse at left,
-    color-mix(in srgb, var(--fx-onprem) 55%, transparent) 0%, transparent 54%);
-  animation: fx-wave-left var(--fx-wave-speed) ease-in-out infinite;
-}
-.fx-wave--cloud {
-  right: -50%;
-  transform-origin: right center;
-  background: radial-gradient(ellipse at right,
-    color-mix(in srgb, var(--fx-cloud) 55%, transparent) 0%, transparent 54%);
-  animation: fx-wave-right var(--fx-wave-speed) ease-in-out infinite;
-  animation-delay: calc(var(--fx-wave-speed) / 2);
-}
-@keyframes fx-wave-left {
-  0%, 100% { transform: translateX(0) scaleX(1); opacity: 0.05; }
-  50%      { transform: translateX(24%) scaleX(1.35); opacity: var(--fx-wave-opacity); }
-}
-@keyframes fx-wave-right {
-  0%, 100% { transform: translateX(0) scaleX(1); opacity: 0.05; }
-  50%      { transform: translateX(-24%) scaleX(1.35); opacity: var(--fx-wave-opacity); }
 }
 
-.fx-scanline {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--fx-line) 22%, var(--fx-line) 78%, transparent);
+/* I tratti restano hairline a qualsiasi scala: la scena è larga 1440 unità
+   dentro contenitori che vanno da 390px in su, e senza questo un cavo
+   passerebbe da 2px a mezzo pixel a seconda della finestra. */
+.fx-scene * { vector-effect: non-scaling-stroke; }
+
+.fx-cable,
+.fx-uplink {
+  fill: none;
+  stroke-width: 1.5;
+  opacity: var(--fx-cable-opacity);
+}
+.fx-cable { stroke: var(--fx-onprem); }
+.fx-uplink { stroke: var(--fx-cloud); }
+
+/* Il segnale: un tratto corto che percorre lo stesso tracciato del cavo.
+   pathLength="100" normalizza i percorsi, quindi il periodo è sempre 104 e
+   una sola coppia di keyframe serve per tutti. */
+.fx-signal {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 4 100;
+  animation: fx-signal-run var(--fx-signal-speed) linear infinite;
+}
+.fx-signal--in {
+  stroke: var(--fx-onprem);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fx-onprem) 75%, transparent));
+}
+.fx-signal--up {
+  stroke: var(--fx-cloud);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fx-cloud) 75%, transparent));
 }
 
-/* Parole che affiorano ai lati: a sinistra il ferro, a destra il cloud. */
+@keyframes fx-signal-run {
+  from { stroke-dashoffset: 104; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Il ripristino torna indietro: stesso tracciato, verso opposto. Un backup
+   che sale e basta racconterebbe metà del lavoro. */
+.fx-signal--down {
+  stroke: var(--fx-cloud);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fx-cloud) 75%, transparent));
+  animation-name: fx-signal-run-reverse;
+}
+@keyframes fx-signal-run-reverse {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 104; }
+}
+
+.fx-delay-1 { animation-delay: -1.1s; }
+.fx-delay-2 { animation-delay: -2.2s; }
+.fx-delay-3 { animation-delay: -3.3s; }
+.fx-delay-4 { animation-delay: -0.6s; }
+
+/* Il server */
+.fx-server__body {
+  fill: color-mix(in srgb, var(--color-bg) 45%, transparent);
+  stroke: var(--fx-hardware);
+  stroke-width: 1.75;
+  opacity: 0.44;
+}
+/* Le unita' rack sono rettangoli veri, non linee divisorie: e' quello che
+   fa leggere l'oggetto come un server invece che come un riquadro. */
+.fx-server__unit {
+  fill: none;
+  stroke: var(--fx-hardware);
+  stroke-width: 1.25;
+  opacity: 0.26;
+}
+/* Feritoie: un tratteggio corto legge come griglia di aerazione senza
+   dover disegnare venti linee. */
+.fx-server__vent {
+  stroke: var(--fx-hardware);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  stroke-linecap: round;
+  opacity: 0.22;
+}
+.fx-led {
+  fill: var(--fx-cloud);
+  animation: fx-led-blink 3.4s steps(1, end) infinite;
+}
+.fx-led--2 { animation-delay: 0.7s; }
+.fx-led--3 { animation-delay: 1.9s; animation-duration: 2.6s; }
+.fx-led--4 { animation-delay: 1.2s; animation-duration: 4.1s; }
+
+/* steps() invece di ease: un LED di stato commuta, non dissolve. */
+@keyframes fx-led-blink {
+  0%, 62%   { opacity: 0.95; }
+  63%, 100% { opacity: 0.25; }
+}
+
+/* La nuvola */
+.fx-cloud-shape {
+  fill: none;
+  stroke: var(--fx-cloud);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.34;
+  animation: fx-cloud-breathe 6s ease-in-out infinite;
+}
+@keyframes fx-cloud-breathe {
+  0%, 100% { opacity: 0.28; }
+  50%      { opacity: 0.5; }
+}
+
+/* ── Parole tecniche ai bordi ───────────────────────────────────── */
+
 .fx-word {
   position: absolute;
   font-family: var(--font-body);
@@ -273,197 +352,34 @@
   48%      { opacity: 0; translate: -18px -14px; }
 }
 
-/* Orbite */
-.fx-orbit {
-  position: absolute;
-  top: 50%;
-  width: 300px;
-  height: 300px;
-  margin-top: -150px;
-  border-radius: var(--radius-full);
-}
-.fx-orbit--onprem {
-  left: 25%;
-  margin-left: -150px;
-  animation: fx-spin var(--fx-orbit-speed) linear infinite;
-}
-.fx-orbit--cloud {
-  right: 25%;
-  margin-right: -150px;
-  animation: fx-spin var(--fx-orbit-speed) linear infinite reverse;
-}
-@keyframes fx-spin {
-  from { rotate: 0deg; }
-  to   { rotate: 360deg; }
-}
-
-.fx-particle {
-  position: absolute;
-  width: var(--fx-particle-size);
-  height: var(--fx-particle-size);
-  border-radius: var(--radius-full);
-  animation: fx-particle-pulse 2.2s ease-in-out infinite;
-}
-.fx-orbit--onprem .fx-particle {
-  background: var(--fx-onprem);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--fx-onprem) 70%, transparent);
-}
-.fx-orbit--cloud .fx-particle {
-  background: var(--fx-cloud);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--fx-cloud) 70%, transparent);
-}
-.fx-particle:nth-child(1) { left: 50%; top: 0; margin-left: calc(var(--fx-particle-size) / -2); }
-.fx-particle:nth-child(2) { right: 0; top: 50%; margin-top: calc(var(--fx-particle-size) / -2); animation-delay: 0.55s; }
-.fx-particle:nth-child(3) { left: 50%; bottom: 0; margin-left: calc(var(--fx-particle-size) / -2); animation-delay: 1.1s; }
-.fx-particle:nth-child(4) { left: 0; top: 50%; margin-top: calc(var(--fx-particle-size) / -2); animation-delay: 1.65s; }
-
-@keyframes fx-particle-pulse {
-  0%, 100% { opacity: 0.45; scale: 1; }
-  50%      { opacity: 1;    scale: 1.6; }
-}
-
-/* ── Il centro: dove on-premises e cloud diventano una cosa sola ── */
-
-.fx-core {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(600px, 82vw);
-  height: 300px;
-  translate: -50% -50%;
-}
-
-.fx-flow {
-  position: absolute;
-  top: 50%;
-  width: 50%;
-  height: 2px;
-  animation: fx-flow-expand 3s ease-in-out infinite;
-}
-.fx-flow--onprem {
-  left: 0;
-  transform-origin: left center;
-  background: linear-gradient(to right, transparent, var(--fx-onprem));
-}
-.fx-flow--cloud {
-  right: 0;
-  transform-origin: right center;
-  background: linear-gradient(to left, transparent, var(--fx-cloud));
-}
-.fx-flow.is-top    { margin-top: -34px; opacity: 0.6; animation-delay: 0.3s; }
-.fx-flow.is-bottom { margin-top: 34px;  opacity: 0.6; animation-delay: 0.6s; }
-
-@keyframes fx-flow-expand {
-  0%, 100% { transform: scaleX(0.5); opacity: 0.22; }
-  50%      { transform: scaleX(1);   opacity: 0.9; }
-}
-
-.fx-pulse-particle {
-  position: absolute;
-  top: 50%;
-  width: 7px;
-  height: 7px;
-  border-radius: var(--radius-full);
-  margin-top: -3.5px;
-}
-.fx-pulse-particle--onprem {
-  left: 0;
-  background: var(--fx-onprem);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--fx-onprem) 80%, transparent);
-  animation: fx-run-right 2.5s ease-in-out infinite;
-}
-.fx-pulse-particle--cloud {
-  right: 0;
-  background: var(--fx-cloud);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--fx-cloud) 80%, transparent);
-  animation: fx-run-left 2.5s ease-in-out infinite;
-}
-.fx-pulse-particle.is-top    { margin-top: -37.5px; animation-delay: 0.8s; }
-.fx-pulse-particle.is-bottom { margin-top: 30.5px;  animation-delay: 1.6s; }
-
-@keyframes fx-run-right {
-  0%   { left: 0;   opacity: 0; scale: 0.5; }
-  10%  { opacity: 1; }
-  50%  { scale: 1.15; }
-  90%  { opacity: 1; }
-  100% { left: 50%; opacity: 0; scale: 0; }
-}
-@keyframes fx-run-left {
-  0%   { right: 0;  opacity: 0; scale: 0.5; }
-  10%  { opacity: 1; }
-  50%  { scale: 1.15; }
-  90%  { opacity: 1; }
-  100% { right: 50%; opacity: 0; scale: 0; }
-}
-
-.fx-fusion {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 26px;
-  height: 26px;
-  margin: -13px 0 0 -13px;
-  border-radius: var(--radius-full);
-  background: var(--fx-core);
-  box-shadow:
-    0 0 22px color-mix(in srgb, var(--fx-core) 85%, transparent),
-    0 0 46px color-mix(in srgb, var(--fx-core) 40%, transparent);
-  animation: fx-fusion-pulse 2.8s ease-in-out infinite;
-}
-@keyframes fx-fusion-pulse {
-  0%, 100% { scale: 0.84; opacity: 0.65; }
-  50%      { scale: 1.2;  opacity: 1; }
-}
-
-.fx-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 26px;
-  height: 26px;
-  margin: -13px 0 0 -13px;
-  border: 1px solid color-mix(in srgb, var(--fx-core) 55%, transparent);
-  border-radius: var(--radius-full);
-  opacity: 0;
-  animation: fx-ring-expand 3.2s ease-out infinite;
-}
-.fx-ring--2 { animation-delay: 1.05s; }
-.fx-ring--3 { animation-delay: 2.1s; }
-
-@keyframes fx-ring-expand {
-  0%   { scale: 1; opacity: 0.6; }
-  100% { scale: 5; opacity: 0; }
-}
-
 /* ── Adattamenti ────────────────────────────────────────────────── */
 
 @media (max-width: 760px) {
   .hero-fx {
     --fx-grid-size: 32px;
-    --fx-particle-size: 5px;
     --fx-height: clamp(21rem, 62vh, 30rem);
   }
-  .fx-orbit { width: 190px; height: 190px; margin-top: -95px; }
-  .fx-orbit--onprem { margin-left: -95px; }
-  .fx-orbit--cloud { margin-right: -95px; }
-  .fx-core { height: 220px; }
+  /* La scena è larga 2.4:1 dentro una banda quasi quadrata: lasciata intera
+     diventerebbe un nastro alto quaranta pixel. Ingrandita e centrata resta
+     leggibile; il ritaglio a 1.5x tiene dentro sia il server sia la nuvola —
+     è il motivo per cui la nuvola non sta al bordo destro della scena — e i
+     cavi continuano a entrare dal margine. */
+  .fx-scene { transform: scale(1.5); }
   .fx-word { font-size: 0.6875rem; letter-spacing: 0.1em; }
 }
 
-/* Trasparenza ridotta: resta la griglia, sparisce l'effetto luminoso. */
+/* Trasparenza ridotta: resta lo schema, sparisce l'alone luminoso. */
 @media (prefers-reduced-transparency: reduce) {
-  .fx-wave, .fx-orbit, .fx-core { display: none; }
+  .fx-signal { filter: none; }
 }
 
-/* Moto ridotto: base.css azzera già le durate, ma le parole e le particelle
-   finirebbero congelate a metà ciclo (cioè invisibili o fuori posto). Meglio
-   togliere del tutto ciò che vive solo nel movimento e tenere la struttura. */
+/* Moto ridotto: base.css azzera già le durate, ma il segnale si fermerebbe a
+   metà cavo e le parole resterebbero congelate a opacità zero. Meglio togliere
+   ciò che vive solo nel movimento e lasciare in piedi lo schema. */
 @media (prefers-reduced-motion: reduce) {
   .fx-word,
-  .fx-particle,
-  .fx-pulse-particle,
-  .fx-ring,
+  .fx-signal,
   .hero-fx__cue span { display: none; }
-  .fx-flow { transform: scaleX(1); opacity: 0.5; }
-  .fx-fusion { scale: 1; opacity: 1; }
+  .fx-led { opacity: 0.9; }
+  .fx-cloud-shape { opacity: 0.6; }
 }
