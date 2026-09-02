@@ -52,8 +52,9 @@
 .brand__mark svg { width: 92%; height: 92%; }
 .brand__text { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; }
 .brand__lines { display: grid; gap: 0.1rem; line-height: 1.15; }
-/* Endorsement della società: deve leggersi come sottotitolo del nome, mai
-   competere con esso — da qui il peso e la dimensione ridotti. */
+/* Seconda riga del lockup: la persona sotto il marchio. Deve leggersi come
+   sottotitolo, mai competere con la riga sopra — da qui peso e dimensione
+   ridotti. Il monogramma AM resta il segno di entrambe. */
 .brand__tagline {
   font-size: 0.7rem;
   font-weight: 500;
