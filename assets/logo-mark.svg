@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
-  <rect width="64" height="64" rx="9.6" fill="#0d1117"/>
-  <g fill="#2ecc8f">
+  <title>Monogramma AM</title>
+  <g fill="currentColor">
     <path d="M8 50 L18 14 H26 L31.2 32.72 V50 H28 L22 28.4 L16 50 Z"/>
     <path d="M56 50 L46 14 H38 L32.8 32.72 V50 H36 L42 28.4 L48 50 Z"/>
     <path d="M11.75 36.5 H31.2 V43 H11.75 Z"/>

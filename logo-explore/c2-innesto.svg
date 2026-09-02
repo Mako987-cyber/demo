@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
+  <title>AM — legatura a montante condiviso</title>
+  <rect width="64" height="64" rx="9.6" fill="#0d1117"/>
+  <g fill="#2ecc8f">
+    <path d="M20 16 H26 L12 48 H6 Z"/>
+    <rect x="12.13" y="34" width="13.87" height="6"/>
+    <rect x="26" y="16" width="6" height="32"/>
+    <path d="M26 16 H32 L45 42 H39 Z"/>
+    <path d="M52 16 H58 L45 42 H39 Z"/>
+    <rect x="52" y="16" width="6" height="32"/>
+  </g>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
+  <title>AM — zigzag continuo</title>
+  <rect width="64" height="64" rx="9.6" fill="#0d1117"/>
+  <g fill="#2ecc8f">
+    <path d="M18 14 H26 L16 50 H8 Z"/>
+    <path d="M18 14 H26 L36 50 H28 Z"/>
+    <path d="M38 14 H46 L36 50 H28 Z"/>
+    <path d="M38 14 H46 L56 50 H48 Z"/>
+    <rect x="11.75" y="36.5" width="20.5" height="6.5"/>
+  </g>
+</svg>

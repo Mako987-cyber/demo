@@ -47,24 +47,19 @@
   color: #2ecc8f;
   box-shadow: var(--glass-shadow);
 }
-.brand__mark svg { width: 82%; height: 82%; }
-/* Lockup a due righe: sopra il nome commerciale, sotto la persona. Il
-   monogramma AM resta al suo posto — Scale IT Right è il marchio con cui il
-   lavoro si presenta, non un'altra azienda, e senza la seconda riga la sigla
-   accanto non avrebbe più un referente. */
-.brand__text {
-  display: grid;
-  gap: 0.08rem;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1.15;
-}
-.brand__text small {
-  font-size: 0.6875rem;
+/* 92%: il marchio nuovo porta gia' 8/64 di margine dentro il viewBox, quindi
+   scala meno del vecchio a parita' di aria attorno (≈7px sulla tile da 44). */
+.brand__mark svg { width: 92%; height: 92%; }
+.brand__text { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; }
+.brand__lines { display: grid; gap: 0.1rem; line-height: 1.15; }
+/* Seconda riga del lockup: la persona sotto il marchio. Deve leggersi come
+   sottotitolo, mai competere con la riga sopra — da qui peso e dimensione
+   ridotti. Il monogramma AM resta il segno di entrambe. */
+.brand__tagline {
+  font-size: 0.7rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--color-text-faint);
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
 }
 .site-nav { display: flex; align-items: center; gap: var(--space-4); }
 .nav-menu { display: flex; align-items: center; gap: var(--space-5); }
@@ -91,6 +86,10 @@
   border-color: var(--glass-border-strong);
   background-color: var(--glass-bg-strong);
 }
+/* Variante compatta per il footer: i progetti sono prova tecnica, non un
+   percorso di conversione — stanno a piè di pagina, non nel menu. */
+.icon-button--sm { width: 2.25rem; height: 2.25rem; color: var(--color-text-muted); }
+.icon-button--sm:hover { color: var(--color-primary); }
 .nav-toggle { display: none; }
 /* Densità: un sito che vende una consulenza deve mostrare la prova senza far
    scrollare. Sezioni più corte del previgente clamp(12,8vw,24). */

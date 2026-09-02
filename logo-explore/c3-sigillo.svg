@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
+  <title>AM — targa incisa</title>
+  <rect width="64" height="64" rx="4" fill="#2ecc8f"/>
+  <g fill="#0d1117">
+    <path d="M15.3 16 H20.7 L11.4 48 H6 Z"/>
+    <path d="M15.3 16 H20.7 L30 48 H24.6 Z"/>
+    <rect x="9.92" y="34.5" width="16.16" height="5.5"/>
+    <rect x="33" y="16" width="5.4" height="32"/>
+    <rect x="52.6" y="16" width="5.4" height="32"/>
+    <path d="M33 16 H38.4 L48.2 42 H42.8 Z"/>
+    <path d="M52.6 16 H58 L48.2 42 H42.8 Z"/>
+  </g>
+</svg>

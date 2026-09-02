@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aniello Mollo">
+  <title>AM — moduli assemblati</title>
+  <rect width="64" height="64" rx="9.6" fill="#0d1117"/>
+  <g fill="#2ecc8f">
+    <path d="M18 14 H21.2 V31.28 L16 50 H8 Z"/>
+    <path d="M22.8 14 H26 L31.2 32.72 V50 H28 L22.8 31.28 Z"/>
+    <path d="M41.2 14 H38 L32.8 32.72 V50 H36 L41.2 31.28 Z"/>
+    <path d="M46 14 H42.8 V31.28 L48 50 H56 Z"/>
+    <rect x="11.75" y="36.5" width="19.45" height="6.5"/>
+  </g>
+</svg>
