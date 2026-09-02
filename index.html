@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Aniello Mollo — Infrastructure &amp; Cloud Engineer. Infrastrutture ibride on-premises e cloud: server e reti, Azure e Microsoft 365, backup e disaster recovery con Commvault, Veeam e Azure Backup. Per banking, finance ed enterprise." />
-  <title>Aniello Mollo · Infrastructure &amp; Cloud Engineer</title>
+  <meta name="description" content="Scale IT Right — Aniello Mollo, Infrastructure &amp; Cloud Engineer. Infrastrutture ibride on-premises e cloud: server e reti, Azure e Microsoft 365, backup e disaster recovery con Commvault, Veeam e Azure Backup. Per banking, finance ed enterprise." />
+  <title>Scale IT Right · Aniello Mollo — Infrastructure &amp; Cloud Engineer</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
@@ -15,13 +15,14 @@
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/components.css" />
   <link rel="stylesheet" href="/styles/layout.css" />
+  <link rel="stylesheet" href="/styles/hero-fx.css" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
 
   <header class="site-header" data-header>
     <div class="container navbar">
-      <a class="brand" href="/" aria-label="Aniello Mollo — Home">
+      <a class="brand" href="/" aria-label="Scale IT Right — Home">
         <span class="brand__mark" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
             <g stroke="currentColor" stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round">
@@ -30,7 +31,10 @@
             </g>
           </svg>
         </span>
-        <span class="brand__text">Aniello Mollo</span>
+        <span class="brand__text">
+          Scale IT Right
+          <small>Aniello Mollo</small>
+        </span>
       </a>
 
       <nav class="site-nav" aria-label="Navigazione principale">
@@ -54,12 +58,34 @@
   </header>
 
   <main id="main-content">
+    <!-- BANDA D'APERTURA: il nome, sopra il fondo animato -->
+    <section class="hero-fx">
+      <div class="hero-fx__bg" data-hero-fx aria-hidden="true"></div>
+      <div class="container hero-fx__content">
+        <p class="hero-fx__kicker">Infrastructure &amp; Cloud Engineering</p>
+        <h1 class="hero-fx__wordmark">
+          <span class="hero-fx__word">Scale</span>
+          <span class="hero-fx__word"><em>IT</em></span>
+          <span class="hero-fx__word">Right</span>
+        </h1>
+        <p class="hero-fx__payoff">Scale it right. Keep it running.</p>
+        <p class="hero-fx__lede">
+          On-premises da una parte, cloud dall'altra, un punto solo in cui le due
+          cose devono funzionare insieme. È lì che lavoro.
+        </p>
+        <p class="hero-fx__cue">
+          Continua
+          <span aria-hidden="true"></span>
+        </p>
+      </div>
+    </section>
+
     <!-- HERO -->
     <section class="hero section section--hero">
       <div class="container hero__grid">
         <div class="hero__content reveal">
           <span class="eyebrow">Infrastruttura ibrida · Cloud Microsoft · Backup &amp; Disaster Recovery</span>
-          <h1>Infrastrutture che reggono. Anche quando qualcosa va storto.</h1>
+          <h2>Infrastrutture che reggono. Anche quando qualcosa va storto.</h2>
           <p>
             Progetto, automatizzo e proteggo infrastrutture ibride: server e reti on-premises,
             cloud Azure e Microsoft 365, backup e ripristini testati. Per aziende in cui un fermo
@@ -177,6 +203,7 @@
     </div>
   </footer>
 
+  <script src="/scripts/hero-fx.js" defer></script>
   <script src="/scripts/main.js" defer></script>
 </body>
 </html>

@@ -9,6 +9,7 @@
 .hero__grid { grid-template-columns: 1.15fr 0.85fr; align-items: center; }
 .hero__content { display: grid; gap: var(--space-5); }
 .hero__content h1,
+.hero__content h2,
 .page-hero h1,
 .featured-panel h2,
 .section-intro h2,
@@ -18,7 +19,8 @@
 }
 /* Era clamp(2.8rem, 6vw, 6rem) su 11ch: spettacolare ma spingeva ogni
    contenuto sotto la piega. Qui la proposta di valore si legge intera. */
-.hero__content h1 { font-size: clamp(2.05rem, 3.8vw, 3.4rem); max-width: 20ch; }
+.hero__content h1,
+.hero__content h2 { font-size: clamp(2.05rem, 3.8vw, 3.4rem); max-width: 20ch; }
 .page-hero h1,
 .section-intro h2,
 .featured-panel h2,
