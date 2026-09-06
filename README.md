@@ -55,6 +55,7 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 │   ├── neo/                 ← NEO Tracker 3D — teal theme (NASA + JPL)
 │   ├── magi-neo/            ← NEO Tracker 3D — Evangelion NERV/MAGI theme
 │   ├── magi-sat/            ← Satellite Orbital Tracker — NERV theme (CelesTrak + Supabase)
+│   ├── orbit/               ← Orbital Tracker — site theme, cobe globe (CelesTrak + Supabase)
 │   ├── naas/                ← No-as-a-Service joke tool
 │   └── space-invaders/      ← Retro Canvas 2D game (vaporwave aesthetic)
 │
@@ -62,7 +63,9 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 │   ├── textures/            ← Earth/globe textures for Three.js scenes
 │   └── vendor/
 │       ├── three.min.js     ← Three.js r128 (bundled locally, no CDN)
-│       └── OrbitControls.js ← Three.js OrbitControls addon
+│       ├── OrbitControls.js ← Three.js OrbitControls addon
+│       ├── cobe.esm.js      ← cobe 2.0.1 WebGL globe (ESM, MIT) — used by orbit/
+│       └── cobe.LICENSE     ← cobe MIT license text
 │
 ├── data/
 │   ├── processed/           ← airports.csv, landing-points.csv, submarine-cables.csv
@@ -97,8 +100,8 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 | Frankfurter.dev `/v1/*` | `currency/` | No auth required |
 | NASA NeoWs `/neo/rest/v1/feed` | `neo/`, `magi-neo/` | Requires `NASA_API_KEY` env var (server-side only) |
 | JPL SSD Close Approach API | `neo/`, `magi-neo/` | Direct from client, no auth |
-| CelesTrak NORAD GP data | `magi-sat/` | Proxied via `/api/celestrak` (CORS + caching) |
-| Supabase PostgREST | `magi-sat/` | Requires `STORAGE_SUPABASE_URL` + `STORAGE_SUPABASE_SERVICE_ROLE_KEY` env vars (server-side only) |
+| CelesTrak NORAD GP data | `magi-sat/`, `orbit/` | Proxied via `/api/celestrak` (CORS + caching) |
+| Supabase PostgREST | `magi-sat/`, `orbit/` | Requires `STORAGE_SUPABASE_URL` + `STORAGE_SUPABASE_SERVICE_ROLE_KEY` env vars (server-side only) |
 | naas.isalman.dev/no | `naas/` | No auth required |
 
 ---
@@ -117,6 +120,7 @@ index.html
     ├── → pages/neo/
     ├── → pages/magi-neo/
     ├── → pages/magi-sat/
+    ├── → pages/orbit/
     ├── → pages/naas/
     └── → pages/space-invaders/
 ```
@@ -128,6 +132,8 @@ index.html
 4. `./script.js` — page logic
 
 > **Exception:** MAGI pages (`magi-neo/`, `magi-sat/`) do **not** use the shared `styles/` system — they have self-contained `style.css` files and load Three.js from `../../assets/vendor/three.min.js`.
+>
+> **Exception:** `orbit/` keeps the shared styles but loads its page logic as `<script type="module">` (after the deferred classic scripts, so `window.CelestrakApi` and `window.MonitoringApi` are already there). It is the only ES module page: cobe ships as ESM.
 
 ---
 
@@ -246,6 +252,9 @@ Functionally identical NEO Tracker 3D. Three.js WebGL scene: animated Earth with
 ### `magi-sat/`
 Real-time satellite orbital tracker. Full Keplerian mechanics: `solveKepler(M, e)` (Newton-Raphson, 50 iter), `satToThree(sat, timeMs)` (ECI→Three.js: `x=ECI.x, y=ECI.z, z=-ECI.y`), `orbitPoints(sat, steps)`. Groups configured in `GROUP_DEFS`: Space Stations, GPS, Visual/Brightest, Starlink (`InstancedMesh`), GLONASS, Galileo, Military, Weather, Recent Launches. Infrastructure layers via `LAYER_DEFS` from Supabase: chokepoints, cable landings, airports, power plants (`FUEL_COLORS` map), submarine cables. Time multiplier: 1×/10×/100×/1000×. Camera altitude zones: LEO/MEO/GEO. Satellite click → detail panel. Sortable/filterable table below.
 
+### `orbit/`
+Real-time orbital tracker on the shared `styles/` system — the site-themed counterpart of `magi-sat/`. The planet is rendered by **cobe** (`assets/vendor/cobe.esm.js`, MIT); satellites, orbit traces and infrastructure layers are drawn on a 2D overlay canvas that replicates cobe's projection: orthographic sphere of radius `0.8`, same `phi`/`theta` rotation matrix and `scale` factor. Two reference frames share one camera angle — satellites are inertial (ECI, `phi = view`), geography rotates with the Earth (`phi = view + GMST`, which is also the `phi` handed to cobe), so the map turns under fixed orbits. Keplerian math ported from `magi-sat/`: `solveKepler(M, e)`, `satPosition(sat, timeMs, out, i)` (ECI→cobe axes: `x=ECI.x, y=ECI.z, z=-ECI.y`), `orbitPath(sat, steps)`, plus `gmst(ms)`. Same nine CelesTrak groups (`GROUPS`) and five Supabase layers (`LAYERS`, `FUEL_COLORS`) as `magi-sat/`. Colors are `[dark, light]` pairs swapped on `data-theme`, globe parameters included. Picking is a linear scan over the positions projected in the current frame, using cobe's own behind-the-sphere test; propagation is throttled while projection runs every frame. Time multiplier 1×/10×/100×/1000×, LEO/MEO/GEO framing presets, drag to rotate, wheel/pinch to zoom. Italian UI.
+
 ### `naas/`
 "No-as-a-Service" — single button, fetches a random refusal reason, CSS shake animation, in-memory history (last 10 entries).
 
@@ -297,5 +306,5 @@ Canvas 2D retro game. Vaporwave: teal ship `#3be9ff`, pink enemies `#ff4fcf`, or
 6. **No build toolchain** — zero `package.json`, no bundler, no transpiler. Vendor JS pre-bundled in `assets/vendor/`.
 7. **Language** — UI text is in Italian (`lang="it"`). MAGI pages are in English with Japanese secondary labels.
 8. **Script load order matters** — `main.js` → `http.js` → feature API module → page `script.js`, always `defer`.
-9. **MAGI isolation** — `magi-neo/` and `magi-sat/` have no dependency on `styles/*.css`. Editing those files does not affect MAGI pages and vice versa.
+9. **MAGI isolation** — `magi-neo/` and `magi-sat/` have no dependency on `styles/*.css`. Editing those files does not affect MAGI pages and vice versa. `orbit/` is the opposite case: it covers the same data as `magi-sat/` while living entirely inside the shared token system.
 10. **Scroll reveal** — `.reveal` class gets `.is-visible` once via `IntersectionObserver`. Fully disabled by `prefers-reduced-motion`.
