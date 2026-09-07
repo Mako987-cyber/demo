@@ -35,8 +35,10 @@
   border: 1px solid var(--glass-inverse-border);
   border-radius: var(--radius-sm);
   color: var(--glass-inverse-text);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
   backdrop-filter: var(--glass-inverse-filter);
   -webkit-backdrop-filter: var(--glass-inverse-filter);
@@ -231,7 +233,7 @@
   background-color: var(--glass-inverse-bg);
   background-image: var(--glass-inverse-highlight);
   border: 1px solid var(--glass-inverse-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   backdrop-filter: var(--glass-inverse-filter);
   -webkit-backdrop-filter: var(--glass-inverse-filter);
   box-shadow: var(--glass-inverse-shadow);
@@ -486,7 +488,7 @@
 .filter-group {
   display: flex;
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   background-color: var(--glass-bg);
   backdrop-filter: var(--glass-filter-sm);
@@ -513,7 +515,7 @@
 .neo-search-input {
   padding: 0.4rem 0.75rem;
   border: 1px solid var(--data-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   background: var(--data-surface);
   color: var(--color-text);
   font-family: var(--font-body);
@@ -591,7 +593,7 @@
   padding: 0.15rem 0.5rem;
   background: color-mix(in srgb, var(--color-negative) 12%, transparent);
   color: var(--color-negative);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   font-size: 0.7rem;
   font-weight: 700;
 }

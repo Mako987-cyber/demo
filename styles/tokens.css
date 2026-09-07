@@ -1,27 +1,40 @@
-/* Art direction: personal cloud engineer portfolio → glassmorphism vivido
-   Palette: viola elettrico dominante + arancio caldo in contrappunto, magenta e ciano
-   di supporto. Il fondo è saturo e il vetro lo rifrange: è quel contrasto
-   viola/arancio a dare la profondità, non la luminosità delle superfici.
-   Typography: Cabinet Grotesk + General Sans for structured, modern professionalism
-   Density: balanced, spacious enough to feel premium but still operational
+/* Art direction: "Anodized" — l'identità viene dal mestiere, non dal settore.
+   Il vocabolario è quello dell'infrastruttura fisica: rack, rail anodizzato,
+   etichette stampate, codici colore del cablaggio strutturato.
 
-   Regola portante — "ibrido": il vetro veste chrome, card e contenitori; i dati
-   (righe di tabella, celle, input) restano su superfici solide. Il vetro non si annida
-   mai dentro altro vetro: backdrop-filter non si somma e il figlio sfocherebbe il
-   backdrop del nonno, producendo un alone sporco. */
+   Colore — l'arancio è quello delle bretelle in fibra multimodale (OM), non un
+   accento decorativo: è il colore che in sala macchine significa "questo cavo".
+   Il verde esiste ma è uno STATO, non una tinta: compare solo dove qualcosa è
+   verificato. Regola non negoziabile: in ops il colore vuol dire stato, mai
+   ornamento. Se un elemento non ha uno stato da comunicare, resta acromatico.
+
+   Superfici — piatte e stampate. Niente vetro, niente blur, niente bagliori:
+   una consulenza infrastrutturale si presenta come un documento tecnico, non
+   come una dashboard consumer. I token --glass-* sopravvivono come alias di
+   compatibilità (le mini-app li referenziano ~335 volte) ma puntano a superfici
+   solide, quindi si de-vetrificano da sole.
+
+   Typography — Archivo variabile su asse wdth: display a 118 (targa stampata),
+   testo a 100. Una sola voce, due larghezze. IBM Plex Mono per le etichette. */
 
 :root,
 [data-theme="light"] {
-  --font-display: 'Cabinet Grotesk', 'Inter', sans-serif;
-  --font-body: 'General Sans', 'Inter', sans-serif;
+  --font-display: 'Archivo', 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'Archivo', 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
-  --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
-  --text-3xl: clamp(2.5rem, 1rem + 4vw, 5rem);
+  /* Le due larghezze del sistema. font-stretch su famiglia variabile; sui
+     browser senza asse wdth degrada a larghezza normale senza rompere nulla. */
+  --width-display: 118%;
+  --width-body: 100%;
+
+  --text-xs: clamp(0.75rem, 0.72rem + 0.16vw, 0.8125rem);
+  --text-sm: clamp(0.875rem, 0.85rem + 0.2vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.97rem + 0.16vw, 1.0625rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.5vw, 1.375rem);
+  --text-xl: clamp(1.375rem, 1.15rem + 1vw, 2rem);
+  --text-2xl: clamp(1.875rem, 1.4rem + 2.1vw, 3rem);
+  --text-3xl: clamp(2.375rem, 1.5rem + 3.6vw, 4.25rem);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -36,214 +49,124 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
-  --color-bg: #eef1ef;
-  --color-surface: #f7f9f8;
-  --color-surface-2: #fbfcfb;
-  --color-surface-offset: #e4e8e6;
-  --color-border: #c8d0cc;
-  --color-divider: #d8dedb;
-  --color-text: #0d1117;
-  /* muted/faint tarati per reggere 4.5:1 compositati sul vetro sopra l'aurora,
-     non solo sul fondo neutro: la soglia si gioca lì. */
-  --color-text-muted: #3f4a48;
-  --color-text-faint: #4d5754;
-  --color-text-inverse: #f7f9f8;
-  /* Smeraldo scurito: su superfici chiare #10b981 sta sotto 2:1. */
-  --color-primary: #05704a;
-  --color-primary-hover: #045c3c;
-  --color-primary-highlight: #d6ebe1;
-  --color-accent: #05704a;
-  --color-accent-soft: #10b981;
+  /* ── Tema chiaro: zinco freddo ────────────────────────────────────
+     Deliberatamente NON crema. Il fondo ha il blu sopra il rosso: legge come
+     metallo verniciato, non come carta. È ciò che tiene la pagina fuori dal
+     territorio editoriale e dentro quello tecnico. */
+  --color-bg: #e6e9eb;
+  --color-surface: #f2f4f5;
+  --color-surface-2: #ffffff;
+  --color-surface-offset: #dae0e3;
+  --color-border: #cdd4d9;
+  --color-divider: #dbe1e4;
+  --color-rail: #b9c2c8;
+  --color-text: #12171b;
+  --color-text-muted: #4a555d;
+  --color-text-faint: #58636a;
+  --color-text-inverse: #ffffff;
 
-  /* ── Aurora: il fondo che il vetro rifrange ──────────────────────
-     Serve ancora — su tinta unita una superficie translucida legge come una
-     macchia grigia — ma qui è una velatura, non un mesh colorato: smeraldo e
-     acciaio appena percettibili. Sopra il 20% il sito smette di sembrare serio. */
-  --aurora-1: rgba(5, 112, 74, 0.16);
-  --aurora-2: rgba(51, 84, 110, 0.16);
-  --aurora-3: rgba(16, 185, 129, 0.12);
-  --aurora-4: rgba(70, 96, 116, 0.14);
-  --aurora-blur: 40px;
+  /* Arancio bruciato: #ff7a1a su zinco sta a 2.1:1, inutilizzabile per testo.
+     Questo regge 4.9:1 sul fondo e 6.1:1 in negativo dentro la CTA piena. */
+  --color-accent: #a84200;
+  --color-accent-hover: #8e3800;
+  --color-accent-wash: rgba(168, 66, 0, 0.09);
+  --color-accent-line: rgba(168, 66, 0, 0.28);
 
-  /* ── Vetro ───────────────────────────────────────────────────────
-     12–16px è il punto di equilibrio fra effetto e costo GPU; saturate()
-     evita che i colori dietro il pannello sbiadiscano sul grigio. */
-  --glass-blur: 14px;
-  --glass-blur-sm: 10px;
-  --glass-saturate: 165%;
-  /* Il filtro passa da token, non scritto a mano nelle regole: così la preferenza
-     "trasparenza ridotta" lo azzera una volta sola e la scelta si propaga anche al
-     CSS delle singole pagine, senza doverne elencare i selettori. */
-  --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  --glass-filter-sm: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-  --glass-bg: rgba(255, 255, 255, 0.66);
-  --glass-bg-strong: rgba(255, 255, 255, 0.84);
-  --glass-bg-subtle: rgba(255, 255, 255, 0.46);
-  --glass-border: rgba(13, 17, 23, 0.10);
-  --glass-border-soft: rgba(13, 17, 23, 0.06);
-  --glass-border-strong: rgba(5, 112, 74, 0.34);
-  /* Ombre corte e verticali: la diffusione ampia legge come profondità decorativa,
-     qui serve solo lo stacco dal fondo. */
-  --glass-shadow: 0 1px 2px rgba(13, 17, 23, 0.05), 0 6px 16px rgba(13, 17, 23, 0.07);
-  --glass-shadow-lift: 0 2px 4px rgba(13, 17, 23, 0.07), 0 12px 28px rgba(13, 17, 23, 0.12);
-  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 56%);
-
-  /* ── Superfici solide (lato "dati" della regola ibrida) ──────────
-     Righe di tabella, celle, input: niente translucenza, niente repaint in scroll. */
-  --data-surface: #ffffff;
-  --data-surface-alt: #eef1ef;
-  --data-border: rgba(13, 17, 23, 0.12);
-
-  /* Colori semantici dei dati. I precedenti (#10b981, #ef4444, #3b82f6) erano
-     scritti a mano nelle pagine e su fondo chiaro stavano intorno a 2.5:1;
-     questi reggono 4.5:1 sulle superfici dati in entrambi i temi. */
-  --color-positive: #05704a;
+  /* Stato, non tinta. */
+  --color-verified: #0f7a4e;
+  --color-positive: #0f7a4e;
   --color-negative: #a82a19;
   --color-info: #1d4ed8;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.1875rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.3125rem;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 2px rgba(18, 23, 27, 0.06);
+  --shadow-md: 0 2px 8px rgba(18, 23, 27, 0.08);
+  --shadow-lg: 0 8px 24px rgba(18, 23, 27, 0.12);
 
   --content-default: 1180px;
-  --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-interactive: 160ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Tema scuro (default): grafite su grafite. Il vetro è una schiaritura del
-   fondo, non un colore diverso — è ciò che distingue una superficie tecnica
-   sobria da un pannello decorativo. */
+/* ── Tema scuro (default): grafite fredda ──────────────────────────
+   Non nero. #101418 ha una dominante blu che tiene il fondo lontano dal
+   "portfolio dark generico" e vicino al grigio macchina. */
 [data-theme="dark"] {
-  --color-bg: #0d1117;
-  --color-surface: #161b22;
-  --color-surface-2: #1c222b;
-  --color-surface-offset: #222831;
-  --color-border: #30363d;
-  --color-divider: #262c34;
-  --color-text: #e6edf3;
-  --color-text-muted: #b3bec8;
-  --color-text-faint: #97a3ae;
-  --color-text-inverse: #0d1117;
-  --color-primary: #2ecc8f;
-  --color-primary-hover: #46dda2;
-  --color-primary-highlight: #10281f;
-  --color-accent: #2ecc8f;
-  --color-accent-soft: #10b981;
+  --color-bg: #101418;
+  --color-surface: #161b20;
+  --color-surface-2: #1c2228;
+  --color-surface-offset: #222930;
+  --color-border: #272e35;
+  --color-divider: #1f262c;
+  --color-rail: #2b333a;
+  --color-text: #e6eaec;
+  --color-text-muted: #9aa5ad;
+  --color-text-faint: #78838b;
+  --color-text-inverse: #101418;
 
-  --aurora-1: rgba(16, 185, 129, 0.16);
-  --aurora-2: rgba(70, 110, 150, 0.16);
-  --aurora-3: rgba(16, 185, 129, 0.10);
-  --aurora-4: rgba(90, 120, 145, 0.13);
+  /* Arancio fibra pieno: 7.0:1 sul fondo, quindi utilizzabile come colore di
+     testo e non solo come riempimento. */
+  --color-accent: #ff7a1a;
+  --color-accent-hover: #ff9042;
+  --color-accent-wash: rgba(255, 122, 26, 0.12);
+  --color-accent-line: rgba(255, 122, 26, 0.34);
 
-  --glass-bg: rgba(38, 46, 56, 0.62);
-  --glass-bg-strong: rgba(30, 37, 46, 0.82);
-  --glass-bg-subtle: rgba(38, 46, 56, 0.42);
-  --glass-border: rgba(255, 255, 255, 0.10);
-  --glass-border-soft: rgba(255, 255, 255, 0.06);
-  --glass-border-strong: rgba(46, 204, 143, 0.42);
-  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.34), 0 6px 18px rgba(0, 0, 0, 0.40);
-  --glass-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.40), 0 14px 32px rgba(0, 0, 0, 0.50);
-  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 56%);
-
-  --data-surface: #161b22;
-  --data-surface-alt: #1c222b;
-  --data-border: rgba(255, 255, 255, 0.10);
-
-  --color-positive: #3fce90;
+  --color-verified: #3fd68c;
+  --color-positive: #3fd68c;
   --color-negative: #ff8f7a;
   --color-info: #79b8ff;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
 }
 
-/* ── Vetro scuro indipendente dal tema ──────────────────────────────
-   Per le HUD sospese sopra un canvas WebGL: lì lo sfondo è lo spazio profondo
-   in entrambi i temi, quindi il pannello deve restare scuro anche in light. */
+/* ── Alias di compatibilità ────────────────────────────────────────
+   Le sei mini-app che seguono il sistema condiviso (weather, crypto, currency,
+   neo, naas, space-invaders) referenziano i vecchi nomi --glass-* e --data-*.
+   Rimapparli qui le porta sul nuovo linguaggio piatto senza toccare una riga
+   dei loro CSS, e --glass-filter: none spegne il backdrop-filter ovunque in un
+   colpo solo, CSS di pagina compreso. */
 :root {
-  --glass-inverse-bg: rgba(7, 12, 20, 0.72);
-  --glass-inverse-bg-strong: rgba(5, 9, 15, 0.88);
-  --glass-inverse-border: rgba(160, 214, 220, 0.22);
-  --glass-inverse-border-hover: rgba(160, 214, 220, 0.55);
-  --glass-inverse-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 18px 44px rgba(0, 0, 0, 0.5);
-  --glass-inverse-highlight: linear-gradient(180deg, rgba(180, 226, 232, 0.10), rgba(180, 226, 232, 0) 58%);
-  --glass-inverse-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  --glass-inverse-text: #cdd8da;
-  --glass-inverse-text-bright: #9dd4da;
-  --glass-inverse-text-dim: rgba(190, 222, 226, 0.62);
-  --glass-inverse-accent: #4fd1a5;
-  /* Hazard: colore semantico della scena NEO (oggetto potenzialmente pericoloso). */
-  --glass-inverse-hazard: #e05e40;
+  --glass-bg: var(--color-surface);
+  --glass-bg-strong: var(--color-surface-2);
+  --glass-bg-subtle: var(--color-surface);
+  --glass-border: var(--color-border);
+  --glass-border-soft: var(--color-divider);
+  --glass-border-strong: var(--color-accent-line);
+  --glass-highlight: none;
+  --glass-filter: none;
+  --glass-filter-sm: none;
+  --glass-shadow: var(--shadow-sm);
+  --glass-shadow-lift: var(--shadow-md);
 
-  /* Alias di compatibilità.
-     Queste due righe riparano ~67 riferimenti che puntavano a variabili mai
-     dichiarate (le pagine dati usavano --color-bg-secondary / --color-text-secondary
-     mentre i token esponevano --color-surface / --color-text-muted): finora quelle
-     card rendevano con sfondo trasparente. Ora risolvono, e per giunta a vetro. */
-  --color-bg-secondary: var(--glass-bg);
+  --data-surface: var(--color-surface-2);
+  --data-surface-alt: var(--color-surface);
+  --data-border: var(--color-border);
+
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent-hover);
+  --color-primary-highlight: var(--color-accent-wash);
+  --color-accent-soft: var(--color-accent);
+  --color-bg-secondary: var(--color-surface);
   --color-text-secondary: var(--color-text-muted);
-}
 
-/* ── Fallback: browser senza backdrop-filter ───────────────────────
-   Senza il blur la translucenza sarebbe solo testo su fondo sporco: si compensa
-   alzando l'opacità fino a rendere le superfici praticamente piene. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root, [data-theme="light"] {
-    --glass-bg: rgba(255, 255, 255, 0.94);
-    --glass-bg-strong: rgba(255, 255, 255, 0.97);
-    --glass-bg-subtle: rgba(255, 255, 255, 0.88);
-  }
-  [data-theme="dark"] {
-    --glass-bg: rgba(30, 37, 46, 0.95);
-    --glass-bg-strong: rgba(22, 27, 34, 0.98);
-    --glass-bg-subtle: rgba(38, 46, 56, 0.90);
-  }
-  :root {
-    --glass-inverse-bg: rgba(7, 12, 20, 0.95);
-    --glass-inverse-bg-strong: rgba(5, 9, 15, 0.98);
-  }
-}
-
-/* ── Preferenza di sistema: trasparenza ridotta ────────────────────
-   Superfici piene e aurora quasi spenta. Il blur viene disattivato in base.css. */
-@media (prefers-reduced-transparency: reduce) {
-  :root, [data-theme="light"] {
-    --glass-bg: #ffffff;
-    --glass-bg-strong: #ffffff;
-    --glass-bg-subtle: #f7f9f8;
-    --glass-border: var(--color-border);
-    --glass-border-soft: var(--color-divider);
-    --glass-highlight: none;
-    --aurora-1: rgba(5, 112, 74, 0.05);
-    --aurora-2: rgba(51, 84, 110, 0.05);
-    --aurora-3: rgba(16, 185, 129, 0.04);
-    --aurora-4: rgba(70, 96, 116, 0.04);
-  }
-  [data-theme="dark"] {
-    --glass-bg: #1e252e;
-    --glass-bg-strong: #161b22;
-    --glass-bg-subtle: #222831;
-    --glass-border: var(--color-border);
-    --glass-border-soft: var(--color-divider);
-    --glass-highlight: none;
-    --aurora-1: rgba(16, 185, 129, 0.05);
-    --aurora-2: rgba(70, 110, 150, 0.05);
-    --aurora-3: rgba(16, 185, 129, 0.04);
-    --aurora-4: rgba(90, 120, 145, 0.04);
-  }
-  :root {
-    --glass-inverse-bg: #070c14;
-    --glass-inverse-bg-strong: #05090f;
-    --glass-inverse-highlight: none;
-    /* Spegne il blur ovunque in un colpo solo, CSS di pagina compreso. */
-    --glass-filter: none;
-    --glass-filter-sm: none;
-    --glass-inverse-filter: none;
-  }
+  /* HUD sospese sopra un canvas WebGL (neo/): lì il fondo è spazio profondo in
+     entrambi i temi, quindi il pannello resta scuro anche in light. */
+  --glass-inverse-bg: rgba(10, 14, 18, 0.86);
+  --glass-inverse-bg-strong: rgba(6, 9, 12, 0.94);
+  --glass-inverse-border: rgba(255, 122, 26, 0.22);
+  --glass-inverse-border-hover: rgba(255, 122, 26, 0.55);
+  --glass-inverse-shadow: var(--shadow-lg);
+  --glass-inverse-highlight: none;
+  --glass-inverse-filter: none;
+  --glass-inverse-text: #d2d8db;
+  --glass-inverse-text-bright: #ffb27a;
+  --glass-inverse-text-dim: rgba(210, 216, 219, 0.62);
+  --glass-inverse-accent: #ff7a1a;
+  --glass-inverse-hazard: #ff4d2e;
 }

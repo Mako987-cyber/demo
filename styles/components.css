@@ -1,263 +1,312 @@
 .container { width: min(calc(100% - 2rem), var(--content-default)); margin-inline: auto; }
 
-/* ── Utility del vetro ──────────────────────────────────────────────
-   Tre livelli di densità. La regola non negoziabile: un contenitore di vetro
-   ha figli SOLIDI. backdrop-filter non si somma — un pannello di vetro dentro
-   un altro sfoca il backdrop del nonno, non il genitore, e produce un alone. */
-.glass-surface,
-.glass-surface--strong,
-.glass-surface--subtle {
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  background-repeat: no-repeat;
-  backdrop-filter: var(--glass-filter);
-  -webkit-backdrop-filter: var(--glass-filter);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+/* ══ Etichetta stampata ═══════════════════════════════════════════════
+   Sostituisce la pillola colorata. Una barra arancione di 2px e un'etichetta
+   in monospaziato maiuscolo: è il modo in cui si marca un apparato, e costa
+   molto meno attenzione di un badge pieno. */
+.eyebrow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
-/* Barrier layer: sotto blocchi di testo lunghi serve una superficie più piena,
-   altrimenti il contrasto dipende da cosa passa sotto. */
-.glass-surface--strong { background-color: var(--glass-bg-strong); }
-.glass-surface--subtle { background-color: var(--glass-bg-subtle); border-color: var(--glass-border-soft); }
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  flex: none;
+  /* Allineata al centro ottico della prima riga, non del blocco. */
+  margin-top: 0.55em;
+  background: var(--color-accent);
+}
 
+/* ══ Testata ══════════════════════════════════════════════════════════ */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  background-color: color-mix(in srgb, var(--glass-bg) 82%, transparent);
-  backdrop-filter: var(--glass-filter);
-  -webkit-backdrop-filter: var(--glass-filter);
+  background: var(--color-bg);
   border-bottom: 1px solid transparent;
 }
-.site-header.is-scrolled {
-  border-bottom-color: var(--glass-border-soft);
-  box-shadow: var(--glass-shadow);
+.site-header.is-scrolled { border-bottom-color: var(--color-border); }
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
 }
-.navbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) 0; }
 .brand { display: flex; align-items: center; gap: var(--space-3); }
 .brand__mark {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.85rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  /* Stessa tile del favicon: grafite pieno, non translucido — il logo deve
-     restare riconoscibile ovunque, non dipendere da cosa gli scorre dietro. */
-  background: #0d1117;
-  color: #2ecc8f;
-  box-shadow: var(--glass-shadow);
+  flex: none;
+  /* Tile grafite piena in entrambi i temi: il marchio non deve dipendere da
+     cosa gli sta dietro. Il monogramma prende l'arancio di sistema. */
+  background: #101418;
+  color: var(--color-accent);
 }
-/* 92%: il marchio nuovo porta gia' 8/64 di margine dentro il viewBox, quindi
-   scala meno del vecchio a parita' di aria attorno (≈7px sulla tile da 44). */
 .brand__mark svg { width: 92%; height: 92%; }
-.brand__text { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; }
-.brand__lines { display: grid; gap: 0.1rem; line-height: 1.15; }
-/* Endorsement della società: deve leggersi come sottotitolo del nome, mai
-   competere con esso — da qui il peso e la dimensione ridotti. */
-.brand__tagline {
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-}
-.site-nav { display: flex; align-items: center; gap: var(--space-4); }
-.nav-menu { display: flex; align-items: center; gap: var(--space-5); }
-/* :not(.btn) è necessario, non cosmetico: `.nav-menu a` ha specificità 0-1-1 e
-   sovrascriverebbe il colore di `.btn--primary` (0-1-0), lasciando la CTA
-   "Contatti" con il colore dei link di testo sopra il fondo pieno. */
-.nav-menu a:not(.btn) { font-size: var(--text-sm); color: var(--color-text-muted); }
-.nav-menu a:not(.btn):hover,
-.nav-menu a:not(.btn).is-active { color: var(--color-text); }
-.icon-button {
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  backdrop-filter: var(--glass-filter-sm);
-  -webkit-backdrop-filter: var(--glass-filter-sm);
-  box-shadow: var(--glass-shadow);
-  display: grid;
-  place-items: center;
-}
-.icon-button:hover {
-  border-color: var(--glass-border-strong);
-  background-color: var(--glass-bg-strong);
-}
-/* Variante compatta per il footer: i progetti sono prova tecnica, non un
-   percorso di conversione — stanno a piè di pagina, non nel menu. */
-.icon-button--sm { width: 2.25rem; height: 2.25rem; color: var(--color-text-muted); }
-.icon-button--sm:hover { color: var(--color-primary); }
-.nav-toggle { display: none; }
-/* Densità: un sito che vende una consulenza deve mostrare la prova senza far
-   scrollare. Sezioni più corte del previgente clamp(12,8vw,24). */
-.section { padding: clamp(var(--space-10), 5.5vw, var(--space-16)) 0; }
-.section--hero { padding-top: clamp(var(--space-12), 6vw, var(--space-20)); }
-.section--tight { padding: var(--space-8) 0; }
-.section--bordered { border-top: 1px solid var(--glass-border-soft); }
-.section-action { margin-top: var(--space-8); }
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0.85rem;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
-  color: var(--color-primary);
-  font-size: var(--text-xs);
+.brand__lines { display: grid; gap: 0.05rem; line-height: 1.2; }
+.brand__text {
+  font-family: var(--font-display);
+  font-stretch: var(--width-display);
+  font-size: 0.9375rem;
   font-weight: 700;
+  letter-spacing: -0.005em;
+}
+/* Endorsement societario: registro etichetta, mai in concorrenza col nome. */
+.brand__tagline {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--color-text-faint);
 }
+
+.site-nav { display: flex; align-items: center; gap: var(--space-4); }
+.nav-menu { display: flex; align-items: center; gap: var(--space-6); }
+/* :not(.btn) resta necessario: `.nav-menu a` ha specificità 0-1-1 e batterebbe
+   `.btn--primary` (0-1-0), scolorendo la CTA "Contatti" sul suo fondo pieno. */
+.nav-menu a:not(.btn) {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding-block: var(--space-1);
+}
+.nav-menu a:not(.btn):hover { color: var(--color-text); }
+/* La pagina corrente si marca con la barra, non con un colore: stesso segno
+   dell'etichetta stampata, quindi il sistema resta uno solo. */
+.nav-menu a:not(.btn).is-active { color: var(--color-text); }
+.nav-menu a:not(.btn).is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--color-accent);
+}
+
+.icon-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.icon-button:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.icon-button--sm { width: 2.125rem; height: 2.125rem; }
+.nav-toggle { display: none; }
+
+/* ══ Sezioni ══════════════════════════════════════════════════════════ */
+.section { padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; }
+.section--hero { padding-top: clamp(var(--space-12), 6vw, var(--space-20)); padding-bottom: var(--space-10); }
+.section--tight { padding: var(--space-8) 0; }
+.section--bordered { border-top: 1px solid var(--color-divider); }
+.section-action { margin-top: var(--space-10); }
+
+/* ══ Bottoni ══════════════════════════════════════════════════════════
+   Squadrati. Il raggio pieno del sistema precedente addolciva un'offerta che
+   deve leggersi come un impegno tecnico. */
 .btn {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  min-height: 48px;
-  padding: 0.9rem 1.2rem;
-  border-radius: var(--radius-full);
+  gap: var(--space-2);
+  min-height: 46px;
+  padding: 0.75rem 1.375rem;
   border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-stretch: var(--width-body);
   font-size: var(--text-sm);
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 0.005em;
 }
-/* Il CTA primario resta pieno: è l'elemento che deve reggere il contrasto
-   qualunque cosa gli scorra sotto. */
-.btn--primary {
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  box-shadow: var(--glass-shadow);
-}
-.btn--primary:hover { background: var(--color-primary-hover); transform: translateY(-1px); box-shadow: var(--glass-shadow-lift); }
+.btn--primary { background: var(--color-accent); color: var(--color-text-inverse); }
+.btn--primary:hover { background: var(--color-accent-hover); }
 .btn--secondary {
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  backdrop-filter: var(--glass-filter-sm);
-  -webkit-backdrop-filter: var(--glass-filter-sm);
-  border-color: var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
 }
-.btn--secondary:hover {
-  background-color: var(--glass-bg-strong);
-  border-color: var(--glass-border-strong);
-  transform: translateY(-1px);
-  box-shadow: var(--glass-shadow-lift);
-}
-/* La CTA in navigazione deve staccarsi dai link di testo senza dominarli:
-   più compatta del bottone di pagina, stessa gerarchia cromatica. */
+.btn--secondary:hover { border-color: var(--color-accent); color: var(--color-accent); }
 .btn--nav {
   min-height: 0;
-  padding: 0.5rem 0.95rem;
+  padding: 0.5rem 0.9rem;
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
-  letter-spacing: 0.02em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-/* ── Striscia di prova ──────────────────────────────────────────────
-   Le metriche erano sepolte in una card laterale dell'hero. Qui diventano
-   il primo argomento dopo la proposta di valore. */
+/* ══ Prospetto di rack — l'elemento firma ═════════════════════════════
+   Le aree di intervento non sono tre voci equivalenti: sono strati di uno
+   stack, e uno stack ha un ordine fisico. Qui scendono da U42 (il tenant che
+   il cliente crede di abitare) a U01 (il ferro dove i problemi accadono
+   davvero). La numerazione esiste perché codifica quella profondità — è
+   l'unico punto del sito in cui compaiono numeri d'ordine. */
+.rack {
+  list-style: none;
+  border-top: 1px solid var(--color-border);
+}
+.rack-unit {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  border-bottom: 1px solid var(--color-border);
+}
+.rack-unit__u {
+  position: relative;
+  padding: var(--space-6) var(--space-5) var(--space-6) 0;
+  /* Il rail: bordi verticali contigui che, senza gap fra le righe, si saldano
+     in una montante unica lungo tutta la colonna. */
+  border-right: 1px solid var(--color-rail);
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--color-text-faint);
+  transition: color var(--transition-interactive), border-color var(--transition-interactive);
+}
+/* La tacca di montaggio, all'altezza dell'etichetta. */
+.rack-unit__u::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: var(--space-6);
+  width: 9px;
+  height: 2px;
+  background: var(--color-rail);
+  transition: background-color var(--transition-interactive), width var(--transition-interactive);
+}
+.rack-unit__body { padding: var(--space-6) 0 var(--space-6) var(--space-6); }
+.rack-unit__body h3 { font-size: var(--text-lg); margin-bottom: var(--space-3); }
+.rack-unit__body p { color: var(--color-text-muted); max-width: 62ch; }
+.rack-unit:hover .rack-unit__u { color: var(--color-accent); border-right-color: var(--color-accent-line); }
+.rack-unit:hover .rack-unit__u::after { background: var(--color-accent); width: 15px; }
+
+/* Riga di apparati sotto ogni unità: nomi propri di prodotto, registro
+   etichetta perché è esattamente ciò che sono. */
+.unit-kit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-4);
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--color-text-faint);
+}
+
+/* ══ Stato ════════════════════════════════════════════════════════════
+   L'unico verde del sito. Marca un fatto verificabile, non decora un blocco:
+   se non c'è uno stato da dichiarare, questo componente non compare. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-verified);
+}
+.status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: none;
+  background: var(--color-verified);
+}
+
+/* ══ Striscia di prova ════════════════════════════════════════════════ */
 .proof-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-4);
+  gap: 0;
   list-style: none;
-  padding: 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 .proof-item {
   display: grid;
-  gap: var(--space-1);
-  padding: var(--space-5) var(--space-5);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  background-repeat: no-repeat;
-  backdrop-filter: var(--glass-filter);
-  -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: var(--glass-shadow);
-  border-left: 3px solid var(--color-primary);
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-6) var(--space-6) var(--space-6) var(--space-5);
+  border-left: 1px solid var(--color-border);
 }
+.proof-item:first-child { border-left: 0; padding-left: 0; }
 .proof-item strong {
   font-family: var(--font-display);
-  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  font-stretch: var(--width-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
   line-height: 1;
-  color: var(--color-primary);
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
-.proof-item span { font-size: var(--text-sm); color: var(--color-text-muted); }
+.proof-item span {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
 .proof-context {
-  margin-top: var(--space-5);
+  margin-top: var(--space-6);
   font-size: var(--text-sm);
   color: var(--color-text-muted);
-  max-width: 72ch;
+  max-width: 74ch;
 }
 .proof-context strong { color: var(--color-text); font-weight: 600; }
 
-/* ── Banda di chiusura ──────────────────────────────────────────── */
-.cta-band {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-6);
-  padding: var(--space-8);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  background-repeat: no-repeat;
-  backdrop-filter: var(--glass-filter);
-  -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: var(--glass-shadow);
-}
-.cta-band h2 { font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-2); }
-.cta-band p { color: var(--color-text-muted); font-size: var(--text-sm); max-width: 58ch; }
-/* Riduce l'attrito prima del contatto: chi valuta un fornitore vuole sapere
-   in anticipo tempi e impegno. */
-.contact-note {
-  margin-top: var(--space-4);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--data-border);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-
-/* Il gruppo di pannelli del portfolio: una sola regola veste home, servizi,
-   profilo e contatti senza toccare l'HTML. */
-.hero-card, .info-card, .featured-panel, .service-panel, .profile-card, .profile-quote, .contact-panel {
+/* ══ Pannelli ═════════════════════════════════════════════════════════
+   Piatti, bordo di un pixel, raggio quasi nullo. La profondità la fa il bordo,
+   non l'ombra: è la differenza fra una scheda tecnica e una card di prodotto. */
+.info-card, .featured-panel, .service-panel, .profile-card, .profile-quote, .contact-panel, .hero-card {
   position: relative;
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  background-repeat: no-repeat;
-  backdrop-filter: var(--glass-filter);
-  -webkit-backdrop-filter: var(--glass-filter);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--glass-shadow);
-  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition-interactive), background-color var(--transition-interactive);
 }
-.info-card:hover, .service-panel:hover {
-  transform: translateY(-3px);
-  border-color: var(--glass-border-strong);
-  box-shadow: var(--glass-shadow-lift);
+.info-card:hover, .service-panel:hover { border-color: var(--color-accent-line); }
+/* Filo arancione sul bordo alto: compare all'hover, non è sempre acceso. */
+.info-card::before, .service-panel::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto -1px;
+  height: 2px;
+  background: var(--color-accent);
+  opacity: 0;
+  transition: opacity var(--transition-interactive);
 }
-/* Figlio di .hero-card (vetro) → solido, per non annidare backdrop-filter. */
-.code-card {
-  background: var(--data-surface-alt);
-  border: 1px solid var(--data-border);
-  border-radius: calc(var(--radius-xl) - var(--space-2));
-  padding: var(--space-4);
-}
-.code-card__bar { display: flex; gap: 0.4rem; margin-bottom: var(--space-4); }
-.code-card__bar span { width: 0.65rem; height: 0.65rem; border-radius: var(--radius-full); background: var(--color-text-faint); }
-.code-card pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92rem; color: var(--color-text-muted); white-space: pre-wrap; }
-/* Anche questi vivono dentro pannelli di vetro: superfici solide. */
+.info-card:hover::before, .service-panel:hover::before { opacity: 1; }
+
 .metric-card, .contact-link {
-  border: 1px solid var(--data-border);
-  background: var(--data-surface);
-}
-.tag {
-  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
-  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
 }
 .contact-link {
   display: flex;
@@ -265,37 +314,135 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-lg);
 }
-.contact-link:hover { border-color: var(--glass-border-strong); transform: translateY(-2px); }
-.contact-link span { color: var(--color-text-muted); }
-.contact-link strong { font-size: var(--text-sm); }
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+.contact-link:hover { border-color: var(--color-accent); }
+.contact-link strong { font-size: var(--text-sm); font-weight: 600; }
+.contact-link span {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+/* ══ Banda di chiusura ════════════════════════════════════════════════ */
+.cta-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  /* L'unico blocco con una barra arancione permanente: è la fine del percorso
+     di lettura, e qui il colore ha il compito di segnalare l'azione. */
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+}
+.cta-band h2 { font-size: var(--text-xl); margin-bottom: var(--space-3); }
+.cta-band p { color: var(--color-text-muted); font-size: var(--text-sm); max-width: 60ch; }
+
+.contact-note {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* La code card dell'hero è stata rimossa dalla home: era il gesto più
+   prevedibile della pagina e competeva col rack. La regola resta per le pagine
+   che la usano ancora. */
+.code-card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+}
+.code-card__bar { display: flex; gap: 0.35rem; margin-bottom: var(--space-4); }
+.code-card__bar span { width: 0.5rem; height: 0.5rem; background: var(--color-text-faint); }
+.code-card pre {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  white-space: pre-wrap;
+}
+
+.reveal { opacity: 0; transform: translateY(12px); transition: opacity .55s ease, transform .55s ease; }
 .reveal.is-visible { opacity: 1; transform: none; }
-@media (max-width: 1024px) {
-  .proof-strip { grid-template-columns: 1fr; }
+
+/* ── Enumerazione del rack ─────────────────────────────────────────────
+   L'unico momento animato del sito: quando il prospetto entra in vista le sue
+   unità si accendono dall'alto verso il basso, come un inventario che scorre
+   le posizioni. Dura 400ms in tutto e non si ripete. */
+.rack.is-visible .rack-unit { animation: unit-in 260ms cubic-bezier(0.2, 0, 0, 1) backwards; }
+.rack.is-visible .rack-unit:nth-child(1) { animation-delay: 0ms; }
+.rack.is-visible .rack-unit:nth-child(2) { animation-delay: 55ms; }
+.rack.is-visible .rack-unit:nth-child(3) { animation-delay: 110ms; }
+.rack.is-visible .rack-unit:nth-child(4) { animation-delay: 165ms; }
+@keyframes unit-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 900px) {
+  .proof-strip { grid-template-columns: 1fr; border-bottom: 0; }
+  .proof-item { border-left: 0; border-bottom: 1px solid var(--color-border); padding-left: 0; padding-right: 0; }
+  /* Il rail sparisce e la sigla di unità torna in linea sopra il titolo: la
+     posizione nello stack resta leggibile senza rubare mezza larghezza. */
+  .rack-unit { grid-template-columns: 1fr; }
+  .rack-unit__u {
+    padding: var(--space-6) 0 0;
+    border-right: 0;
+    text-align: left;
+  }
+  .rack-unit__u::after { position: static; display: block; width: 15px; margin-top: var(--space-2); background: var(--color-accent); }
+  .rack-unit__body { padding: var(--space-3) 0 var(--space-6); }
 }
 @media (max-width: 760px) {
   .nav-toggle { display: grid; }
   .btn--nav { width: 100%; margin-top: var(--space-2); }
-  .cta-band { flex-direction: column; align-items: flex-start; }
+  .cta-band { flex-direction: column; align-items: flex-start; gap: var(--space-6); }
   .nav-menu {
     position: absolute;
     top: 100%; left: 0; right: 0;
     display: none;
     flex-direction: column;
     align-items: flex-start;
-    padding: var(--space-4) 1rem var(--space-5);
-    background-color: var(--glass-bg-strong);
-    backdrop-filter: var(--glass-filter);
-    -webkit-backdrop-filter: var(--glass-filter);
-    border-bottom: 1px solid var(--glass-border-soft);
-    box-shadow: var(--glass-shadow);
+    gap: var(--space-4);
+    padding: var(--space-5) 1rem var(--space-6);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
   }
   .nav-menu.is-open { display: flex; }
 }
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
-  .btn--primary:hover, .btn--secondary:hover,
-  .info-card:hover, .service-panel:hover, .contact-link:hover { transform: none; }
+  .rack.is-visible .rack-unit { animation: none; }
 }
+
+/* Ritorno indietro: un'etichetta, non un bottone. Era una pastiglia definita
+   sette volte in sette fogli di stile; qui vive una volta sola e le mini-app
+   che seguono il sistema la ereditano. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-10);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.back-link:hover { color: var(--color-accent); }
+
+/* Il rack non trasla all'ingresso: la sua entrata è l'enumerazione delle
+   unità, e sommare le due animazioni le indebolirebbe entrambe. */
+.rack.reveal { transform: none; }

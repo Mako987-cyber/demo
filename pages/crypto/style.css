@@ -7,7 +7,7 @@
 }
 
 .dashboard-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 2rem;
 }
 
@@ -50,7 +50,7 @@
 .rate-flag {
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .rate-code {
@@ -62,7 +62,7 @@
 .rate-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 
@@ -105,7 +105,7 @@
 .history-tab {
   padding: 0.5rem 1.25rem;
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   background-color: var(--glass-bg);
   background-image: var(--glass-highlight);
   backdrop-filter: var(--glass-filter-sm);
@@ -376,7 +376,7 @@
 .result-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .update-info {
@@ -386,29 +386,6 @@
   margin-top: 1rem;
 }
 
-.back-link {
-  display: inline-block;
-  margin-bottom: 2rem;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  backdrop-filter: var(--glass-filter-sm);
-  -webkit-backdrop-filter: var(--glass-filter-sm);
-  box-shadow: var(--glass-shadow);
-  color: var(--color-text);
-  text-decoration: none;
-  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
-  font-weight: 500;
-}
-
-.back-link:hover {
-  border-color: var(--glass-border-strong);
-  background-color: var(--glass-bg-strong);
-  transform: translateY(-1px);
-  box-shadow: var(--glass-shadow-lift);
-}
 
 @media (max-width: 600px) {
   .rates-grid {
