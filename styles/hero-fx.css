@@ -1,0 +1,422 @@
+/* ── Banda d'apertura: il nome sopra, lo schema di rete sotto ───────
+   La scena si legge da sinistra a destra come un diagramma di cablaggio:
+   sei cavi LAN entrano dal bordo, il segnale li percorre fino alle porte di
+   un rack al centro, e da lì due uplink raggiungono la nuvola a destra. È la
+   narrazione del sito — il ferro, il punto in cui tutto passa, il cloud —
+   detta con gli oggetti invece che per figura.
+
+   Testo e scena occupano fasce separate: il padding inferiore della banda
+   riserva esattamente l'altezza della scena, quindi le due cose non possono
+   sovrapporsi a nessuna larghezza. È il motivo per cui qui non serve più il
+   velo che prima proteggeva la lettura.
+
+   Il segnale non è un oggetto che si muove: è un tratteggio che scorre lungo
+   il tracciato (stroke-dashoffset). Costa un'animazione sola per cavo e non
+   può staccarsi dal percorso. Ogni path dichiara pathLength="100", così la
+   stessa animazione vale per tracciati di lunghezza diversa.
+
+   Tutto vive su token di tema: la banda funziona anche in light, dove
+   l'originale bianco-su-nero non funzionerebbe. */
+
+.hero-fx {
+  --fx-height: clamp(26rem, 70vh, 42rem);
+
+  --fx-grid-size: 44px;
+  --fx-grid-opacity: 0.07;
+  --fx-grid-color: var(--color-text);
+
+  --fx-onprem: #7f97a8;   /* il lato fisico: acciaio anodizzato */
+  --fx-cloud: var(--color-accent);   /* la fibra che sale al cloud */
+  --fx-hardware: var(--color-text);
+
+  --fx-word: color-mix(in srgb, var(--color-text) 58%, transparent);
+
+  --fx-cable-opacity: 0.28;
+  --fx-signal-speed: 4.4s;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: var(--fx-height);
+  display: grid;
+  align-content: center;
+  padding-block: clamp(var(--space-12), 7vw, var(--space-20));
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-theme="light"] .hero-fx {
+  --fx-grid-opacity: 0.09;
+  --fx-onprem: #3e5a6b;
+  --fx-word: color-mix(in srgb, var(--color-text) 52%, transparent);
+  --fx-cable-opacity: 0.24;
+}
+
+/* ── Contenuto ──────────────────────────────────────────────────── */
+
+.hero-fx__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.hero-fx__kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
+/* Il nome. Archivo alla larghezza display del sistema, peso pieno, parole in
+   blocchi separati: servono per la salita sfalsata, non per vezzo tipografico.
+   La targa qui si fa con l'asse di larghezza — non con un peso 800, che il set
+   caricato non ha e che il browser sintetizzerebbe. */
+.hero-fx__wordmark {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.28em;
+  margin: 0;
+  font-family: var(--font-display);
+  font-stretch: var(--width-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 7.6vw, 5.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+/* "IT" è il perno del nome: è l'unica parola che prende l'accento. */
+.hero-fx__wordmark em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+.hero-fx__word {
+  display: inline-block;
+  animation: fx-word-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center bottom;
+}
+.hero-fx__word:nth-child(1) { animation-delay: 0.05s; }
+.hero-fx__word:nth-child(2) { animation-delay: 0.17s; }
+.hero-fx__word:nth-child(3) { animation-delay: 0.29s; }
+
+@keyframes fx-word-rise {
+  from { opacity: 0; transform: perspective(900px) translateY(26px) rotateX(14deg); }
+  to   { opacity: 1; transform: perspective(900px) translateY(0) rotateX(0deg); }
+}
+
+.hero-fx__payoff {
+  font-family: var(--font-display);
+  font-stretch: var(--width-body);
+  font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  animation: fx-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+}
+
+.hero-fx__lede {
+  max-width: 52ch;
+  color: var(--color-text-muted);
+  animation: fx-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.58s both;
+}
+
+@keyframes fx-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-fx__cue {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  animation: fx-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.72s both;
+}
+.hero-fx__cue span {
+  width: 1px;
+  height: 2.25rem;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--fx-hardware) 24%, transparent), transparent);
+  animation: fx-cue 2.6s ease-in-out infinite;
+}
+@keyframes fx-cue {
+  0%, 100% { opacity: 0.35; transform: scaleY(0.7); transform-origin: top; }
+  50%      { opacity: 1;    transform: scaleY(1);   transform-origin: top; }
+}
+
+/* ── Il fondo ───────────────────────────────────────────────────── */
+
+.hero-fx__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Velo centrale: lo schema ripassa dietro a un wordmark alto quasi cento
+   pixel, e sotto ci passano cavi, rack e nuvola. Senza questo strato le
+   lettere perdono contrasto proprio dove la scena è più fitta. Sfuma in tre
+   tappe invece di due: protegge anche la riga di descrizione, che cade sopra
+   la nuvola, e lascia comunque leggere il rack — che è il punto dell'effetto,
+   non un dettaglio da coprire. */
+.hero-fx__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse 54% 42% at 50% 50%,
+    color-mix(in srgb, var(--color-bg) 62%, transparent) 0%,
+    color-mix(in srgb, var(--color-bg) 30%, transparent) 55%,
+    transparent 80%);
+}
+
+.fx-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Griglia che respira: la carta millimetrata sotto lo schema. */
+.fx-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg,
+      transparent, transparent calc(var(--fx-grid-size) - 1px),
+      var(--fx-grid-color) calc(var(--fx-grid-size) - 1px), var(--fx-grid-color) var(--fx-grid-size)),
+    repeating-linear-gradient(90deg,
+      transparent, transparent calc(var(--fx-grid-size) - 1px),
+      var(--fx-grid-color) calc(var(--fx-grid-size) - 1px), var(--fx-grid-color) var(--fx-grid-size));
+  opacity: var(--fx-grid-opacity);
+  animation: fx-grid-pulse 8s ease-in-out infinite;
+}
+@keyframes fx-grid-pulse {
+  0%, 100% { opacity: var(--fx-grid-opacity); }
+  50%      { opacity: calc(var(--fx-grid-opacity) * 1.9); }
+}
+
+/* Vignettatura: sfuma sul fondo della pagina, non sul nero — così la banda
+   si innesta nel sito invece di sembrarci appoggiata sopra. */
+.fx-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 0%, transparent 52%, var(--color-bg) 100%);
+}
+
+/* ── Lo schema di rete ──────────────────────────────────────────── */
+
+/* Larghezza piena e rapporto bloccato: la mappatura resta 1:1 in orizzontale
+   a qualsiasi finestra, quindi i cavi entrano sempre dal bordo dello schermo —
+   che è tutto l'effetto. Con "meet" e un'altezza libera, un contenitore di
+   proporzioni diverse dal viewBox lascerebbe due bande vuote ai lati e i cavi
+   partirebbero a mezz'aria. Se la scena viene più alta della banda, il taglio
+   se lo prende l'overflow: sopra e sotto ci sono solo margini vuoti. */
+.fx-scene {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: 100%;
+  aspect-ratio: 1440 / 600;
+  height: auto;
+}
+
+/* I tratti restano hairline a qualsiasi scala: la scena è larga 1440 unità
+   dentro contenitori che vanno da 390px in su, e senza questo un cavo
+   passerebbe da 2px a mezzo pixel a seconda della finestra. */
+.fx-scene * { vector-effect: non-scaling-stroke; }
+
+.fx-cable,
+.fx-uplink {
+  fill: none;
+  stroke-width: 1.5;
+  opacity: var(--fx-cable-opacity);
+}
+.fx-cable { stroke: var(--fx-onprem); }
+.fx-uplink { stroke: var(--fx-cloud); }
+
+/* Il segnale: un tratto corto che percorre lo stesso tracciato del cavo.
+   pathLength="100" normalizza i percorsi, quindi il periodo è sempre 104 e
+   una sola coppia di keyframe serve per tutti. */
+.fx-signal {
+  fill: none;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-dasharray: 4 100;
+  animation: fx-signal-run var(--fx-signal-speed) linear infinite;
+}
+.fx-signal--in {
+  stroke: var(--fx-onprem);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fx-onprem) 75%, transparent));
+}
+.fx-signal--up {
+  stroke: var(--fx-cloud);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fx-cloud) 75%, transparent));
+}
+
+@keyframes fx-signal-run {
+  from { stroke-dashoffset: 104; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Il ripristino torna indietro: stesso tracciato, verso opposto. Un backup
+   che sale e basta racconterebbe metà del lavoro. */
+.fx-signal--down {
+  stroke: var(--fx-cloud);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fx-cloud) 75%, transparent));
+  animation-name: fx-signal-run-reverse;
+}
+@keyframes fx-signal-run-reverse {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 104; }
+}
+
+/* Ritardi negativi: l'animazione parte già a metà corsa, così al primo frame
+   i cavi sono popolati invece di riempirsi tutti insieme dopo qualche secondo. */
+.fx-delay-1 { animation-delay: -0.7s; }
+.fx-delay-2 { animation-delay: -1.4s; }
+.fx-delay-3 { animation-delay: -2.1s; }
+.fx-delay-4 { animation-delay: -2.8s; }
+.fx-delay-5 { animation-delay: -3.5s; }
+.fx-delay-6 { animation-delay: -1.9s; }
+
+/* Il rack */
+.fx-server__body {
+  fill: color-mix(in srgb, var(--color-bg) 55%, transparent);
+  stroke: var(--fx-hardware);
+  stroke-width: 1.75;
+  opacity: 0.45;
+}
+/* Le unità sono rettangoli veri, non linee divisorie: è quello che fa leggere
+   l'oggetto come un server invece che come un riquadro. */
+.fx-server__unit {
+  fill: none;
+  stroke: var(--fx-hardware);
+  stroke-width: 1.25;
+  opacity: 0.3;
+}
+/* Feritoie: un tratteggio corto legge come griglia di aerazione senza dover
+   disegnare venti linee. */
+.fx-server__vent {
+  stroke: var(--fx-hardware);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  stroke-linecap: round;
+  opacity: 0.24;
+}
+.fx-led {
+  fill: var(--fx-cloud);
+  animation: fx-led-blink 3.4s steps(1, end) infinite;
+}
+.fx-led--2 { animation-delay: 0.7s; }
+.fx-led--3 { animation-delay: 1.9s; animation-duration: 2.6s; }
+.fx-led--4 { animation-delay: 1.2s; animation-duration: 4.1s; }
+.fx-led--5 { animation-delay: 2.4s; animation-duration: 3.1s; }
+.fx-led--6 { animation-delay: 0.3s; animation-duration: 4.6s; }
+
+/* steps() invece di ease: un LED di stato commuta, non dissolve. */
+@keyframes fx-led-blink {
+  0%, 62%   { opacity: 0.95; }
+  63%, 100% { opacity: 0.25; }
+}
+
+/* La nuvola: due sagome sovrapposte, la piccola dietro e la grande davanti.
+   Il riempimento pieno serve a far sparire il bordo di quella dietro sotto
+   quella davanti — è ciò che produce la linea di stacco fra le due, invece
+   di un groviglio di due contorni incrociati. */
+.fx-cloud-shape {
+  /* Riempimento pieno del colore di fondo: invisibile sul fondo, ma copre il
+     bordo della nuvola dietro. È l'occlusione a creare la linea di stacco fra
+     le due sagome — con un fill translucido resterebbe il fantasma del
+     contorno sotto. Per questo la trasparenza vive su stroke-opacity, che
+     tocca solo il tratto, e non su opacity, che si porterebbe via anche il
+     riempimento. */
+  fill: color-mix(in srgb, var(--fx-cloud) 7%, var(--color-bg));
+  stroke: var(--fx-cloud);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.5;
+  animation: fx-cloud-breathe 6s ease-in-out infinite;
+}
+.fx-cloud-shape--back { animation-delay: -3s; }
+
+@keyframes fx-cloud-breathe {
+  0%, 100% { stroke-opacity: 0.42; }
+  50%      { stroke-opacity: 0.74; }
+}
+
+/* ── Parole tecniche ai bordi ───────────────────────────────────── */
+
+.fx-word {
+  position: absolute;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fx-word);
+  opacity: 0;
+}
+.fx-word--onprem { animation: fx-word-onprem 12s ease-in-out infinite; }
+.fx-word--cloud  { animation: fx-word-cloud 12s ease-in-out infinite; }
+
+@keyframes fx-word-onprem {
+  0%, 100% { opacity: 0; translate: -18px 0; }
+  12%, 36% { opacity: 0.55; translate: 0 -6px; }
+  48%      { opacity: 0; translate: 18px -14px; }
+}
+@keyframes fx-word-cloud {
+  0%, 100% { opacity: 0; translate: 18px 0; }
+  12%, 36% { opacity: 0.55; translate: 0 -6px; }
+  48%      { opacity: 0; translate: -18px -14px; }
+}
+
+/* ── Adattamenti ────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .hero-fx {
+    --fx-grid-size: 32px;
+    --fx-height: clamp(24rem, 66vh, 32rem);
+  }
+  /* Ingrandita e ancorata a destra: centrata, il ritaglio taglierebbe fuori
+     la nuvola, che è il punto d'arrivo del racconto. Da destra restano dentro
+     sia il rack sia la nuvola, e i cavi continuano a entrare dal bordo
+     sinistro dello schermo — sono tagliati a metà corsa, ma è esattamente
+     come si legge un cavo che arriva da fuori campo. */
+  .fx-scene { left: auto; right: 0; width: 145%; }
+  .fx-word { font-size: 0.6875rem; letter-spacing: 0.1em; }
+}
+
+/* Trasparenza ridotta: resta lo schema, sparisce l'alone luminoso. */
+@media (prefers-reduced-transparency: reduce) {
+  .fx-signal { filter: none; }
+}
+
+/* Moto ridotto: base.css azzera già le durate, ma il segnale si fermerebbe a
+   metà cavo e le parole resterebbero congelate a opacità zero. Meglio togliere
+   ciò che vive solo nel movimento e lasciare in piedi lo schema. */
+@media (prefers-reduced-motion: reduce) {
+  .fx-word,
+  .fx-signal,
+  .hero-fx__cue span { display: none; }
+  .fx-led { opacity: 0.9; }
+  .fx-cloud-shape { stroke-opacity: 0.6; }
+}

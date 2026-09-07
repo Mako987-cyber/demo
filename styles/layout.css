@@ -8,7 +8,10 @@
    fuori dall'asse di lettura del resto della pagina. La misura si impone ai
    figli. */
 .hero__content { display: grid; gap: var(--space-5); }
-.hero__content h1 {
+/* h2, non h1: la banda d'apertura porta l'h1 con il marchio, e questa è
+   l'intestazione della sezione che entra nel merito. */
+.hero__content h1,
+.hero__content h2 {
   font-size: var(--text-3xl);
   max-width: 15ch;
 }
