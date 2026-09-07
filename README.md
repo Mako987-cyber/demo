@@ -20,10 +20,11 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 │   └── main.js              ← Shared UI: theme toggle, mobile nav, sticky header, scroll reveal
 │
 ├── styles/
-│   ├── tokens.css           ← All CSS custom properties (design tokens)
+│   ├── tokens.css           ← All CSS custom properties (design tokens + compat aliases)
 │   ├── base.css             ← CSS reset + global element defaults
-│   ├── components.css       ← Reusable UI components (buttons, cards, nav, reveal animation)
-│   └── layout.css           ← Grid/layout structures (hero, service grid, contact, etc.)
+│   ├── components.css       ← Reusable UI components (buttons, cards, nav, rack, reveal)
+│   ├── layout.css           ← Grid/layout structures (hero, service grid, contact, footer)
+│   └── hero-fx.css          ← Hero scene: cable/cloud SVG decoration behind the headline
 │
 ├── api/                     ← Vercel serverless Node.js proxy functions
 │   ├── celestrak.js         ← Proxies CelesTrak NORAD TLE data (allowlist-validated GROUP param)
@@ -57,9 +58,14 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 │   ├── magi-sat/            ← Satellite Orbital Tracker — NERV theme (CelesTrak + Supabase)
 │   ├── orbit/               ← Orbital Tracker — site theme, cobe globe (CelesTrak + Supabase)
 │   ├── naas/                ← No-as-a-Service joke tool
-│   └── space-invaders/      ← Retro Canvas 2D game (vaporwave aesthetic)
+│   └── space-invaders/      ← Retro Canvas 2D game (site palette)
 │
 ├── assets/
+│   ├── logo.svg             ← Logo mark (graphite + fiber orange)
+│   ├── logo-mark.svg        ← Mark only
+│   ├── logo-lockup.svg      ← Mark + wordmark, light theme
+│   ├── logo-lockup-dark.svg ← Mark + wordmark, dark theme
+│   ├── favicon.svg          ← SVG favicon (+ favicon.ico, apple-touch-icon.png at root/assets)
 │   ├── textures/            ← Earth/globe textures for Three.js scenes
 │   └── vendor/
 │       ├── three.min.js     ← Three.js r128 (bundled locally, no CDN)
@@ -67,11 +73,14 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 │       ├── cobe.esm.js      ← cobe 2.0.1 WebGL globe (ESM, MIT) — used by orbit/
 │       └── cobe.LICENSE     ← cobe MIT license text
 │
+├── logo-explore/            ← Logo exploration workspace (SVG variants + Python build scripts)
+│   ├── build/               ← build_logo.py, build_raster.py — regenerate SVG/PNG artifacts
+│   ├── variants.js          ← Variant definitions
+│   └── preview.html         ← Side-by-side variant preview
+│
 ├── data/
 │   ├── processed/           ← airports.csv, landing-points.csv, submarine-cables.csv
-│   └── raw/                 ← Source GeoJSON/CSV (global-power-plants, cables, landing-points)
-│
-└── js/                      ← Empty (reserved)
+    └── raw/                 ← Source GeoJSON/CSV (global-power-plants, cables, landing-points)
 ```
 
 ---
@@ -83,7 +92,7 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 | Frontend | Vanilla HTML5, CSS3, JavaScript ES6+ (no transpiling) |
 | 3D Rendering | Three.js r128 (UMD global from `assets/vendor/`) + OrbitControls |
 | Charts | Custom Canvas 2D API (hand-rolled line + candlestick, no Chart.js/D3) |
-| Fonts | Cabinet Grotesk + General Sans via Fontshare (main); Share Tech Mono + Rajdhani via Google Fonts (MAGI pages) |
+| Fonts | Archivo (variable, `wdth` axis) + IBM Plex Mono via Google Fonts (main); Share Tech Mono + Rajdhani via Google Fonts (MAGI pages) |
 | Deployment | Vercel (static hosting + serverless functions) |
 | Backend | Vercel Serverless Functions — Node.js ESM (`export default handler`) |
 | Database | Supabase PostgREST (`monitoring` schema) for infrastructure overlay data |
@@ -142,23 +151,190 @@ index.html
 The shared stylesheet is split into 4 layers (all linked in `<head>`, except MAGI pages):
 
 ### `tokens.css` — Design Tokens
-All values as CSS custom properties on `:root`, overridden for `[data-theme="dark"]`.
+All values as CSS custom properties on `:root` / `[data-theme="light"]`, overridden for `[data-theme="dark"]`. Art direction: **"Anodized"** — flat printed surfaces, cold zinc/graphite neutrals, fiber-optic orange as the single accent, green reserved for *state* (verified/positive) rather than decoration.
 
-- **Fonts:** `--font-display: 'Cabinet Grotesk'`, `--font-body: 'General Sans'`
+- **Fonts:** `--font-display` / `--font-body: 'Archivo'` (same family, two widths via `font-stretch`: `--width-display: 118%`, `--width-body: 100%`), `--font-mono: 'IBM Plex Mono'`
 - **Type scale:** `--text-xs` through `--text-3xl` using `clamp()` for fluid sizing
 - **Spacing:** `--space-1` (0.25rem) → `--space-24` (6rem)
-- **Light palette:** `--color-bg: #f7f6f2`, `--color-primary: #0a6b74`, `--color-text: #22282a`
-- **Dark palette:** `--color-bg: #121516`, `--color-primary: #63aab3`
-- **Other:** `--radius-*`, `--shadow-*`, `--content-default: 1180px`, `--transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1)`
+- **Radii:** deliberately near-square — `--radius-sm: 0.125rem` → `--radius-xl: 0.3125rem`, plus `--radius-full: 9999px`
+- **Other:** `--shadow-sm/md/lg`, `--content-default: 1180px`, `--transition-interactive: 160ms cubic-bezier(0.2, 0, 0, 1)`
+- **Compat aliases:** the six shared mini-apps still reference the old `--glass-*` / `--data-*` / `--color-primary*` names; these are remapped onto the flat tokens at the bottom of `tokens.css`, and `--glass-filter: none` kills every `backdrop-filter` at once. Full hex values in [Color Palette](#color-palette) below.
 
 ### `base.css` — Reset & Globals
 Universal box-sizing, smooth scroll, body font/color defaults, `:focus-visible` outline, `.skip-link`, `.sr-only`, `prefers-reduced-motion` disables all animations.
 
 ### `components.css` — UI Components
-`.container`, `.site-header` (sticky + `backdrop-filter: blur`), `.navbar`, `.brand`, `.icon-button`, `.section`, `.eyebrow` (pill label), `.btn` / `.btn--primary` / `.btn--secondary` (pill, 48px min-height), card variants (`.hero-card`, `.info-card`, `.service-panel`, `.profile-card`, `.contact-panel`, `.metric-card`), `.code-card` (macOS traffic lights), `.tag`, `.reveal` → `.is-visible` (IntersectionObserver).
+`.container`, `.site-header` (sticky, solid — no blur anywhere in the system), `.navbar`, `.brand` (`.brand__mark`, `.brand__text`, `.brand__tagline`), `.icon-button`, `.section` (`--hero`, `--tight`, `--bordered`), `.eyebrow` (mono label), `.btn` / `.btn--primary` / `.btn--secondary` / `.btn--nav` (46px min-height, `--radius-sm`), `.rack` + `.rack-unit` (the signature rack-elevation element, U42→U01), `.info-card`, `.metric-card`, `.proof-strip` / `.proof-item`, `.cta-band`, `.contact-link`, `.status`, `.unit-kit`, `.code-card` (traffic lights), `.tag`, `.back-link`, `.reveal` → `.is-visible` (IntersectionObserver).
 
 ### `layout.css` — Grid Structures
-`.hero__grid` (`1.08fr 0.92fr`), `.service-layout` (`repeat(3, 1fr)`), `.profile-grid` (`0.82fr 1.18fr`), `.contact-layout`, `.metric-grid`, etc. All collapse to `1fr` at ≤1024px; `.btn` goes full-width at ≤760px.
+`.page-hero` / `.hero__content` / `.hero__lead` / `.hero__qualifier`, `.service-layout` (`repeat(3, 1fr)`, `--pairs` variant at `repeat(2, 1fr)`), `.card-grid--split` (`repeat(3, 1fr)`), `.profile-grid` (`0.85fr 1.15fr`), `.contact-layout` (`0.9fr 1.1fr`), `.metric-grid` (`repeat(3, 1fr)`), `.featured-panel`, `.definition-list`, `.feature-list`, `.tag-row`, `.button-row`, `.site-footer` / `.footer__inner`. All collapse to `1fr` at ≤1024px.
+
+### `hero-fx.css` — Hero Scene
+Decorative SVG band behind the homepage headline: six structured-cabling runs into a double cloud silhouette. Neutral steel tints (`#3e5a6b`, `#7f97a8`) so it never competes with the accent. Fully suppressed under `prefers-reduced-motion`.
+
+---
+
+## Color Palette
+
+Source of truth: [`styles/tokens.css`](styles/tokens.css). Dark is the default theme; light is a cold zinc, deliberately not cream.
+
+### Core tokens
+
+| Token | Light (`:root`, `[data-theme="light"]`) | Dark (`[data-theme="dark"]`) | Role |
+|---|---|---|---|
+| `--color-bg` | `#e6e9eb` | `#101418` | Page ground (cold zinc / cold graphite) |
+| `--color-surface` | `#f2f4f5` | `#161b20` | Default panel |
+| `--color-surface-2` | `#ffffff` | `#1c2228` | Raised panel |
+| `--color-surface-offset` | `#dae0e3` | `#222930` | Recessed / striped surface |
+| `--color-border` | `#cdd4d9` | `#272e35` | Panel border |
+| `--color-divider` | `#dbe1e4` | `#1f262c` | Hairline rule |
+| `--color-rail` | `#b9c2c8` | `#2b333a` | Rack rail / structural line |
+| `--color-text` | `#12171b` | `#e6eaec` | Body text |
+| `--color-text-muted` | `#4a555d` | `#9aa5ad` | Secondary text |
+| `--color-text-faint` | `#58636a` | `#78838b` | Tertiary / metadata |
+| `--color-text-inverse` | `#ffffff` | `#101418` | Text on filled accent |
+
+### Accent — fiber orange
+
+The accent is the OM multimode patch-cord orange. It is *not* the same hex in both themes: `#ff7a1a` only hits 2.1:1 on zinc, so the light theme uses a burnt variant that carries 4.9:1 on the background and 6.1:1 knocked out inside a filled CTA. Dark-theme `#ff7a1a` reaches 7.0:1, so it is usable as text and not just as fill.
+
+| Token | Light | Dark |
+|---|---|---|
+| `--color-accent` | `#a84200` | `#ff7a1a` |
+| `--color-accent-hover` | `#8e3800` | `#ff9042` |
+| `--color-accent-wash` | `rgba(168, 66, 0, 0.09)` | `rgba(255, 122, 26, 0.12)` |
+| `--color-accent-line` | `rgba(168, 66, 0, 0.28)` | `rgba(255, 122, 26, 0.34)` |
+
+### Status colors
+
+Non-negotiable rule of the system: **color means state, never ornament.** An element with no state to report stays achromatic.
+
+| Token | Light | Dark | Meaning |
+|---|---|---|---|
+| `--color-verified` | `#0f7a4e` | `#3fd68c` | Verified / confirmed |
+| `--color-positive` | `#0f7a4e` | `#3fd68c` | Gain, up |
+| `--color-negative` | `#a82a19` | `#ff8f7a` | Loss, down, alert |
+| `--color-info` | `#1d4ed8` | `#79b8ff` | Informational |
+
+### Shadows
+
+| Token | Light | Dark |
+|---|---|---|
+| `--shadow-sm` | `0 1px 2px rgba(18, 23, 27, 0.06)` | `0 1px 2px rgba(0, 0, 0, 0.4)` |
+| `--shadow-md` | `0 2px 8px rgba(18, 23, 27, 0.08)` | `0 2px 8px rgba(0, 0, 0, 0.45)` |
+| `--shadow-lg` | `0 8px 24px rgba(18, 23, 27, 0.12)` | `0 8px 24px rgba(0, 0, 0, 0.55)` |
+
+### Inverse HUD (`neo/`)
+
+Panels floating over a WebGL canvas whose background is deep space in *both* themes, so they stay dark in light mode. Theme-independent values:
+
+| Token | Value |
+|---|---|
+| `--glass-inverse-bg` | `rgba(10, 14, 18, 0.86)` |
+| `--glass-inverse-bg-strong` | `rgba(6, 9, 12, 0.94)` |
+| `--glass-inverse-border` | `rgba(255, 122, 26, 0.22)` |
+| `--glass-inverse-border-hover` | `rgba(255, 122, 26, 0.55)` |
+| `--glass-inverse-text` | `#d2d8db` |
+| `--glass-inverse-text-bright` | `#ffb27a` |
+| `--glass-inverse-text-dim` | `rgba(210, 216, 219, 0.62)` |
+| `--glass-inverse-accent` | `#ff7a1a` |
+| `--glass-inverse-hazard` | `#ff4d2e` |
+
+### Brand assets
+
+| Asset | Colors |
+|---|---|
+| `assets/logo.svg`, `logo-mark.svg`, `favicon.svg` | `#101418` (graphite) + `#ff7a1a` (fiber orange) |
+| `assets/logo-lockup.svg` | `#101418` + `#ff7a1a` |
+| `assets/logo-lockup-dark.svg` | `#e6eaec` (wordmark) + `#ff7a1a` on `#101418` |
+
+---
+
+## Page-Specific Palettes
+
+### Charts (`crypto/`, `currency/`)
+
+`getChartPalette()` in both `script.js` files, aligned to `--color-positive` / `--color-negative`:
+
+| Element | Dark | Light |
+|---|---|---|
+| Line | `#2ecc8f` | `#05704a` |
+| Candle up | `#3fce90` | `#05704a` |
+| Candle down | `#ff8f7a` | `#a82a19` |
+| Grid | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.06)` |
+| Axis text | `rgba(255,255,255,0.62)` | `rgba(0,0,0,0.58)` |
+| Area fill (top stop) | `rgba(46,204,143,0.22)` | `rgba(5,112,74,0.12)` |
+
+### `orbit/` — satellite groups
+
+Mid-luminosity tints, given as `[dark, light]` pairs and swapped on `data-theme`:
+
+| Group | Dark | Light |
+|---|---|---|
+| Space stations | `#fb923c` | `#c2410c` |
+| GPS | `#34d399` | `#047857` |
+| 100 brightest | `#fbbf24` | `#a16207` |
+| Starlink | `#38bdf8` | `#0369a1` |
+| GLONASS | `#c4b5fd` | `#6d28d9` |
+| Galileo | `#60a5fa` | `#1d4ed8` |
+| Military | `#f87171` | `#b91c1c` |
+| Weather | `#22d3ee` | `#0e7490` |
+| Last 30 days | `#f472b6` | `#be185d` |
+
+### `orbit/` — infrastructure layers
+
+| Layer | Dark | Light |
+|---|---|---|
+| Submarine cables | `#60a5fa` | `#1d4ed8` |
+| Cable landings | `#38bdf8` | `#0369a1` |
+| Chokepoints | `#fb7185` | `#be123c` |
+| Airports | `#fbbf24` | `#a16207` |
+| Power plants | `#34d399` | `#047857` |
+
+Power plants recolor by fuel (`FUEL_COLORS`, single series, theme-independent): Solar `#facc15`, Wind `#5eead4`, Hydro `#38bdf8`, Nuclear `#f87171`, Gas `#fb923c`, Coal `#94a3b8`, Oil `#a16207`, Biomass `#4ade80`, Geothermal `#fb7185`, Waste `#a8a29e`.
+
+### `orbit/` — cobe globe
+
+Normalized RGB, tuned to the site accent (anodized-steel sphere, fiber-orange markers):
+
+| Channel | Dark | Light |
+|---|---|---|
+| `baseColor` | `[0.22, 0.27, 0.31]` | `[0.66, 0.70, 0.73]` |
+| `glowColor` | `[0.13, 0.08, 0.04]` | `[0.90, 0.92, 0.93]` |
+| `markerColor` | `[1.00, 0.48, 0.10]` (`#ff7a1a`) | `[0.66, 0.26, 0.00]` (`#a84200`) |
+| `dark` / `diffuse` / `mapBrightness` | `1` / `1.3` / `7` | `0` / `1.4` / `5` |
+
+### `space-invaders/`
+
+Ship `#5ee7a8`, enemies `#e8746b`, bullets `#e8c15e`, enemy-hit flash `#ffd9d4`, field `#0b0f14`.
+
+### `neo/` — WebGL scene
+
+Canvas background `#020508`; Earth material tints `#1060a0` / `#0b2e5c`, landmass `#3d7a43`, cloud `#cce4f5`, moon `#b0c8b0`. Overlay panels use the inverse-HUD tokens above.
+
+### `hero-fx.css`
+
+Steel decoration tints: `#3e5a6b`, `#7f97a8`.
+
+### MAGI pages — self-contained, outside the token system
+
+`magi-neo/` and `magi-sat/` keep the NERV/MAGI amber CRT identity and do **not** read `styles/tokens.css`.
+
+| Token | `magi-neo/` | `magi-sat/` |
+|---|---|---|
+| `--c-bg` | `#080402` | `#060301` |
+| `--c-bg-deep` / `--c-bg2` | `#050301` | `#0a0402` |
+| `--c-orange` | `#ff6600` | `#ff6600` |
+| `--c-amber` | `#ffaa00` | `#ffaa00` |
+| `--c-bright` | `#ffcc44` | `#ffcc44` |
+| `--c-red` | `#ff2200` | `#ff2200` |
+| `--c-safe` | `#44ff88` | `#44ff88` |
+| `--c-text` | `#ff9933` | `#ff9933` |
+| `--c-text-dim` / `--c-text2` | `#996633` | `#cc6600` |
+| `--c-dim` | `#5a3010` | — |
+| `--c-border` | `rgba(255,102,0,0.45)` | `rgba(255,102,0,0.4)` |
+| `--c-border-hi` / `--c-border2` | `rgba(255,170,0,0.8)` | `rgba(255,102,0,0.15)` |
+| panel background | `rgba(10, 5, 2, 0.94)` | `rgba(8, 4, 1, 0.94)` |
 
 ---
 
@@ -259,7 +435,7 @@ Real-time orbital tracker on the shared `styles/` system — the site-themed cou
 "No-as-a-Service" — single button, fetches a random refusal reason, CSS shake animation, in-memory history (last 10 entries).
 
 ### `space-invaders/`
-Canvas 2D retro game. Vaporwave: teal ship `#3be9ff`, pink enemies `#ff4fcf`, orange bullets `#ffb36b`, neon glow via `ctx.shadowBlur`. `gameState` object with `init()`, `start()`, `togglePause()`, `loop()`. 3×6 enemy grid, direction reversal + descent at walls, 2% random enemy shot chance per frame. Controls: Arrow/WASD + Space to shoot + P to pause. 800×600 canvas.
+Canvas 2D retro game, re-tinted to the site palette: mint ship `#5ee7a8`, clay enemies `#e8746b`, amber bullets `#e8c15e` on a `#0b0f14` field, soft glow via `ctx.shadowBlur`. `gameState` object with `init()`, `start()`, `togglePause()`, `loop()`. 3×6 enemy grid, direction reversal + descent at walls, 2% random enemy shot chance per frame. Controls: Arrow/WASD + Space to shoot + P to pause. 800×600 canvas.
 
 ---
 
