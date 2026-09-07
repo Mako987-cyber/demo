@@ -4,7 +4,7 @@
 }
 
 .search-section {
-  text-align: center;
+  text-align: left;
   margin-bottom: 2.5rem;
 }
 
@@ -113,7 +113,7 @@
 .current-temp {
   font-size: 3.5rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text);
   line-height: 1;
 }
 
@@ -142,7 +142,7 @@
 
 /* Figlio di .current-card (vetro) → solido. */
 .current-item {
-  text-align: center;
+  text-align: left;
   padding: 0.75rem 0.5rem;
   background: var(--data-surface);
   border-radius: var(--radius-md);
@@ -166,7 +166,7 @@
 .current-item-value {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text);
 }
 
 /* Forecast Section */
@@ -284,29 +284,6 @@
   font-weight: 500;
 }
 
-.back-link {
-  display: inline-block;
-  margin-bottom: 2rem;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  backdrop-filter: var(--glass-filter-sm);
-  -webkit-backdrop-filter: var(--glass-filter-sm);
-  box-shadow: var(--glass-shadow);
-  color: var(--color-text);
-  text-decoration: none;
-  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
-  font-weight: 500;
-}
-
-.back-link:hover {
-  border-color: var(--glass-border-strong);
-  background-color: var(--glass-bg-strong);
-  transform: translateY(-1px);
-  box-shadow: var(--glass-shadow-lift);
-}
 
 @media (max-width: 600px) {
   .search-wrapper {
@@ -414,7 +391,7 @@
 .hourly-temp {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .hourly-wind,

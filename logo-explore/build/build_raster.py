@@ -6,8 +6,8 @@ payload PNG (supportato da tutti i browser correnti)."""
 import os, struct, zlib
 
 OUT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-GRAPHITE = (13, 17, 23)
-EMERALD = (46, 204, 143)
+GRAPHITE = (16, 20, 24)
+FIBER = (255, 122, 26)
 SS = 4                      # supersampling per lato
 
 # poligoni del marchio nello spazio 64x64 (stessi vertici dei path SVG)
@@ -61,7 +61,7 @@ def rasterize(size, radius=9.6, scale=1.0, opaque=False):
                 row += bytes(4)
                 continue
             k = mark_hits / tile_hits          # quota di smeraldo dentro la tile
-            rgb = tuple(round(GRAPHITE[i] + (EMERALD[i] - GRAPHITE[i]) * k)
+            rgb = tuple(round(GRAPHITE[i] + (FIBER[i] - GRAPHITE[i]) * k)
                         for i in range(3))
             alpha = 255 if opaque else round(255 * tile_hits / total)
             row += bytes((*rgb, alpha))

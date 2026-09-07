@@ -20,7 +20,7 @@
 }
 
 .game-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 1.5rem;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .game-stats span {
-  color: var(--color-primary);
+  color: var(--color-text);
   font-weight: 700;
 }
 
@@ -106,7 +106,7 @@
   padding: 0.82rem 1.45rem;
   min-width: 185px;
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   background-color: var(--glass-bg-strong);
   background-image: var(--glass-highlight);
   background-repeat: no-repeat;
@@ -170,33 +170,6 @@
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-.back-link {
-  display: inline-block;
-  margin-top: 1rem;
-  text-decoration: none;
-  color: var(--color-text);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
-  background-color: var(--glass-bg);
-  background-image: var(--glass-highlight);
-  backdrop-filter: var(--glass-filter-sm);
-  -webkit-backdrop-filter: var(--glass-filter-sm);
-  box-shadow: var(--glass-shadow);
-  padding: 0.58rem 1.15rem;
-  font-family: var(--font-body);
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  font-weight: 600;
-  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), border-color var(--transition-interactive), background-color var(--transition-interactive);
-}
-
-.back-link:hover {
-  color: var(--color-text-inverse);
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
-  box-shadow: var(--glass-shadow-lift);
-}
 
 @media (max-width: 760px) {
   .game-container {

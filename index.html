@@ -8,9 +8,10 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#0d1117" />
-  <link rel="preconnect" href="https://api.fontshare.com" />
-  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#101418" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/tokens.css" />
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/components.css" />
@@ -151,40 +152,27 @@
       </div>
     </section>
 
-    <!-- HERO -->
+    <!-- HERO DI CONTENUTO — la banda sopra porta l'h1 e il marchio; qui si
+         entra nel merito. Niente code card: con la banda animata e il rack
+         più sotto, un terzo oggetto forte li indebolirebbe tutti. -->
     <section class="hero section section--hero">
-      <div class="container hero__grid">
-        <div class="hero__content reveal">
-          <span class="eyebrow">Infrastruttura ibrida · Cloud Microsoft · Backup &amp; Disaster Recovery</span>
-          <h2>Infrastrutture che reggono. Anche quando qualcosa va storto.</h2>
-          <p>
-            Progetto, automatizzo e proteggo infrastrutture ibride: server e reti on-premises,
-            cloud Azure e Microsoft 365, backup e ripristini testati. Per aziende in cui un fermo
-            non è un fastidio, è un danno quantificabile.
-          </p>
-          <div class="button-row">
-            <a class="btn btn--primary" href="/pages/portfolio/contact.html">Parliamo della tua infrastruttura</a>
-            <a class="btn btn--secondary" href="/pages/portfolio/services.html">Vedi i servizi</a>
-          </div>
+      <div class="container hero__content reveal">
+        <span class="eyebrow">Infrastruttura ibrida · Cloud · Continuità operativa</span>
+        <h2>Infrastrutture che reggono.</h2>
+        <p class="hero__qualifier">Anche quando qualcosa va storto.</p>
+        <p class="hero__lead">
+          Progetto, automatizzo e proteggo infrastrutture ibride: server e reti on-premises,
+          cloud Azure e Microsoft 365, backup e ripristini testati. Per aziende in cui un fermo
+          non è un fastidio, è un danno quantificabile.
+        </p>
+        <div class="button-row">
+          <a class="btn btn--primary" href="/pages/portfolio/contact.html">Parliamo della tua infrastruttura</a>
+          <a class="btn btn--secondary" href="/pages/portfolio/services.html">Vedi i servizi</a>
         </div>
-
-        <aside class="hero-card reveal" aria-label="Sintesi professionale">
-          <div class="code-card">
-            <div class="code-card__bar"><span></span><span></span><span></span></div>
-            <pre>aniello.mollo {
-  role:    "Infrastructure &amp; Cloud Engineer"
-  scope:   ["On-premises", "Cloud", "Ibrido"]
-  stack:   ["Azure", "M365", "Entra ID", "Intune"]
-  backup:  ["Commvault", "Veeam", "Azure Backup"]
-  code:    ["PowerShell", "Terraform", "Graph API"]
-  sectors: ["Banking", "Finance", "Enterprise"]
-}</pre>
-          </div>
-        </aside>
       </div>
     </section>
 
-    <!-- PROVA: le metriche promosse da card laterale a primo argomento -->
+    <!-- PROVA -->
     <section class="section section--tight">
       <div class="container">
         <ul class="proof-strip reveal" role="list">
@@ -208,29 +196,63 @@
       </div>
     </section>
 
-    <!-- SERVIZI -->
+    <!-- SERVIZI — prospetto di rack. Le unità scendono da U42 a U01 perché è
+         così che si legge un rack, e perché l'ordine dice qualcosa di vero:
+         dal tenant al ferro. -->
     <section class="section section--bordered">
       <div class="container section-intro reveal">
         <span class="eyebrow">Aree di intervento</span>
-        <h2>Dal cavo di rete al tenant cloud.</h2>
+        <h2>Dal tenant cloud al cavo di rete.</h2>
         <p>
-          Tre pilastri che si tengono insieme: un'infrastruttura solida, automazione
-          che riduce il lavoro manuale e la certezza di poter tornare online in fretta.
+          Quattro strati che si tengono insieme. Si leggono dall'alto verso il basso,
+          come un rack: si parte dal tenant che usi ogni giorno e si scende fino al ferro
+          che lo regge.
         </p>
       </div>
-      <div class="container card-grid card-grid--split">
-        <article class="info-card reveal">
-          <h3>Infrastruttura e reti</h3>
-          <p>Server Windows e Linux, virtualizzazione, Active Directory, reti LAN/WLAN e VPN, gestione endpoint su flotte Windows, iOS e macOS. On-premises, cloud o entrambi.</p>
-        </article>
-        <article class="info-card reveal">
-          <h3>Cloud e automazione</h3>
-          <p>Azure e Microsoft 365 con Entra ID e Intune, provisioning con Terraform, script PowerShell via Graph API e pipeline CI/CD. Meno operazioni a mano, meno errori.</p>
-        </article>
-        <article class="info-card reveal">
-          <h3>Continuità operativa</h3>
-          <p>Backup e disaster recovery con Commvault, Veeam e Azure Backup, policy di retention e ripristini testati. Perché il resto dell'infrastruttura abbia una rete sotto.</p>
-        </article>
+      <div class="container">
+        <ol class="rack reveal" role="list">
+          <li class="rack-unit">
+            <div class="rack-unit__u">U42</div>
+            <div class="rack-unit__body">
+              <h3>Cloud e identità</h3>
+              <p>Azure e Microsoft 365 con Entra ID e Intune: tenant, criteri di accesso condizionale e gestione degli endpoint su flotte Windows, iOS e macOS.</p>
+              <ul class="unit-kit" role="list">
+                <li>Azure</li><li>Microsoft 365</li><li>Entra ID</li><li>Intune</li>
+              </ul>
+            </div>
+          </li>
+          <li class="rack-unit">
+            <div class="rack-unit__u">U30</div>
+            <div class="rack-unit__body">
+              <h3>Automazione</h3>
+              <p>Provisioning con Terraform, script PowerShell via Graph API, pipeline CI/CD. Meno operazioni a mano vuol dire meno errori, e qui gli errori si pagano in compliance.</p>
+              <ul class="unit-kit" role="list">
+                <li>Terraform</li><li>PowerShell</li><li>Graph API</li><li>CI/CD</li>
+              </ul>
+            </div>
+          </li>
+          <li class="rack-unit">
+            <div class="rack-unit__u">U12</div>
+            <div class="rack-unit__body">
+              <h3>Continuità operativa</h3>
+              <p>Backup e disaster recovery con Commvault, Veeam e Azure Backup, policy di retention e procedure di ripristino provate su dati reali, non solo documentate.</p>
+              <p class="status">Ripristini testati</p>
+              <ul class="unit-kit" role="list">
+                <li>Commvault</li><li>Veeam</li><li>Azure Backup</li>
+              </ul>
+            </div>
+          </li>
+          <li class="rack-unit">
+            <div class="rack-unit__u">U01</div>
+            <div class="rack-unit__body">
+              <h3>Ferro e rete</h3>
+              <p>Server Windows e Linux, virtualizzazione, Active Directory, reti LAN, WLAN e VPN. Il livello dove i guasti accadono davvero, e dove si risolvono.</p>
+              <ul class="unit-kit" role="list">
+                <li>Windows Server</li><li>Linux</li><li>Active Directory</li><li>LAN / WLAN / VPN</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
       </div>
       <div class="container section-action reveal">
         <a class="btn btn--secondary" href="/pages/portfolio/services.html">Tutti i servizi in dettaglio</a>

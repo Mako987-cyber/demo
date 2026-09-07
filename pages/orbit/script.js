@@ -265,12 +265,16 @@ function zoneLabel() {
 }
 
 // ── Globo ─────────────────────────────────────────────────────────────────
+// I colori seguono la palette del sito: sfera in acciaio anodizzato, marcatori
+// nell'arancio della fibra. Erano tarati sullo smeraldo dell'art direction
+// precedente, e con il nuovo sistema il globo restava l'unico oggetto verde
+// della pagina. Valori in RGB normalizzato: #ff7a1a scuro, #a84200 chiaro.
 function globeTheme() {
   return lightTheme
     ? { dark: 0, diffuse: 1.4, mapBrightness: 5, mapBaseBrightness: 0,
-        baseColor: [0.60, 0.71, 0.66], glowColor: [0.86, 0.92, 0.89], markerColor: [0.02, 0.44, 0.29] }
+        baseColor: [0.66, 0.70, 0.73], glowColor: [0.90, 0.92, 0.93], markerColor: [0.66, 0.26, 0.00] }
     : { dark: 1, diffuse: 1.3, mapBrightness: 7, mapBaseBrightness: 0.05,
-        baseColor: [0.19, 0.32, 0.28], glowColor: [0.06, 0.16, 0.13], markerColor: [0.18, 0.8, 0.56] };
+        baseColor: [0.22, 0.27, 0.31], glowColor: [0.13, 0.08, 0.04], markerColor: [1.00, 0.48, 0.10] };
 }
 
 function initGlobe() {

@@ -15,10 +15,10 @@ import os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 OUT = os.path.join(ROOT, "assets")
-GRAPHITE = "#0d1117"
-EMERALD = "#2ecc8f"
-INK_LIGHT = "#0d1117"   # wordmark su fondo chiaro
-INK_DARK = "#e6edf3"    # wordmark su fondo scuro
+GRAPHITE = "#101418"
+FIBER = "#ff7a1a"
+INK_LIGHT = "#101418"   # wordmark su fondo chiaro
+INK_DARK = "#e6eaec"    # wordmark su fondo scuro
 
 # ── Marchio: due moduli + traversa, viewBox 0 0 64 64 ────────────────
 # Zigzag a due picchi (= M) spezzato in due moduli da una luce di 1.6 sulla
@@ -141,7 +141,7 @@ def write(name, content):
 
 
 # ── 1. logo.svg / favicon.svg: tile grafite + marchio smeraldo ───────
-tile_body = tile() + f'\n  <g fill="{EMERALD}">\n' + mark_paths() + "\n  </g>"
+tile_body = tile() + f'\n  <g fill="{FIBER}">\n' + mark_paths() + "\n  </g>"
 write("logo.svg", svg("0 0 64 64", tile_body,
                       "Aniello Mollo — Infrastructure &amp; Cloud Engineer"))
 write("favicon.svg", svg("0 0 64 64", tile_body))
@@ -157,7 +157,7 @@ wm, end = wordmark(WM_X)
 print(f"wordmark: cap {n(20 * K)}, da {n(WM_X)} a {n(end)} (larghezza {n(end - WM_X)})")
 
 for suffix, ink in (("", INK_LIGHT), ("-dark", INK_DARK)):
-    body = (tile() + f'\n  <g fill="{EMERALD}">\n' + mark_paths() + "\n  </g>\n"
+    body = (tile() + f'\n  <g fill="{FIBER}">\n' + mark_paths() + "\n  </g>\n"
             + f'  <g fill="{ink}" fill-rule="evenodd">\n'
             + "\n".join(f'    <path d="{d}"/>' for d in wm) + "\n  </g>")
     write(f"logo-lockup{suffix}.svg", svg(f"0 0 {n(end)} 64", body, "Aniello Mollo"))

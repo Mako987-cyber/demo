@@ -1,109 +1,193 @@
-.hero__grid,
-.profile-grid,
-.contact-layout,
-.card-grid--split,
-.service-layout {
-  display: grid;
-  gap: var(--space-6);
-}
-.hero__grid { grid-template-columns: 1.15fr 0.85fr; align-items: center; }
+/* ══ Hero ═════════════════════════════════════════════════════════════
+   Una colonna sola. La card di codice a destra è sparita: era il gesto più
+   prevedibile del sito e rubava peso al rack, che è l'elemento firma. Qui la
+   tipografia è l'immagine — l'asse di larghezza fa la targa, non un'ornamento
+   attorno al testo. */
+/* Niente max-width qui: .hero__content è anche .container, e un max-width su
+   un elemento con margin-inline:auto lo centrerebbe, portando tutta la colonna
+   fuori dall'asse di lettura del resto della pagina. La misura si impone ai
+   figli. */
 .hero__content { display: grid; gap: var(--space-5); }
+/* h2, non h1: la banda d'apertura porta l'h1 con il marchio, e questa è
+   l'intestazione della sezione che entra nel merito. */
 .hero__content h1,
-.hero__content h2,
-.page-hero h1,
-.featured-panel h2,
-.section-intro h2,
-.profile-card h1 {
-  font-family: var(--font-display);
-  letter-spacing: -0.04em;
+.hero__content h2 {
+  font-size: var(--text-3xl);
+  max-width: 15ch;
 }
-/* Era clamp(2.8rem, 6vw, 6rem) su 11ch: spettacolare ma spingeva ogni
-   contenuto sotto la piega. Qui la proposta di valore si legge intera. */
-.hero__content h1,
-.hero__content h2 { font-size: clamp(2.05rem, 3.8vw, 3.4rem); max-width: 20ch; }
-.page-hero h1,
-.section-intro h2,
-.featured-panel h2,
-.profile-card h1 { font-size: var(--text-2xl); }
-.hero-card { padding: var(--space-6); display: grid; gap: var(--space-5); box-shadow: var(--glass-shadow-lift); }
-.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
-.metric-card { padding: var(--space-4); border-radius: var(--radius-lg); }
-.metric-card span { display: block; font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
-.metric-card strong { font-family: var(--font-display); font-size: var(--text-xl); }
-.button-row { display: flex; flex-wrap: wrap; gap: var(--space-3); }
-.section-intro { display: grid; gap: var(--space-4); margin-bottom: var(--space-8); max-width: 68ch; }
+/* La qualificazione della promessa cambia larghezza e peso, non famiglia: è la
+   stessa voce che abbassa il tono dopo l'affermazione. */
+.hero__qualifier {
+  font-family: var(--font-display);
+  font-stretch: var(--width-body);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 0.9rem + 1.5vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-text-muted);
+  max-width: 32ch;
+  margin-top: calc(var(--space-2) * -1);
+}
+.hero__lead { max-width: 58ch; color: var(--color-text-muted); }
+.button-row { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+
+/* ══ Intestazioni di sezione e di pagina ══════════════════════════════ */
+.section-intro { display: grid; gap: var(--space-4); margin-bottom: var(--space-10); }
+.section-intro h1, .section-intro h2, .featured-panel h2, .profile-card h1 { font-size: var(--text-2xl); }
+/* Titolo corto e paragrafo lungo hanno misure diverse: vincolarli
+   separatamente è ciò che tiene la testata allineata a sinistra invece di
+   centrarla insieme al contenitore. */
+.section-intro h1, .section-intro h2 { max-width: 18ch; }
+.section-intro p { max-width: 64ch; color: var(--color-text-muted); }
+/* .page-hero è la sezione di testata, non il blocco di testo: le pagine
+   interne ci annidano dentro un .container. Qui si regola solo la spaziatura. */
+.page-hero { padding-top: var(--space-8); padding-bottom: var(--space-6); }
+.page-main { min-height: calc(100dvh - 14rem); padding: var(--space-12) 0 var(--space-16); }
+
+/* ══ Griglie ══════════════════════════════════════════════════════════ */
+.card-grid--split, .service-layout, .profile-grid, .contact-layout {
+  display: grid;
+  gap: var(--space-5);
+}
 .card-grid--split { grid-template-columns: repeat(3, 1fr); }
-.info-card,
-.service-panel,
-.profile-card,
-.profile-quote,
-.contact-panel { padding: var(--space-6); }
-.info-card h3,
-.service-panel h2,
-.service-panel h3,
-.contact-panel h1 { font-size: var(--text-lg); margin-bottom: var(--space-3); }
+.service-layout { grid-template-columns: repeat(3, 1fr); }
+/* Quattro elementi in una griglia da tre lasciano due celle vuote in fondo:
+   a coppie la seconda riga si chiude. */
+.service-layout--pairs { grid-template-columns: repeat(2, 1fr); }
+.info-card, .service-panel, .profile-card, .profile-quote, .contact-panel { padding: var(--space-6); }
+/* La riga di etichette scende a fondo pannello: così i filetti si allineano
+   fra colonne della stessa riga anche con testi di lunghezza diversa. */
+.service-panel { display: flex; flex-direction: column; }
+.service-panel .tag-row { margin-top: auto; }
+.info-card h3, .service-panel h2, .service-panel h3, .contact-panel h1 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-3);
+}
+.info-card p, .service-panel p { color: var(--color-text-muted); }
+
+.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+.metric-card { padding: var(--space-5); }
+.metric-card span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.metric-card strong {
+  font-family: var(--font-display);
+  font-stretch: var(--width-display);
+  font-size: var(--text-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ══ Pannello in evidenza ═════════════════════════════════════════════ */
 .featured-panel {
   display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  gap: var(--space-8);
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--space-10);
   align-items: start;
-  padding: var(--space-6);
+  padding: var(--space-8);
 }
-.feature-list { display: grid; gap: var(--space-3); list-style: none; color: var(--color-text-muted); }
-.feature-list li::before { content: "— "; color: var(--color-primary); }
-.service-layout { grid-template-columns: repeat(3, 1fr); }
-.tag-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-5); }
-.tag {
-  padding: 0.45rem 0.75rem;
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
-  font-size: var(--text-xs);
-  font-weight: 700;
+.feature-list { display: grid; gap: 0; list-style: none; }
+/* Righe separate da un filo invece che da un trattino: una lista di contesti
+   operativi si legge come un elenco di apparati, non come prosa puntata. */
+.feature-list li {
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
-.profile-grid { grid-template-columns: 0.82fr 1.18fr; align-items: stretch; }
-.profile-quote {
-  display: grid;
-  align-items: center;
-  min-height: 100%;
+.feature-list li:first-child { border-top: 0; padding-top: 0; }
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
 }
+.tag { font-size: var(--text-xs); color: var(--color-text-faint); }
+
+/* ══ Profilo ══════════════════════════════════════════════════════════ */
+.profile-grid { grid-template-columns: 0.85fr 1.15fr; align-items: stretch; }
+.profile-quote { display: grid; align-items: center; min-height: 100%; }
 .profile-quote p {
   font-family: var(--font-display);
-  font-size: var(--text-xl);
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  font-stretch: var(--width-display);
+  font-weight: 700;
+  font-size: var(--text-2xl);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
-.definition-list { display: grid; gap: var(--space-4); margin-top: var(--space-5); }
-.definition-list div { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--data-border); }
-.definition-list span { font-size: var(--text-xs); color: var(--color-text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
-.contact-layout { grid-template-columns: 0.92fr 1.08fr; align-items: start; }
-.contact-panel--stacked { display: grid; gap: var(--space-3); }
-.page-main { min-height: calc(100dvh - 12rem); }
-.site-footer { padding: var(--space-8) 0 var(--space-10); color: var(--color-text-faint); }
-.footer__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.definition-list { display: grid; gap: 0; margin-top: var(--space-5); }
+.definition-list div {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+}
+.definition-list span {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
+/* ══ Contatti ═════════════════════════════════════════════════════════ */
+.contact-layout { grid-template-columns: 0.9fr 1.1fr; align-items: start; }
+/* Il pannello dei recapiti non ha una superficie propria: contiene solo voci
+   che ne hanno già una, e incorniciare una cornice raddoppia il bordo senza
+   aggiungere informazione. */
+.contact-panel--stacked {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+/* ══ Piè di pagina ════════════════════════════════════════════════════ */
+.site-footer {
+  padding: var(--space-10) 0 var(--space-12);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-faint);
+}
+.footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+}
 .footer__meta { display: flex; align-items: center; gap: var(--space-4); }
-/* Riga legale: separata dal resto del footer da un filo, e volutamente più
-   piccola — è informazione dovuta, non comunicazione. */
 .footer__legal {
   margin-top: var(--space-6);
   padding-top: var(--space-4);
-  border-top: 1px solid var(--glass-border-soft);
+  border-top: 1px solid var(--color-divider);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
-  color: var(--color-text-faint);
+  letter-spacing: 0.06em;
 }
+
 @media (max-width: 1024px) {
-  .hero__grid,
-  .profile-grid,
-  .contact-layout,
-  .service-layout,
-  .featured-panel,
-  .card-grid--split { grid-template-columns: 1fr; }
+  .profile-grid, .contact-layout, .service-layout, .featured-panel, .card-grid--split {
+    grid-template-columns: 1fr;
+  }
+  .featured-panel { gap: var(--space-8); }
 }
 @media (max-width: 760px) {
   .metric-grid { grid-template-columns: 1fr; }
-  .button-row { flex-direction: column; }
+  .button-row { flex-direction: column; align-items: stretch; }
   .btn { width: 100%; }
 }

@@ -6,7 +6,7 @@
   const navToggle = document.querySelector('[data-nav-toggle]');
   const navMenu = document.querySelector('[data-nav-menu]');
 
-  // Il viola profondo è l'identità del sito, non una variante: si apre così di
+  // La grafite fredda è l'identità del sito, non una variante: si apre così di
   // default invece di seguire il sistema. La scelta esplicita dell'utente vince
   // e viene ricordata — senza, su un sito multipagina il toggle si azzererebbe
   // a ogni navigazione.

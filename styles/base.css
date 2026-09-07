@@ -1,4 +1,5 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 html {
   scroll-behavior: smooth;
   text-size-adjust: none;
@@ -6,74 +7,70 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-padding-top: var(--space-16);
-  /* Il fondo vive su html e si propaga al canvas: così body::before (z-index -1)
-     può dipingere l'aurora sopra il fondo e sotto il contenuto. */
   background: var(--color-bg);
 }
+
+/* Il fondo è piatto. L'aurora sfocata che stava qui serviva a dare al vetro
+   qualcosa da rifrangere; senza vetro diventava solo una macchia colorata, e
+   su una pagina che vende continuità operativa un fondo che vibra lavora
+   contro il messaggio. Rimuoverla toglie anche il compositing continuo. */
 body {
   min-height: 100dvh;
   font-family: var(--font-body, sans-serif);
+  font-stretch: var(--width-body);
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--color-text);
-  background: transparent;
-}
-
-/* ── Aurora ─────────────────────────────────────────────────────────
-   Il fondo che il vetro rifrange. Fisso e fuori dal flusso: non scrolla,
-   quindi backdrop-filter non deve ricalcolarlo a ogni frame di scroll.
-
-   Statico di proposito: il drift lento andava bene per un sito-vetrina, ma su
-   una pagina che deve vendere una consulenza infrastrutturale un fondo che si
-   muove legge come consumer e distrae dalla lettura. Rimuoverlo elimina anche
-   il costo di compositing continuo. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -20%;
-  z-index: -1;
-  pointer-events: none;
-  background-color: transparent;
-  /* Le posizioni sono in coordinate del layer, che con inset:-20% e' il 140%
-     del viewport: 32%–68% qui corrisponde a 25%–75% di schermo. Tenerle in
-     questa fascia porta il colore sotto il contenuto — ai bordi il vetro non
-     avrebbe nulla da rifrangere. */
-  background-image:
-    radial-gradient(52% 48% at 32% 30%, var(--aurora-1), transparent 70%),
-    radial-gradient(48% 46% at 68% 28%, var(--aurora-2), transparent 68%),
-    radial-gradient(54% 50% at 64% 70%, var(--aurora-3), transparent 70%),
-    radial-gradient(46% 44% at 34% 68%, var(--aurora-4), transparent 66%);
-  filter: blur(var(--aurora-blur, 40px));
+  background: var(--color-bg);
 }
 
 img, svg { display: block; max-width: 100%; height: auto; }
+
 a, button, input, textarea, select {
-  transition: color var(--transition-interactive), background var(--transition-interactive), border-color var(--transition-interactive), box-shadow var(--transition-interactive), transform var(--transition-interactive);
+  transition: color var(--transition-interactive), background-color var(--transition-interactive), border-color var(--transition-interactive), box-shadow var(--transition-interactive), opacity var(--transition-interactive);
 }
 a { color: inherit; text-decoration: none; }
-button { cursor: pointer; border: 0; background: none; color: inherit; }
-h1, h2, h3, h4, h5, h6 { line-height: 1.05; text-wrap: balance; }
+button { cursor: pointer; border: 0; background: none; color: inherit; font: inherit; }
+
+/* La voce display: stessa famiglia del testo, larghezza maggiore. La targa si
+   fa con la larghezza e l'interlinea corta, non con un secondo carattere. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-stretch: var(--width-display);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
 p, li { text-wrap: pretty; }
+
+/* Focus arancione pieno e squadrato: sullo stesso registro dei bordi stampati
+   del resto della pagina, e visibile su entrambi i temi. */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-  border-radius: var(--radius-sm);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 0;
 }
 ::selection {
-  background: color-mix(in srgb, var(--color-primary) 26%, transparent);
-  color: var(--color-text);
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
 }
+
 .skip-link {
   position: absolute;
   top: -3rem;
   left: var(--space-4);
   z-index: 1000;
-  background: var(--color-primary);
+  background: var(--color-accent);
   color: var(--color-text-inverse);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 .skip-link:focus { top: var(--space-4); }
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -85,6 +82,7 @@ p, li { text-wrap: pretty; }
   white-space: nowrap;
   border: 0;
 }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -94,5 +92,5 @@ p, li { text-wrap: pretty; }
   }
 }
 
-/* Trasparenza ridotta: superfici piene e --glass-filter: none arrivano da tokens.css.
-   L'aurora è già statica, quindi non serve altro qui. */
+/* prefers-reduced-transparency non ha più nulla da spegnere: le superfici sono
+   già piene e --glass-filter è none per tutti in tokens.css. */
