@@ -17,14 +17,16 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 ├── vercel.json              ← Deployment config (cleanUrls, headers, serverless discovery)
 │
 ├── scripts/
-│   └── main.js              ← Shared UI: theme toggle, mobile nav, sticky header, scroll reveal
+│   ├── main.js              ← Shared UI: theme toggle, mobile nav, sticky header, scroll reveal
+│   └── consent.js           ← Cookie banner + preferences; loads Google Fonts only after consent
 │
 ├── styles/
 │   ├── tokens.css           ← All CSS custom properties (design tokens + compat aliases)
 │   ├── base.css             ← CSS reset + global element defaults
 │   ├── components.css       ← Reusable UI components (buttons, cards, nav, rack, reveal)
 │   ├── layout.css           ← Grid/layout structures (hero, service grid, contact, footer)
-│   └── hero-fx.css          ← Hero scene: cable/cloud SVG decoration behind the headline
+│   ├── hero-fx.css          ← Hero scene: cable/cloud SVG decoration behind the headline
+│   └── consent.css          ← Cookie banner (site tokens with fallbacks + MAGI variant)
 │
 ├── api/                     ← Vercel serverless Node.js proxy functions
 │   ├── celestrak.js         ← Proxies CelesTrak NORAD TLE data (allowlist-validated GROUP param)
@@ -33,6 +35,7 @@ Deployed on **Vercel**. Written entirely in **vanilla HTML/CSS/JavaScript** — 
 │
 ├── pages/
 │   ├── projects.html        ← Projects gallery/index
+│   ├── cookie-policy.html   ← Cookie policy (informativa art. 122 Codice privacy / GDPR)
 │   │
 │   ├── api/                 ← Client-side API modules (IIFE globals, loaded via <script defer>)
 │   │   ├── http.js          ← ApiHttp.requestJson(url, errorMessage) — base fetch wrapper
@@ -484,3 +487,4 @@ Canvas 2D retro game, re-tinted to the site palette: mint ship `#5ee7a8`, clay e
 8. **Script load order matters** — `main.js` → `http.js` → feature API module → page `script.js`, always `defer`.
 9. **MAGI isolation** — `magi-neo/` and `magi-sat/` have no dependency on `styles/*.css`. Editing those files does not affect MAGI pages and vice versa. `orbit/` is the opposite case: it covers the same data as `magi-sat/` while living entirely inside the shared token system.
 10. **Scroll reveal** — `.reveal` class gets `.is-visible` once via `IntersectionObserver`. Fully disabled by `prefers-reduced-motion`.
+11. **Cookie consent** — no profiling or analytics. First-party storage is technical only (`am-theme`, `am-consent` in `localStorage`). Google Fonts is the only third party and is gated: pages declare it as `<link rel="stylesheet" data-consent="fonts" data-consent-href="…">` (no `href`), and `scripts/consent.js` — loaded **synchronously** at the end of `<head>`, after `styles/consent.css` — copies the URL into `href` only after consent. Without consent the system font stack is used. Consent lasts 6 months; bump `VERSION` in `consent.js` when adding a category so the banner is shown again. Every footer carries "Cookie policy" + a `[data-consent-open]` "Preferenze cookie" button (hidden until JS runs). New pages must include all three pieces, and `pages/cookie-policy.html` must be updated whenever a new third-party service or storage key is added.
