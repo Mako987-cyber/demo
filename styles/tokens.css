@@ -105,7 +105,9 @@
   --color-rail: #2b333a;
   --color-text: #e6eaec;
   --color-text-muted: #9aa5ad;
-  --color-text-faint: #78838b;
+  /* #808b93: 4.98:1 su --color-surface, 4.61:1 su --color-surface-2 — le
+     etichette dentro i pannelli restano sopra la soglia AA. */
+  --color-text-faint: #808b93;
   --color-text-inverse: #101418;
 
   /* Arancio fibra pieno: 7.0:1 sul fondo, quindi utilizzabile come colore di

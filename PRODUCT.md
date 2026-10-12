@@ -26,6 +26,8 @@ One person covering the whole stack, from the cloud tenant down to the cable: Az
 
 - The visitor reaches the site, reads home → services → profile, and contacts by email (primary), LinkedIn or GitHub. There is no form, booking or pricing.
 - The contact promise in use: first reply within two business days, no cost and no commitment for the initial assessment.
+- The free "prima valutazione" is a discovery call (call conoscitiva) to understand the situation. A proposal follows only if working together makes sense. There is no written deliverable from the free step; never promise one.
+- Work is remote by default; on-site visits on request anywhere in Lombardy.
 - Services are framed as rack units read top to bottom: U42 cloud and identity, U30 automation, U12 business continuity, U01 hardware and network.
 
 ## Capabilities and Constraints
@@ -49,7 +51,7 @@ One person covering the whole stack, from the cloud tenant down to the cable: Az
 - Metrics on the home: 4+ years on enterprise infrastructure, 200+ devices managed in hybrid fleets, −40% recurring tickets after automation (Eos Solutions).
 - Full work history and skills in `pages/portfolio/profile.html`: altermAInd (2025–present), Eos Solutions (2023–2025), Hemmersbach at Deutsche Bank HQ (2021–2023), Essence Academy (2021; 1000+ accounts, 95% first-contact resolution).
 - Contacts: a.mollo@setitright.it, LinkedIn `aniello-mollo-aa069a1a6`, GitHub `Mako987-cyber`.
-- Absent, must not be fabricated: client testimonials, named PMI clients or case studies, pricing, certifications, VAT/company registration details.
+- Absent, must not be fabricated: client testimonials, named PMI clients or case studies, pricing, certifications, VAT/company registration details, a portrait photo (none provided yet; do not use stock or generated faces).
 
 ## Product Principles
 
