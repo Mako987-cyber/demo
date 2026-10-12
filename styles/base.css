@@ -8,7 +8,12 @@ html {
   text-rendering: optimizeLegibility;
   scroll-padding-top: var(--space-16);
   background: var(--color-bg);
+  /* Barre di scorrimento e controlli nativi seguono il tema invece del
+     grigio chiaro di sistema. */
+  color-scheme: light;
+  scrollbar-color: var(--color-rail) var(--color-bg);
 }
+[data-theme="dark"] { color-scheme: dark; }
 
 /* Il fondo è piatto. L'aurora sfocata che stava qui serviva a dare al vetro
    qualcosa da rifrangere; senza vetro diventava solo una macchia colorata, e

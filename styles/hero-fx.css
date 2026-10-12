@@ -5,10 +5,8 @@
    narrazione del sito — il ferro, il punto in cui tutto passa, il cloud —
    detta con gli oggetti invece che per figura.
 
-   Testo e scena occupano fasce separate: il padding inferiore della banda
-   riserva esattamente l'altezza della scena, quindi le due cose non possono
-   sovrapporsi a nessuna larghezza. È il motivo per cui qui non serve più il
-   velo che prima proteggeva la lettura.
+   La scena passa dietro al testo: il rack cade sotto "IT", il perno del nome.
+   A proteggere la lettura è il velo radiale di .hero-fx__bg::after.
 
    Il segnale non è un oggetto che si muove: è un tratteggio che scorre lungo
    il tracciato (stroke-dashoffset). Costa un'animazione sola per cavo e non
@@ -144,6 +142,8 @@
   color: var(--color-text-faint);
   animation: fx-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.72s both;
 }
+/* È un link alla sezione successiva: l'invito a scendere deve anche portarci. */
+.hero-fx__cue:hover { color: var(--color-accent); }
 .hero-fx__cue span {
   width: 1px;
   height: 2.25rem;
