@@ -1,0 +1,372 @@
+/* ══ Banner cookie ════════════════════════════════════════════════════
+   Stesso registro della .cta-band: pannello piatto, bordo di un pixel, barra
+   arancione a sinistra. È un avviso tecnico, non un popup commerciale: niente
+   overlay che oscura la pagina, niente blur.
+
+   Accetta e Rifiuta hanno lo stesso identico peso visivo: un consenso chiesto
+   con un bottone grande e uno piccolo non è una scelta libera.
+
+   Il foglio è caricato anche dalle pagine MAGI, che non leggono tokens.css:
+   ogni valore passa per una variabile locale --cc-* con fallback sul tema
+   scuro del sito, e la variante .cc--magi le rimappa sulla palette NERV. */
+.cc {
+  --cc-bg: var(--color-surface-2, #1c2228);
+  --cc-surface: var(--color-surface, #161b20);
+  --cc-border: var(--color-border, #272e35);
+  --cc-divider: var(--color-divider, #1f262c);
+  --cc-text: var(--color-text, #e6eaec);
+  --cc-muted: var(--color-text-muted, #9aa5ad);
+  --cc-faint: var(--color-text-faint, #78838b);
+  --cc-accent: var(--color-accent, #ff7a1a);
+  --cc-accent-line: var(--color-accent-line, rgba(255, 122, 26, 0.34));
+  --cc-on-accent: var(--color-text-inverse, #101418);
+  --cc-rail: var(--color-rail, #2b333a);
+  --cc-font: var(--font-body, 'Helvetica Neue', system-ui, sans-serif);
+  --cc-font-display: var(--font-display, 'Helvetica Neue', system-ui, sans-serif);
+  --cc-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  --cc-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.55));
+  --cc-ease: var(--transition-interactive, 160ms cubic-bezier(0.2, 0, 0, 1));
+
+  position: fixed;
+  z-index: 900;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  max-width: var(--content-default, 1180px);
+  max-height: calc(100dvh - 2rem);
+  margin-inline: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  /* Nel banner la riga "prefs" non esiste: una traccia vuota porterebbe
+     comunque il suo gap e allargherebbe il fondo del pannello. */
+  grid-template-areas: "body actions";
+  align-items: end;
+  gap: 1.25rem 2rem;
+  padding: 1.5rem 3.75rem 1.5rem 1.75rem;
+
+  background: var(--cc-bg);
+  border: 1px solid var(--cc-border);
+  border-left: 3px solid var(--cc-accent);
+  border-radius: var(--radius-sm, 0.125rem);
+  box-shadow: var(--cc-shadow);
+  color: var(--cc-text);
+  font-family: var(--cc-font);
+  font-stretch: var(--width-body, 100%);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-align: left;
+
+  animation: cc-in 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+.cc[hidden] { display: none; }
+.cc *, .cc *::before, .cc *::after { box-sizing: border-box; }
+
+@keyframes cc-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.cc__body { grid-area: body; display: grid; gap: 0.5rem; min-width: 0; }
+
+/* Etichetta stampata: la stessa .eyebrow del sito, riscritta perché qui non
+   si può contare su components.css. */
+.cc__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-family: var(--cc-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cc-muted);
+}
+.cc__eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  flex: none;
+  background: var(--cc-accent);
+}
+
+.cc__title {
+  margin: 0;
+  font-family: var(--cc-font-display);
+  font-stretch: var(--width-display, 100%);
+  font-size: clamp(1.125rem, 1.05rem + 0.5vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  color: var(--cc-text);
+}
+.cc__title:focus { outline: none; }
+.cc__title:focus-visible { outline: 2px solid var(--cc-accent); outline-offset: 2px; }
+
+.cc__text {
+  margin: 0;
+  max-width: 78ch;
+  font-size: 0.875rem;
+  color: var(--cc-muted);
+}
+.cc__text em { font-style: normal; color: var(--cc-text); }
+
+.cc__policy {
+  color: var(--cc-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.cc__policy:hover { text-decoration-thickness: 2px; }
+
+/* ── Comandi ── */
+.cc__actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cc__btn,
+.cc__link,
+.cc__close {
+  font: inherit;
+  cursor: pointer;
+  transition: color var(--cc-ease), background-color var(--cc-ease), border-color var(--cc-ease);
+}
+.cc__btn:focus-visible,
+.cc__link:focus-visible,
+.cc__close:focus-visible,
+.cc__switch:focus-visible,
+.cc__policy:focus-visible {
+  outline: 2px solid var(--cc-accent);
+  outline-offset: 2px;
+}
+
+.cc__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8.5rem;
+  min-height: 46px;
+  margin: 0;
+  padding: 0.75rem 1.375rem;
+  border: 1px solid var(--cc-accent);
+  border-radius: var(--radius-sm, 0.125rem);
+  background: transparent;
+  color: var(--cc-text);
+  font-family: var(--cc-font-display);
+  font-stretch: var(--width-body, 100%);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+}
+.cc__btn:hover { background: var(--cc-accent); color: var(--cc-on-accent); }
+
+.cc__link {
+  margin: 0 0.5rem 0 0;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  color: var(--cc-muted);
+  font-family: var(--cc-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: var(--cc-rail);
+  text-underline-offset: 4px;
+}
+.cc__link:hover { color: var(--cc-accent); text-decoration-color: currentColor; }
+
+.cc__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--cc-border);
+  border-radius: var(--radius-sm, 0.125rem);
+  background: transparent;
+  color: var(--cc-muted);
+}
+.cc__close:hover { border-color: var(--cc-accent); color: var(--cc-accent); }
+.cc__close svg { display: block; width: 18px; height: 18px; }
+
+/* ── Preferenze ──
+   Le categorie sono righe separate da un filo, come la .feature-list: un
+   elenco di voci da spuntare, non un secondo livello di card. */
+.cc__prefs {
+  grid-area: prefs;
+  display: none;
+  border-top: 1px solid var(--cc-border);
+}
+.cc[data-mode="prefs"] .cc__prefs { display: block; }
+
+.cc__cat { padding: 1rem 0; border-bottom: 1px solid var(--cc-divider); }
+.cc__cat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.cc__cat-title {
+  margin: 0;
+  font-family: var(--cc-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cc-text);
+}
+.cc__cat-title label { cursor: pointer; }
+.cc__cat-text {
+  margin: 0.5rem 0 0;
+  max-width: 78ch;
+  font-size: 0.8125rem;
+  color: var(--cc-muted);
+}
+.cc__cat-text code {
+  font-family: var(--cc-mono);
+  font-size: 0.95em;
+  color: var(--cc-text);
+}
+.cc__always {
+  flex: none;
+  font-family: var(--cc-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cc-faint);
+}
+.cc__note {
+  margin: 1rem 0 0;
+  font-family: var(--cc-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cc-faint);
+}
+
+/* Interruttore squadrato: stesso raggio quasi nullo dei bottoni. Acceso,
+   il cursore prende l'arancio del sistema. */
+.cc__switch {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: none;
+  width: 2.75rem;
+  height: 1.5rem;
+  margin: 0;
+  border: 1px solid var(--cc-rail);
+  border-radius: var(--radius-sm, 0.125rem);
+  background: var(--cc-surface);
+  cursor: pointer;
+  transition: background-color var(--cc-ease), border-color var(--cc-ease);
+}
+.cc__switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(1.5rem - 8px);
+  height: calc(1.5rem - 8px);
+  border-radius: 1px;
+  background: var(--cc-faint);
+  transition: transform var(--cc-ease), background-color var(--cc-ease);
+}
+.cc__switch:checked { border-color: var(--cc-accent); background: var(--cc-accent-line); }
+.cc__switch:checked::after { transform: translateX(1.25rem); background: var(--cc-accent); }
+
+/* Il banner offre Accetta / Rifiuta / Personalizza; il pannello preferenze
+   sostituisce "Personalizza" con "Salva scelte". */
+.cc__btn--save { display: none; }
+.cc[data-mode="prefs"] .cc__btn--save { display: inline-flex; }
+.cc[data-mode="prefs"] .cc__link { display: none; }
+.cc[data-mode="prefs"] {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "body"
+    "prefs"
+    "actions";
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .cc {
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    max-height: calc(100dvh - 1rem);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "body"
+      "actions";
+    gap: 1rem;
+    padding: 1.25rem 1rem 1rem 1.25rem;
+  }
+  .cc__body { padding-right: 2.5rem; }
+  .cc__actions { justify-content: stretch; }
+  .cc__btn { flex: 1 1 8rem; min-width: 0; }
+  .cc__link { flex: 1 0 100%; text-align: left; margin: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc { animation: none; }
+  .cc__switch, .cc__switch::after { transition: none; }
+}
+
+/* ── Variante MAGI ─────────────────────────────────────────────────────
+   Le pagine NERV hanno una palette CRT propria e nessun tema chiaro: il
+   banner ne prende i colori invece di imporre la grafite del sito. */
+.cc--magi {
+  --cc-bg: rgba(8, 4, 1, 0.97);
+  --cc-surface: #0a0402;
+  --cc-border: rgba(255, 102, 0, 0.45);
+  --cc-divider: rgba(255, 102, 0, 0.18);
+  --cc-text: #ffcc44;
+  --cc-muted: #ff9933;
+  --cc-faint: #cc6600;
+  --cc-accent: #ff6600;
+  --cc-accent-line: rgba(255, 102, 0, 0.3);
+  --cc-on-accent: #080402;
+  --cc-rail: rgba(255, 102, 0, 0.4);
+  --cc-font: 'Share Tech Mono', 'Courier New', monospace;
+  --cc-font-display: 'Rajdhani', 'Share Tech Mono', 'Courier New', monospace;
+  --cc-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --cc-shadow: 0 0 24px rgba(255, 102, 0, 0.18);
+  letter-spacing: 0.02em;
+}
+.cc--magi .cc__title { text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ── Comando "Preferenze cookie" nei piè di pagina ── */
+[data-consent-open][hidden] { display: none; }
+
+/* Link legali nel piè di pagina MAGI: stesso corpo e colore della riga di
+   stato, sottolineati per restare riconoscibili come comandi. */
+.cc-magi-links { display: inline-flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
+.cc-magi-links a,
+.cc-magi-links button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cc-magi-links a:hover,
+.cc-magi-links button:hover { color: #ffaa00; }

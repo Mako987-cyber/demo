@@ -9,13 +9,13 @@
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <meta name="theme-color" content="#101418" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" data-consent="fonts" data-consent-href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
   <link rel="stylesheet" href="/styles/tokens.css" />
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/components.css" />
   <link rel="stylesheet" href="/styles/layout.css" />
+  <link rel="stylesheet" href="/styles/consent.css" />
+  <script src="/scripts/consent.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
@@ -111,6 +111,10 @@
         &copy; <span data-year>2026</span> Aniello Mollo &mdash; ScaleItRight.
         Tutti i diritti riservati.
       </p>
+      <nav class="footer__links" aria-label="Note legali">
+        <a href="/pages/cookie-policy.html">Cookie policy</a>
+        <button type="button" data-consent-open hidden>Preferenze cookie</button>
+      </nav>
     </div>
   </footer>
   <script src="/scripts/main.js" defer></script>
