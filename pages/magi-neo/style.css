@@ -4,7 +4,6 @@
    Palette: Amber/Orange on near-black
    ════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap');
 
 /* ── Variables ── */
 :root {
@@ -924,3 +923,13 @@ html, body {
   .vp-corner--bl, .vp-corner--br { display: none; }
   .magi-legend { bottom: 3.5rem; }
 }
+
+/* Link legali nel piè di pagina: stesso corpo e colore della riga di stato,
+   sottolineati per restare riconoscibili come link. */
+.cc-magi-links { display: inline-flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
+.cc-magi-links a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cc-magi-links a:hover { color: #ffaa00; }
