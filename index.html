@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Scale IT Right — Aniello Mollo, Infrastructure &amp; Cloud Engineer. Metto in ordine l'infrastruttura IT di aziende senza un reparto IT interno: server e reti, Microsoft 365 e Azure, backup con ripristini testati. Prima valutazione senza costi." />
+  <meta name="description" content="Scale IT Right — Aniello Mollo, Infrastructure &amp; Cloud Engineer. Metto in ordine l'infrastruttura IT di aziende senza un reparto IT interno: server e reti, Microsoft 365 e Azure, backup con ripristini testati. Prima call conoscitiva gratuita." />
   <title>Scale IT Right · Aniello Mollo — Infrastructure &amp; Cloud Engineer</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <meta name="theme-color" content="#101418" />
-  <link rel="stylesheet" data-consent="fonts" data-consent-href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="preload" href="/assets/fonts/archivo-400-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/styles/fonts.css" />
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="stylesheet" href="/styles/tokens.css" />
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/components.css" />
   <link rel="stylesheet" href="/styles/layout.css" />
   <link rel="stylesheet" href="/styles/hero-fx.css" />
-  <link rel="stylesheet" href="/styles/consent.css" />
-  <script src="/scripts/consent.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
@@ -57,16 +57,30 @@
   </header>
 
   <main id="main-content">
-    <!-- BANDA D'APERTURA: il nome, sopra il fondo animato -->
-    <section class="hero-fx">
-      <div class="hero-fx__bg" aria-hidden="true">
-        <div class="fx-layer" data-hero-fx>
-          <!-- Schema di cablaggio: sei cavi LAN entrano da sinistra e arrivano
-               alle porte del rack; da lì due uplink raggiungono la nuvola.
-               I tracciati stanno in <defs> e vengono usati due volte a testa —
-               una come cavo, una come segnale che lo percorre — così la
-               geometria è scritta una sola volta. -->
-          <svg class="fx-scene" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid meet"
+    <!-- APERTURA — la promessa e l'azione stanno nella prima schermata. Sotto,
+         a tutta larghezza, lo schema di rete: i cavi entrano dal bordo, il
+         segnale arriva al rack, i LED passano a verde, gli uplink raggiungono
+         la nuvola. Succede una volta sola e poi resta acceso: è la promessa
+         ("keep it running") detta dagli oggetti. -->
+    <section class="hero-fx" aria-labelledby="hero-title">
+      <div class="hero-fx__bg" aria-hidden="true"></div>
+      <div class="container hero__content">
+        <h1 id="hero-title">Infrastrutture che reggono.</h1>
+        <p class="hero__qualifier">Anche quando qualcosa va storto.</p>
+        <p class="hero__lead">
+          Progetto, automatizzo e proteggo l'infrastruttura IT di aziende che non hanno un reparto
+          IT interno: server e reti in sede, Microsoft 365 e Azure, backup con ripristini testati.
+          Perché anche in una piccola azienda un giorno di fermo non è un fastidio: è un danno che si misura.
+        </p>
+        <div class="button-row">
+          <a class="btn btn--primary" href="/pages/portfolio/contact.html">Chiedi una call gratuita</a>
+          <a class="btn btn--secondary" href="/pages/portfolio/services.html">Vedi i servizi</a>
+        </div>
+        <p class="hero__note">La prima call è gratuita e senza impegno · rispondo entro 2 giorni lavorativi</p>
+      </div>
+      <figure class="hero-fx__figure">
+        <div class="hero-fx__scene" aria-hidden="true">
+          <svg class="fx-scene" viewBox="0 40 1440 520" preserveAspectRatio="xMidYMid meet"
                fill="none" aria-hidden="true" focusable="false">
             <defs>
               <path id="fx-lan-1" pathLength="100" vector-effect="non-scaling-stroke" d="M0 60 H430 V213 H640"/>
@@ -132,43 +146,12 @@
                  transform="translate(1142 258) scale(0.72)"/>
           </svg>
         </div>
-      </div>
-      <div class="container hero-fx__content">
-        <p class="hero-fx__kicker">Infrastructure &amp; Cloud Engineering</p>
-        <h1 class="hero-fx__wordmark">
-          <span class="hero-fx__word">Scale</span>
-          <span class="hero-fx__word"><em>IT</em></span>
-          <span class="hero-fx__word">Right</span>
-        </h1>
-        <p class="hero-fx__payoff">Scale it right. Keep it running.</p>
-        <p class="hero-fx__lede">
-          I server in sede da una parte, il cloud dall'altra, un punto solo in cui
-          le due cose devono funzionare insieme. È lì che lavoro.
-        </p>
-        <a class="hero-fx__cue" href="#panoramica">
-          Continua
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-    </section>
-
-    <!-- HERO DI CONTENUTO — la banda sopra porta l'h1 e il marchio; qui si
-         entra nel merito. Niente code card: con la banda animata e il rack
-         più sotto, un terzo oggetto forte li indebolirebbe tutti. -->
-    <section class="hero section section--hero" id="panoramica">
-      <div class="container hero__content reveal">
-        <h2>Infrastrutture che reggono.</h2>
-        <p class="hero__qualifier">Anche quando qualcosa va storto.</p>
-        <p class="hero__lead">
-          Progetto, automatizzo e proteggo l'infrastruttura IT di aziende che non hanno un reparto
-          IT interno: server e reti in sede, Microsoft 365 e Azure, backup con ripristini testati.
-          Perché anche in una piccola azienda un giorno di fermo non è un fastidio: è un danno che si misura.
-        </p>
-        <div class="button-row">
-          <a class="btn btn--primary" href="/pages/portfolio/contact.html">Parliamo della tua infrastruttura</a>
-          <a class="btn btn--secondary" href="/pages/portfolio/services.html">Vedi i servizi</a>
-        </div>
-      </div>
+        <figcaption class="container hero-fx__caption">
+          <strong>Scale it right. Keep it running.</strong>
+          <span>I server in sede da una parte, il cloud dall'altra, un punto solo in cui
+          devono funzionare insieme. È lì che lavoro.</span>
+        </figcaption>
+      </figure>
     </section>
 
     <!-- PROVA -->
@@ -176,16 +159,16 @@
       <div class="container">
         <ul class="proof-strip reveal" role="list">
           <li class="proof-item">
-            <strong>4+</strong>
-            <span>anni su infrastrutture enterprise</span>
+            <strong>−40%</strong>
+            <span>richieste di assistenza ripetute, dopo l'automazione</span>
           </li>
           <li class="proof-item">
             <strong>200+</strong>
             <span>dispositivi aziendali gestiti</span>
           </li>
           <li class="proof-item">
-            <strong>−40%</strong>
-            <span>richieste di assistenza ripetute, dopo l'automazione</span>
+            <strong>4+</strong>
+            <span>anni su infrastrutture enterprise</span>
           </li>
         </ul>
         <p class="proof-context reveal">
@@ -215,9 +198,6 @@
             <div class="rack-unit__body">
               <h3>Cloud e identità</h3>
               <p>Account, posta e file su Microsoft 365 e Azure: regole chiare su chi accede, da dove e con quale dispositivo, e computer e telefoni aziendali Windows, iOS e macOS gestiti da un unico punto.</p>
-              <ul class="unit-kit" role="list">
-                <li>Azure</li><li>Microsoft 365</li><li>Entra ID</li><li>Intune</li>
-              </ul>
             </div>
           </li>
           <li class="rack-unit">
@@ -225,9 +205,6 @@
             <div class="rack-unit__body">
               <h3>Automazione</h3>
               <p>Nuovi utenti, permessi e report creati da script PowerShell e Terraform, sempre allo stesso modo, invece che a mano ogni volta. Meno operazioni manuali vuol dire meno errori e meno tempo perso sulle stesse richieste.</p>
-              <ul class="unit-kit" role="list">
-                <li>Terraform</li><li>PowerShell</li><li>Graph API</li><li>CI/CD</li>
-              </ul>
             </div>
           </li>
           <li class="rack-unit">
@@ -236,9 +213,6 @@
               <h3>Continuità operativa</h3>
               <p>Backup e disaster recovery con Commvault, Veeam e Azure Backup: cosa salvare, per quanto tempo e dove, con ripristini provati su dati reali. Un backup mai ripristinato è solo un'ipotesi.</p>
               <p class="status">Ripristini testati</p>
-              <ul class="unit-kit" role="list">
-                <li>Commvault</li><li>Veeam</li><li>Azure Backup</li>
-              </ul>
             </div>
           </li>
           <li class="rack-unit">
@@ -246,9 +220,6 @@
             <div class="rack-unit__body">
               <h3>Ferro e rete</h3>
               <p>Server Windows e Linux, virtualizzazione, Active Directory, reti cablate, Wi-Fi e VPN. Il livello dove i guasti accadono davvero, e dove si risolvono.</p>
-              <ul class="unit-kit" role="list">
-                <li>Windows Server</li><li>Linux</li><li>Active Directory</li><li>LAN / WLAN / VPN</li>
-              </ul>
             </div>
           </li>
         </ol>
@@ -264,13 +235,19 @@
         <div>
           <h2>Esperienza fatta dove un fermo si misura in soldi.</h2>
         </div>
-        <ul class="feature-list" role="list">
-          <li>Banking, finance ed energia: Deutsche Bank, Eos Solutions, altermAInd.</li>
-          <li>Server on-premises in produzione: Active Directory, Exchange Server e database server.</li>
-          <li>Migrazione della posta da Exchange Server a Exchange Online senza fermi non pianificati.</li>
-          <li>Reti wireless campus-wide e 1000+ account gestiti in ambito education.</li>
-          <li>Flotte multi-OS Windows, iOS e macOS: Intune Autopilot, SCCM, MobileIron, Jamf Pro.</li>
-          <li>Multi-cloud: Azure come piattaforma primaria, AWS EC2/S3/SSM con policy IAM.</li>
+        <ul class="feature-list feature-list--outcomes" role="list">
+          <li>
+            <strong>La posta passa al cloud senza fermare il lavoro.</strong>
+            <span>Migrazioni da Exchange Server a Exchange Online senza fermi non pianificati, per aziende dei settori banking ed energia.</span>
+          </li>
+          <li>
+            <strong>Server in sede che non riservano sorprese.</strong>
+            <span>Active Directory, Exchange e database in produzione, in ambienti dove un fermo costa caro.</span>
+          </li>
+          <li>
+            <strong>Computer, telefoni e Wi-Fi sotto controllo.</strong>
+            <span>Dalla flotta iOS di una sede bancaria a un istituto con 1000+ account, iPad e iMac gestiti e una rete Wi-Fi estesa a tutto il campus.</span>
+          </li>
         </ul>
       </div>
     </section>
@@ -280,9 +257,9 @@
       <div class="container cta-band reveal">
         <div>
           <h2>Hai un'infrastruttura da mettere in ordine?</h2>
-          <p>Raccontami com'è messa oggi: ti dico cosa si può automatizzare, cosa conviene consolidare e cosa lasciare esattamente com'è. La prima valutazione è senza costi e senza impegno, e ti rispondo entro due giorni lavorativi.</p>
+          <p>Raccontami com'è messa oggi: ti dico cosa si può automatizzare, cosa conviene consolidare e cosa lasciare esattamente com'è. La prima call è gratuita e senza impegno, e ti rispondo entro due giorni lavorativi.</p>
         </div>
-        <a class="btn btn--primary" href="/pages/portfolio/contact.html">Parliamone</a>
+        <a class="btn btn--primary" href="/pages/portfolio/contact.html">Chiedi una call gratuita</a>
       </div>
     </section>
   </main>
@@ -308,12 +285,10 @@
       </p>
       <nav class="footer__links" aria-label="Note legali">
         <a href="/pages/cookie-policy.html">Cookie policy</a>
-        <button type="button" data-consent-open hidden>Preferenze cookie</button>
       </nav>
     </div>
   </footer>
 
-  <script src="/scripts/hero-fx.js" defer></script>
   <script src="/scripts/main.js" defer></script>
 </body>
 </html>

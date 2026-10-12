@@ -116,7 +116,6 @@
 
 /* ══ Sezioni ══════════════════════════════════════════════════════════ */
 .section { padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; }
-.section--hero { padding-top: clamp(var(--space-12), 6vw, var(--space-20)); padding-bottom: var(--space-10); }
 .section--tight { padding: var(--space-8) 0; }
 .section--bordered { border-top: 1px solid var(--color-divider); }
 .section-action { margin-top: var(--space-10); }
@@ -147,6 +146,13 @@
   color: var(--color-text);
 }
 .btn--secondary:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.btn--nav[aria-current="page"] {
+  /* Sulla pagina Contatti la CTA è il luogo in cui si è già: si spegne a
+     contorno, come le voci attive del menu si marcano senza riempimento. */
+  background: transparent;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
 .btn--nav {
   min-height: 0;
   padding: 0.5rem 0.9rem;
@@ -202,20 +208,6 @@
 .rack-unit__body p { color: var(--color-text-muted); max-width: 62ch; }
 .rack-unit:hover .rack-unit__u { color: var(--color-accent); border-right-color: var(--color-accent-line); }
 .rack-unit:hover .rack-unit__u::after { background: var(--color-accent); width: 15px; }
-
-/* Riga di apparati sotto ogni unità: nomi propri di prodotto, registro
-   etichetta perché è esattamente ciò che sono. */
-.unit-kit {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-4);
-  margin-top: var(--space-4);
-  list-style: none;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.02em;
-  color: var(--color-text-faint);
-}
 
 /* ══ Stato ════════════════════════════════════════════════════════════
    L'unico verde del sito. Marca un fatto verificabile, non decora un blocco:
@@ -303,26 +295,21 @@
 }
 .info-card:hover::before, .service-panel:hover::before { opacity: 1; }
 
-.metric-card, .contact-link {
+.metric-card {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface-2);
 }
-.contact-link {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-5);
+
+/* Link nel testo: sottolineati, perché in mezzo a una frase il colore da
+   solo non basta a dire "si clicca". */
+.text-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--color-accent-line);
 }
-.contact-link:hover { border-color: var(--color-accent); }
-.contact-link strong { font-size: var(--text-sm); font-weight: 600; }
-.contact-link span {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.02em;
-  color: var(--color-text-muted);
-}
+.text-link:hover { color: var(--color-accent); text-decoration-color: currentColor; }
 
 /* Il maiuscolo si spazia, il minuscolo no: queste etichette sono nomi propri
    in minuscolo, e un tracking largo ne spezzerebbe la forma delle parole. */
@@ -383,12 +370,15 @@
   white-space: pre-wrap;
 }
 
-.reveal {
+/* Solo con JS: la classe .js la mette uno script in <head> prima del primo
+   paint. Senza JS l'IntersectionObserver non esiste e i contenuti devono
+   restare visibili, non fermi a opacità zero. */
+.js .reveal {
   opacity: 0;
   transform: translateY(12px);
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.reveal.is-visible { opacity: 1; transform: none; }
+.js .reveal.is-visible { opacity: 1; transform: none; }
 
 /* ── Enumerazione del rack ─────────────────────────────────────────────
    Il secondo momento animato della home, dopo la banda d'apertura: quando il
@@ -420,6 +410,9 @@
 }
 @media (max-width: 760px) {
   .nav-toggle { display: grid; }
+  /* Menu e tema vanno insieme a destra: con space-between su tre figli il
+     menu finiva al centro della testata, alla pari del marchio. */
+  .site-nav { margin-left: auto; }
   .btn--nav { width: 100%; margin-top: var(--space-2); }
   .cta-band { flex-direction: column; align-items: flex-start; gap: var(--space-6); }
   .nav-menu {
@@ -436,7 +429,7 @@
   .nav-menu.is-open { display: flex; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
+  .js .reveal, .js .reveal.is-visible { opacity: 1; transform: none; transition: none; }
   .rack.is-visible .rack-unit { animation: none; }
 }
 

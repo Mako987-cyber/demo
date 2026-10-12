@@ -59,7 +59,7 @@
    fra colonne della stessa riga anche con testi di lunghezza diversa. */
 .service-panel { display: flex; flex-direction: column; }
 .service-panel .tag-row { margin-top: auto; }
-.info-card h3, .service-panel h2, .service-panel h3, .contact-panel h1 {
+.info-card h3, .service-panel h2, .service-panel h3, .contact-panel h1, .contact-panel h2 {
   font-size: var(--text-lg);
   margin-bottom: var(--space-3);
 }
@@ -100,6 +100,10 @@
   font-size: var(--text-sm);
 }
 .feature-list li:first-child { border-top: 0; padding-top: 0; }
+/* Risultati, non apparati: la frase che un titolare capisce sopra, il
+   contesto che la rende vera sotto. */
+.feature-list--outcomes li { display: grid; gap: var(--space-1); }
+.feature-list--outcomes strong { color: var(--color-text); font-size: var(--text-base); font-weight: 600; }
 
 .tag-row {
   display: flex;
@@ -139,16 +143,62 @@
 
 /* ══ Contatti ═════════════════════════════════════════════════════════ */
 .contact-layout { grid-template-columns: 0.9fr 1.1fr; align-items: start; }
-/* Il pannello dei recapiti non ha una superficie propria: contiene solo voci
-   che ne hanno già una, e incorniciare una cornice raddoppia il bordo senza
-   aggiungere informazione. */
-.contact-panel--stacked {
+/* Un'azione sola, una mail. Il pannello principale non ha superficie
+   propria: è la pagina stessa che chiede, il riquadro accanto risponde a
+   "e poi?". */
+.contact-panel--main {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-5);
   padding: 0;
   background: transparent;
   border: 0;
 }
+.contact-panel--main h1 { font-size: var(--text-2xl); max-width: 16ch; margin-bottom: 0; }
+.contact-panel--main > p { color: var(--color-text-muted); max-width: 58ch; }
+.brief-list {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-rail);
+}
+.contact-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+/* L'indirizzo resta scritto in chiaro: chi non ha un client di posta lo
+   copia a mano, e chi ha JS lo copia con il pulsante. */
+.contact-address {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  user-select: all;
+}
+.contact-address__status { font-size: var(--text-xs); color: var(--color-verified); user-select: none; }
+.contact-alt { font-size: var(--text-sm); }
+
+/* I passi sono numerati perché la sequenza è l'informazione: prima la mail,
+   poi la risposta, poi la call. */
+.steps { display: grid; list-style: none; counter-reset: step; margin-top: var(--space-5); }
+.steps li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+  counter-increment: step;
+}
+.steps li::before {
+  content: counter(step);
+  grid-row: span 2;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  padding-top: 0.2em;
+}
+.steps strong { font-weight: 600; }
+.steps span { grid-column: 2; color: var(--color-text-muted); font-size: var(--text-sm); }
 
 /* ══ Piè di pagina ════════════════════════════════════════════════════ */
 .site-footer {

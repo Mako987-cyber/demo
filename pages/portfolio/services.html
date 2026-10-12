@@ -9,13 +9,13 @@
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <meta name="theme-color" content="#101418" />
-  <link rel="stylesheet" data-consent="fonts" data-consent-href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="preload" href="/assets/fonts/archivo-400-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/styles/fonts.css" />
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="stylesheet" href="/styles/tokens.css" />
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/components.css" />
   <link rel="stylesheet" href="/styles/layout.css" />
-  <link rel="stylesheet" href="/styles/consent.css" />
-  <script src="/scripts/consent.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Salta al contenuto</a>
@@ -56,7 +56,6 @@
   <main id="main-content" class="page-main">
     <section class="section page-hero">
       <div class="container section-intro reveal">
-        <span class="eyebrow">Servizi</span>
         <h1>Infrastruttura, cloud e continuità operativa.</h1>
         <p>Le stesse quattro aree della home, nel dettaglio. Si scende dal cloud fino ai server e alla rete. Posso intervenire su quello che avete già, installare qualcosa di nuovo o rimettere in ordine un'infrastruttura cresciuta un pezzo alla volta, senza un piano, con il metodo imparato in contesti banking e finance.</p>
       </div>
@@ -202,9 +201,9 @@
       <div class="container cta-band reveal">
         <div>
           <h2>Non sai da quale di questi partire?</h2>
-          <p>Si comincia sempre allo stesso modo: capire cosa c'è, cosa è protetto e cosa no. Scrivimi: la prima valutazione è senza costi e senza impegno.</p>
+          <p>Si comincia sempre allo stesso modo: capire cosa c'è, cosa è protetto e cosa no. Scrivimi: la prima call è gratuita e senza impegno.</p>
         </div>
-        <a class="btn btn--primary" href="/pages/portfolio/contact.html">Parliamone</a>
+        <a class="btn btn--primary" href="/pages/portfolio/contact.html">Chiedi una call gratuita</a>
       </div>
     </section>
   </main>
@@ -230,7 +229,6 @@
       </p>
       <nav class="footer__links" aria-label="Note legali">
         <a href="/pages/cookie-policy.html">Cookie policy</a>
-        <button type="button" data-consent-open hidden>Preferenze cookie</button>
       </nav>
     </div>
   </footer>
