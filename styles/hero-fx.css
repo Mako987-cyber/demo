@@ -10,12 +10,18 @@
    momento animato, non un fondo che vibra: il segnale passa una volta, i
    cavi restano accesi, i LED del rack passano a verde (in ops il verde è lo
    stato "attivo", e qui è l'unico stato da dichiarare), poi la nuvola si
-   accende e tutto resta fermo. Dura poco più di tre secondi.
+   accende. Da lì il traffico non si ferma più: i segnali continuano a
+   correre sui cavi, i LED lampeggiano di attività, la nuvola respira.
 
    Il segnale non è un oggetto che si muove: è un tratteggio che scorre lungo
    il tracciato (stroke-dashoffset). Ogni path dichiara pathLength="100" e
-   il motivo "4 100" ha periodo 104: partire da 108 e arrivare a 4 fa entrare
-   e uscire il tratto senza che resti un puntino a riposo.
+   il motivo "4 100" ha periodo 104: da 108 a 4 il tratto entra ed esce, e
+   108 ≡ 4 sul periodo, quindi il ciclo riparte senza scatti.
+
+   Niente vector-effect: non-scaling-stroke sui tracciati: con quello attivo
+   Chrome calcola il tratteggio in pixel di schermo e ignora pathLength, e il
+   segnale si spezza in una fila di trattini fermi lungo tutto il cavo. Gli
+   spessori scalano con la scena e si correggono per breakpoint.
 
    Tutto vive su token di tema: la banda funziona anche in light. */
 
@@ -31,6 +37,8 @@
 
   --fx-cable-idle: 0.16;
   --fx-cable-live: 0.4;
+
+  --fx-signal-speed: 4.4s;
 
   position: relative;
   isolation: isolate;
@@ -91,14 +99,19 @@
   margin-top: clamp(var(--space-8), 4vw, var(--space-12));
 }
 
-/* Larghezza piena e rapporto bloccato: i cavi entrano sempre dal bordo
-   dello schermo, che è tutto l'effetto. */
+/* Larghezza piena e rapporto 1440/520, ma con un tetto d'altezza: senza,
+   su un monitor largo (o con lo zoom del browser ridotto) la scena cresce
+   con la finestra fino a riempire più schermate. Oltre il tetto il viewBox
+   resta centrato ("meet") e le prolunghe dei cavi, disegnate fuori dal
+   viewBox, li portano comunque fino al bordo dello schermo. */
 .hero-fx__scene { overflow: hidden; }
 .fx-scene {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 1440 / 520;
+  max-height: min(32.5rem, 56svh);
+  overflow: visible;
 }
 
 .hero-fx__caption {
@@ -116,19 +129,23 @@
 }
 .hero-fx__caption span { max-width: 60ch; }
 
-/* I tratti restano hairline a qualsiasi scala. */
-.fx-scene * { vector-effect: non-scaling-stroke; }
+/* Il rack non ha tratteggi da animare: lì i tratti possono restare hairline
+   a qualsiasi scala. */
+.fx-server * { vector-effect: non-scaling-stroke; }
 
 /* ── I cavi ─────────────────────────────────────────────────────── */
 
 .fx-cable,
+.fx-cable-lead,
 .fx-uplink {
   fill: none;
   stroke-width: 1.5;
   opacity: var(--fx-cable-live);
   animation: fx-cable-on 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.fx-cable { stroke: var(--fx-onprem); }
+.fx-cable,
+.fx-cable-lead { stroke: var(--fx-onprem); }
+.fx-cable-lead { animation-delay: 1.35s; }
 .fx-uplink { stroke: var(--fx-cloud); }
 
 @keyframes fx-cable-on {
@@ -145,15 +162,17 @@
 .fx-cable:nth-of-type(6) { animation-delay: 1.85s; }
 .fx-uplink { animation-delay: 3s; }
 
-/* ── Il segnale: un passaggio solo ──────────────────────────────── */
+/* ── Il segnale: traffico continuo ─────────────────────────────── */
+/* Ritardi positivi: al primo passaggio i segnali partono dal bordo e
+   accendono il rack; da lì in poi il ciclo si ripete all'infinito. */
 
 .fx-signal {
   fill: none;
   stroke-width: 2.25;
   stroke-linecap: round;
   stroke-dasharray: 4 100;
-  stroke-dashoffset: 4;
-  animation: fx-signal-run 1.2s cubic-bezier(0.45, 0, 0.2, 1) both;
+  stroke-dashoffset: 108;
+  animation: fx-signal-run var(--fx-signal-speed) linear infinite backwards;
 }
 .fx-signal--in {
   stroke: var(--fx-onprem);
@@ -164,7 +183,7 @@
 .fx-signal--down {
   stroke: var(--fx-cloud);
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--fx-cloud) 70%, transparent));
-  animation-duration: 0.9s;
+  animation-duration: 3.2s;
   animation-delay: 2.1s;
 }
 /* Il ripristino torna indietro: stesso tracciato, verso opposto. Un backup
@@ -180,12 +199,13 @@
   to   { stroke-dashoffset: 108; }
 }
 
-.fx-signal--in.fx-delay-1 { animation-delay: 0.3s; }
-.fx-signal--in.fx-delay-2 { animation-delay: 0.4s; }
-.fx-signal--in.fx-delay-3 { animation-delay: 0.5s; }
-.fx-signal--in.fx-delay-4 { animation-delay: 0.6s; }
-.fx-signal--in.fx-delay-5 { animation-delay: 0.7s; }
-.fx-signal--down.fx-delay-6 { animation-delay: 2.25s; }
+/* Sfalsati quanto basta perché i sei cavi non pulsino all'unisono. */
+.fx-signal--in.fx-delay-1 { animation-delay: 0.9s; }
+.fx-signal--in.fx-delay-2 { animation-delay: 0.45s; }
+.fx-signal--in.fx-delay-3 { animation-delay: 1.3s; }
+.fx-signal--in.fx-delay-4 { animation-delay: 0.65s; }
+.fx-signal--in.fx-delay-5 { animation-delay: 1.1s; }
+.fx-signal--down.fx-delay-6 { animation-delay: 3.7s; }
 
 /* ── Il rack ────────────────────────────────────────────────────── */
 
@@ -209,40 +229,59 @@
   opacity: 0.24;
 }
 
-/* I LED partono spenti e passano a verde fisso quando arriva il segnale:
-   un LED di stato commuta, non dissolve, quindi steps() e nessun ritorno. */
+/* I LED partono spenti, passano a verde quando arriva il segnale e poi
+   lampeggiano di attività, ognuno col suo ritmo. Un LED di stato commuta,
+   non dissolve: steps() in entrambe le animazioni. */
 .fx-led {
+  --fx-led-at: 1.4s;
   fill: var(--fx-on);
-  animation: fx-led-on 0.01s steps(1, end) both;
-  animation-delay: 1.4s;
+  animation:
+    fx-led-on 0.01s steps(1, end) var(--fx-led-at) both,
+    fx-led-blink 3.4s steps(1, end) calc(var(--fx-led-at) + 0.6s) infinite;
 }
-.fx-led--2 { animation-delay: 1.5s; }
-.fx-led--3 { animation-delay: 1.6s; }
-.fx-led--4 { animation-delay: 1.7s; }
-.fx-led--5 { animation-delay: 1.8s; }
-.fx-led--6 { animation-delay: 1.9s; }
+.fx-led--2 { --fx-led-at: 1.5s; animation-duration: 0.01s, 2.6s; }
+.fx-led--3 { --fx-led-at: 1.6s; animation-duration: 0.01s, 4.1s; }
+.fx-led--4 { --fx-led-at: 1.7s; animation-duration: 0.01s, 3.1s; }
+.fx-led--5 { --fx-led-at: 1.8s; animation-duration: 0.01s, 4.6s; }
+.fx-led--6 { --fx-led-at: 1.9s; animation-duration: 0.01s, 2.9s; }
 
 @keyframes fx-led-on {
   from { fill: var(--fx-hardware); opacity: 0.22; }
   to   { fill: var(--fx-on); opacity: 0.95; }
+}
+@keyframes fx-led-blink {
+  0%, 70%   { opacity: 0.95; }
+  71%, 100% { opacity: 0.35; }
 }
 
 /* ── La nuvola ──────────────────────────────────────────────────── */
 /* Due sagome sovrapposte. Il riempimento pieno del colore di fondo copre il
    bordo di quella dietro: è l'occlusione a creare la linea di stacco, quindi
    la trasparenza vive su stroke-opacity e non su opacity. */
+/* La sagoma è scalata (0.52 e 0.72): lo spessore si compensa qui perché a
+   schermo il bordo resti simile a quello dei cavi. */
 .fx-cloud-shape {
   fill: color-mix(in srgb, var(--fx-cloud) 7%, var(--color-bg));
   stroke: var(--fx-cloud);
-  stroke-width: 1.75;
+  stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-opacity: 0.7;
-  animation: fx-cloud-on 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3s both;
+  animation:
+    fx-cloud-on 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3s both,
+    fx-cloud-breathe 6s ease-in-out 3.6s infinite;
+}
+.fx-cloud-shape--back {
+  stroke-width: 3.3;
+  animation-delay: 3s, 6.6s;
 }
 @keyframes fx-cloud-on {
   from { stroke-opacity: 0.3; }
   to   { stroke-opacity: 0.7; }
+}
+@keyframes fx-cloud-breathe {
+  0%, 100% { stroke-opacity: 0.7; }
+  50%      { stroke-opacity: 0.42; }
 }
 
 /* ── Adattamenti ────────────────────────────────────────────────── */
@@ -255,6 +294,12 @@
      scena resterebbe larga quanto lo schermo e lo spostamento la porterebbe
      fuori campo. */
   .fx-scene { width: 185%; max-width: none; margin-left: -78%; }
+  /* Qui la scena è a circa metà scala: gli spessori raddoppiano per
+     restare leggibili. */
+  .fx-cable, .fx-cable-lead, .fx-uplink { stroke-width: 2.6; }
+  .fx-signal { stroke-width: 3.6; }
+  .fx-cloud-shape { stroke-width: 3.6; }
+  .fx-cloud-shape--back { stroke-width: 5; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -264,5 +309,5 @@
 /* Moto ridotto: si mostra direttamente lo stato finale, tutto acceso. */
 @media (prefers-reduced-motion: reduce) {
   .fx-signal { display: none; }
-  .fx-cable, .fx-uplink, .fx-led, .fx-cloud-shape { animation: none; }
+  .fx-cable, .fx-cable-lead, .fx-uplink, .fx-led, .fx-cloud-shape { animation: none; }
 }

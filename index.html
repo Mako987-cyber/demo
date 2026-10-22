@@ -60,8 +60,8 @@
     <!-- APERTURA — la promessa e l'azione stanno nella prima schermata. Sotto,
          a tutta larghezza, lo schema di rete: i cavi entrano dal bordo, il
          segnale arriva al rack, i LED passano a verde, gli uplink raggiungono
-         la nuvola. Succede una volta sola e poi resta acceso: è la promessa
-         ("keep it running") detta dagli oggetti. -->
+         la nuvola. Dopo l'accensione il traffico continua a scorrere: è la
+         promessa ("keep it running") detta dagli oggetti. -->
     <section class="hero-fx" aria-labelledby="hero-title">
       <div class="hero-fx__bg" aria-hidden="true"></div>
       <div class="container hero__content">
@@ -83,23 +83,26 @@
           <svg class="fx-scene" viewBox="0 40 1440 520" preserveAspectRatio="xMidYMid meet"
                fill="none" aria-hidden="true" focusable="false">
             <defs>
-              <path id="fx-lan-1" pathLength="100" vector-effect="non-scaling-stroke" d="M0 60 H430 V213 H640"/>
-              <path id="fx-lan-2" pathLength="100" vector-effect="non-scaling-stroke" d="M0 130 H470 V248 H640"/>
-              <path id="fx-lan-3" pathLength="100" vector-effect="non-scaling-stroke" d="M0 200 H505 V283 H640"/>
-              <path id="fx-lan-4" pathLength="100" vector-effect="non-scaling-stroke" d="M0 400 H505 V318 H640"/>
-              <path id="fx-lan-5" pathLength="100" vector-effect="non-scaling-stroke" d="M0 470 H470 V353 H640"/>
-              <path id="fx-lan-6" pathLength="100" vector-effect="non-scaling-stroke" d="M0 545 H430 V388 H640"/>
-              <path id="fx-up-1" pathLength="100" vector-effect="non-scaling-stroke" d="M800 250 H950 V305 H1200"/>
-              <path id="fx-up-2" pathLength="100" vector-effect="non-scaling-stroke" d="M800 350 H1030 V335 H1250"/>
+              <path id="fx-lan-1" pathLength="100" d="M0 60 H430 V213 H640"/>
+              <path id="fx-lan-2" pathLength="100" d="M0 130 H470 V248 H640"/>
+              <path id="fx-lan-3" pathLength="100" d="M0 200 H505 V283 H640"/>
+              <path id="fx-lan-4" pathLength="100" d="M0 400 H505 V318 H640"/>
+              <path id="fx-lan-5" pathLength="100" d="M0 470 H470 V353 H640"/>
+              <path id="fx-lan-6" pathLength="100" d="M0 545 H430 V388 H640"/>
+              <path id="fx-up-1" pathLength="100" d="M800 250 H950 V305 H1200"/>
+              <path id="fx-up-2" pathLength="100" d="M800 350 H1030 V335 H1250"/>
               <!-- Nuvola: unione di tre lobi tangenti a una base piatta — lobo
                    sinistro medio, cupola centrale alta, lobo destro grande.
                    I punti di raccordo sono le intersezioni dei cerchi, calcolate
                    e non stimate: è ciò che rende i tre archi un profilo unico
                    invece di tre gobbe appoggiate. Riusata due volte, piccola
                    dietro e grande davanti, come nel riferimento. -->
-              <path id="fx-cloud" vector-effect="non-scaling-stroke" d="M62 185A62 62 0 1 1 73.6 62.1A78 78 0 0 1 224 53.5A66 66 0 1 1 232 185Z"/>
+              <path id="fx-cloud" d="M62 185A62 62 0 1 1 73.6 62.1A78 78 0 0 1 224 53.5A66 66 0 1 1 232 185Z"/>
             </defs>
 
+            <!-- Prolunga a sinistra, fuori dal viewBox: dove la scena è più
+                 stretta dello schermo, i cavi arrivano comunque dal bordo. -->
+            <path class="fx-cable-lead" d="M-12000 60 H0 M-12000 130 H0 M-12000 200 H0 M-12000 400 H0 M-12000 470 H0 M-12000 545 H0"/>
             <use class="fx-cable" href="#fx-lan-1"/>
             <use class="fx-cable" href="#fx-lan-2"/>
             <use class="fx-cable" href="#fx-lan-3"/>
