@@ -1,8 +1,8 @@
-/* ── Banda d'apertura: la promessa sopra, lo schema di rete sotto ───
+/* ── Banda d'apertura: la promessa davanti, lo schema di rete dietro ──
    La prima schermata porta ciò che il visitatore deve sapere e fare: la
-   promessa come titolo, il perché, l'invito alla call. Lo schema sta in una
-   fascia propria sotto il testo, a tutta larghezza, così nessuna linea passa
-   mai dietro alle parole.
+   promessa come titolo, il perché, l'invito alla call. Lo schema fa da
+   fondo all'intera banda, a tutta larghezza, e un velo sul lato del testo
+   tiene le parole leggibili dove i cavi ci passano sotto.
 
    Lo schema si legge da sinistra a destra come un diagramma di cablaggio:
    sei cavi LAN entrano dal bordo dello schermo, il segnale li percorre fino
@@ -43,7 +43,11 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding-top: clamp(var(--space-12), 6vw, var(--space-16));
+  display: grid;
+  align-content: center;
+  gap: clamp(var(--space-8), 4vw, var(--space-12));
+  min-height: clamp(34rem, calc(100svh - 4.5rem), 54rem);
+  padding-block: clamp(var(--space-12), 6vw, var(--space-16)) var(--space-10);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -54,7 +58,8 @@
   --fx-cable-live: 0.36;
 }
 
-.hero-fx > .hero__content { position: relative; z-index: 1; }
+.hero-fx > .hero__content,
+.hero-fx > .hero-fx__caption { position: relative; z-index: 1; }
 
 /* La rassicurazione sta sotto i pulsanti, alla stessa distanza della
    decisione: è la risposta alla domanda "quanto mi costa chiedere?". */
@@ -63,7 +68,7 @@
   color: var(--color-text-muted);
 }
 
-/* ── Il fondo: carta millimetrata ferma ─────────────────────────── */
+/* ── Il fondo: carta millimetrata, schema, velo ─────────────────── */
 
 .hero-fx__bg {
   position: absolute;
@@ -81,43 +86,40 @@
   background-size: var(--fx-grid-size) var(--fx-grid-size);
   opacity: var(--fx-grid-opacity);
 }
-/* Vignettatura sul fondo della pagina, non sul nero: la banda si innesta
-   nel sito invece di sembrarci appoggiata sopra. */
+/* Sopra lo schema (::after si dipinge dopo l'svg), due strati:
+   - il velo, un'ellisse del colore di fondo sul lato del testo: senza, le
+     righe del paragrafo perdono contrasto proprio dove passano i cavi;
+   - la vignettatura sul fondo della pagina, non sul nero: la banda si
+     innesta nel sito invece di sembrarci appoggiata sopra. */
 .hero-fx__bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 40%,
-    transparent 0%, transparent 45%, var(--color-bg) 100%);
+  background:
+    radial-gradient(ellipse 46% 52% at 32% 48%,
+      color-mix(in srgb, var(--color-bg) 78%, transparent) 0%,
+      color-mix(in srgb, var(--color-bg) 45%, transparent) 55%,
+      transparent 100%),
+    radial-gradient(ellipse at 50% 45%,
+      transparent 0%, transparent 50%, var(--color-bg) 100%);
 }
 
-/* ── La figura ──────────────────────────────────────────────────── */
-
-.hero-fx__figure {
-  position: relative;
-  z-index: 1;
-  margin-top: clamp(var(--space-8), 4vw, var(--space-12));
-}
-
-/* Larghezza piena e rapporto 1440/520, ma con un tetto d'altezza: senza,
-   su un monitor largo (o con lo zoom del browser ridotto) la scena cresce
-   con la finestra fino a riempire più schermate. Oltre il tetto il viewBox
-   resta centrato ("meet") e le prolunghe dei cavi, disegnate fuori dal
-   viewBox, li portano comunque fino al bordo dello schermo. */
-.hero-fx__scene { overflow: hidden; }
+/* La scena riempie la banda e il viewBox ci sta dentro per intero
+   ("meet"): su uno schermo largo (o con lo zoom del browser ridotto) è
+   l'altezza della banda a fermarla, invece di farla crescere con la
+   finestra. In quel caso il viewBox resta centrato e le prolunghe dei
+   cavi, disegnate fuori dal viewBox, li portano comunque fino al bordo. */
 .fx-scene {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  aspect-ratio: 1440 / 520;
-  max-height: min(32.5rem, 56svh);
+  height: 100%;
   overflow: visible;
 }
 
 .hero-fx__caption {
   display: grid;
   gap: var(--space-1);
-  padding-block: var(--space-4) var(--space-10);
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
@@ -293,7 +295,17 @@
   /* max-width: none perché base.css limita ogni svg al 100%: senza, la
      scena resterebbe larga quanto lo schermo e lo spostamento la porterebbe
      fuori campo. */
-  .fx-scene { width: 185%; max-width: none; margin-left: -78%; }
+  .fx-scene { right: auto; left: -78%; width: 185%; max-width: none; }
+  /* Qui il testo occupa tutta la larghezza: il velo si allarga con lui. */
+  .hero-fx__bg::after {
+    background:
+      radial-gradient(ellipse 90% 50% at 50% 45%,
+        color-mix(in srgb, var(--color-bg) 72%, transparent) 0%,
+        color-mix(in srgb, var(--color-bg) 40%, transparent) 60%,
+        transparent 100%),
+      radial-gradient(ellipse at 50% 45%,
+        transparent 0%, transparent 50%, var(--color-bg) 100%);
+  }
   /* Qui la scena è a circa metà scala: gli spessori raddoppiano per
      restare leggibili. */
   .fx-cable, .fx-cable-lead, .fx-uplink { stroke-width: 2.6; }
